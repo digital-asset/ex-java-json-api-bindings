@@ -22,12 +22,15 @@ import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.GetValidatorUserInfoResponse;
 
 public class Validator {
+    @SuppressWarnings("unused")
     private final ValidatorApi validatorApi;
     private final ValidatorPublicApi validatorPublicApi;
 
-    public Validator(String baseUrl) {
+    public Validator(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
+        if(!bearerToken.isEmpty())
+            client.setBearerToken(bearerToken);
         this.validatorApi = new ValidatorApi(client);
         this.validatorPublicApi = new ValidatorPublicApi(client);
     }

@@ -19,7 +19,10 @@ public class Main {
     public static void main(String[] args) {
         try {
             printEnvironment();
-            confirmConnectivity();
+            Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
+            Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+            confirmConnectivity(ledgerApi, validatorApi);
+            confirmAuthentication(ledgerApi, validatorApi);
             System.exit(0);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -39,11 +42,13 @@ public class Main {
                 + (Env.VALIDATOR_TOKEN.isEmpty() ? "<empty>" : Env.VALIDATOR_TOKEN.substring(0, 5) + "..."));
     }
 
-    private static void confirmConnectivity() throws Exception {
+    private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
         printStep("Confirm API connectivity");
-        Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL);
         System.out.println("Version: " + ledgerApi.getVersion());
-        Validator validatorApi = new Validator(Env.VALIDATOR_API_URL);
         System.out.println("Party: " + validatorApi.getValidatorParty());
+    }
+
+    private static void confirmAuthentication(Ledger ledgerApi, Validator validatorApi) throws Exception {
+        printStep("Confirm authentication");
     }
 }

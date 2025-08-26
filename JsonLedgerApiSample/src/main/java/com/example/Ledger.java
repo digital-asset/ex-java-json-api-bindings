@@ -23,9 +23,11 @@ import com.example.client.ledger.model.GetLedgerApiVersionResponse;
 public class Ledger {
     private final DefaultApi ledgerApi;
 
-    public Ledger(String baseUrl) {
+    public Ledger(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
+        if(!bearerToken.isEmpty())
+            client.setBearerToken(bearerToken);
         this.ledgerApi = new DefaultApi(client);
     }
 
