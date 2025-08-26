@@ -18,15 +18,32 @@ package com.example;
 public class Main {
     public static void main(String[] args) {
         try {
-            Ledger ledgerApi = new Ledger("http://wallet.localhost/api/participant");
-            System.out.println("Version: " + ledgerApi.getVersion());
-            Validator validatorApi = new Validator("http://wallet.localhost/api/validator");
-            System.out.println("Party: " + validatorApi.getValidatorParty());
-        }
-        catch(Exception ex)
-        {
+            printEnvironment();
+            confirmConnectivity();
+            System.exit(0);
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
         }
+    }
+
+    private static void printStep(String step) {
+        System.out.println("\n=== " + step + " ===");
+    }
+
+    private static void printEnvironment() {
+        printStep("Print environment variables");
+        System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
+        System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
+        System.out.println("VALIDATOR_TOKEN: "
+                + (Env.VALIDATOR_TOKEN.isEmpty() ? "<empty>" : Env.VALIDATOR_TOKEN.substring(0, 5) + "..."));
+    }
+
+    private static void confirmConnectivity() throws Exception {
+        printStep("Confirm API connectivity");
+        Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL);
+        System.out.println("Version: " + ledgerApi.getVersion());
+        Validator validatorApi = new Validator(Env.VALIDATOR_API_URL);
+        System.out.println("Party: " + validatorApi.getValidatorParty());
     }
 }
