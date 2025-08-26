@@ -50,5 +50,7 @@ public class Main {
 
     private static void confirmAuthentication(Ledger ledgerApi, Validator validatorApi) throws Exception {
         printStep("Confirm authentication");
+        System.out.println("Ledger end: " + ledgerApi.getLedgerEnd());
+        System.out.println("Validator users: " + validatorApi.listUsers());
     }
 }

@@ -20,6 +20,9 @@ import com.example.client.validator.api.ValidatorPublicApi;
 import com.example.client.validator.invoker.ApiClient;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.GetValidatorUserInfoResponse;
+import com.example.client.validator.model.ListUsersResponse;
+
+import java.util.List;
 
 public class Validator {
     @SuppressWarnings("unused")
@@ -38,5 +41,10 @@ public class Validator {
     public String getValidatorParty() throws ApiException {
         GetValidatorUserInfoResponse response = this.validatorPublicApi.getValidatorUserInfo();
         return response.getPartyId();
+    }
+
+    public List<String> listUsers() throws ApiException {
+        ListUsersResponse response = this.validatorApi.listUsers();
+        return response.getUsernames();
     }
 }

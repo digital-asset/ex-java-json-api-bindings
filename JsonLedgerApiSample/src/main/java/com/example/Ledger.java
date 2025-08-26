@@ -19,6 +19,7 @@ import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.model.GetLedgerApiVersionResponse;
+import com.example.client.ledger.model.GetLedgerEndResponse;
 
 public class Ledger {
     private final DefaultApi ledgerApi;
@@ -34,5 +35,10 @@ public class Ledger {
     public String getVersion() throws ApiException {
         GetLedgerApiVersionResponse response = this.ledgerApi.getV2Version();
         return response.getVersion();
+    }
+
+    public Long getLedgerEnd() throws ApiException {
+        GetLedgerEndResponse response = this.ledgerApi.getV2StateLedgerEnd();
+        return response.getOffset();
     }
 }
