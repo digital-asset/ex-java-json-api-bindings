@@ -15,7 +15,11 @@
 
 package com.example;
 
+import com.example.client.validator.model.SignedTopologyTx;
+import com.example.client.validator.model.TopologyTx;
+
 import java.security.KeyPair;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -64,7 +68,9 @@ public class Main {
     private static void onboardNewUser(String partyHint, Validator validatorApi) throws Exception {
         printStep("Onboard " + partyHint);
         KeyPair keyPair = Keys.generate();
-        String newParty = validatorApi.onboard(partyHint, keyPair);
+        List<TopologyTx> txs = validatorApi.prepareOnboarding(partyHint, keyPair.getPublic());
+        List<SignedTopologyTx> signedTxs = ExternalSigning.signOnboarding(txs, keyPair.getPrivate());
+        String newParty = validatorApi.submitOnboarding(signedTxs, keyPair.getPublic());
         System.out.println("New party: " + newParty);
     }
 }
