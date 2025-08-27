@@ -21,7 +21,7 @@ import com.example.client.validator.invoker.ApiClient;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
 
-import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.List;
 
 public class Validator {
@@ -48,27 +48,22 @@ public class Validator {
         return response.getUsernames();
     }
 
-    public String onboard(String partyHint, KeyPair keyPair) throws ApiException {
-        String publicKey = Keys.toEd25519HexString(keyPair.getPublic());
-        GenerateExternalPartyTopologyRequest request1 = new GenerateExternalPartyTopologyRequest();
-        request1.setPartyHint(partyHint);
-        request1.setPublicKey(publicKey);
-        GenerateExternalPartyTopologyResponse response1 = this.validatorApi.generateExternalPartyTopology(request1);
+    public List<TopologyTx> prepareOnboarding(String partyHint, PublicKey publicKey) throws ApiException {
+        String publicKeyHex = Keys.toEd25519HexString(publicKey);
+        GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest();
+        request.setPartyHint(partyHint);
+        request.setPublicKey(publicKeyHex);
+        GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
+        return response.getTopologyTxs();
+    }
 
-        // TODO: move into a separate user signing method
-        List<SignedTopologyTx> signedTxs = response1.getTopologyTxs().stream().map(tx -> {
-            String signedHash = Keys.sign(keyPair.getPrivate(), tx.getHash());
-            SignedTopologyTx signedTx = new SignedTopologyTx();
-            signedTx.setTopologyTx(tx.getTopologyTx());
-            signedTx.setSignedHash(signedHash);
-            return signedTx;
-        }).toList();
-
+    public String submitOnboarding(List<SignedTopologyTx> signedTxs, PublicKey publicKey) throws ApiException {
         // TODO: figure out why this fails
-        SubmitExternalPartyTopologyRequest request2 = new SubmitExternalPartyTopologyRequest();
-        request2.setSignedTopologyTxs(signedTxs);
-        request2.setPublicKey(publicKey);
-        SubmitExternalPartyTopologyResponse response2 = this.validatorApi.submitExternalPartyTopology(request2);
-        return response2.getPartyId();
+        String publicKeyHex = Keys.toEd25519HexString(publicKey);
+        SubmitExternalPartyTopologyRequest request = new SubmitExternalPartyTopologyRequest();
+        request.setSignedTopologyTxs(signedTxs);
+        request.setPublicKey(publicKeyHex);
+        SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
+        return response.getPartyId();
     }
 }
