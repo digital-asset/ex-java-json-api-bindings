@@ -15,9 +15,9 @@
 
 package com.example;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
-import java.util.Formatter;
 
 public class Encode {
 
@@ -50,8 +50,8 @@ public class Encode {
     public static String toEd25519HexString(Key key) {
         byte[] encodedBytes = key.getEncoded();
         byte[] rawKeyBytes = new byte[32];
-        System.arraycopy(bytes, bytes.length - 32, rawKeyBytes, 0, 32);
-        return toHexString(encodedBytes);
+        System.arraycopy(encodedBytes, encodedBytes.length - 32, rawKeyBytes, 0, 32);
+        return toHexString(rawKeyBytes);
     }
 
     public static String toBase64String(Key key) {
