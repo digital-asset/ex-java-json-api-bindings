@@ -15,14 +15,17 @@
 
 package com.example;
 
+import java.security.KeyPair;
+
 public class Main {
     public static void main(String[] args) {
+        setupEnvironment(args);
         try {
-            printEnvironment();
             Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
             Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
+            onboardNewUser(Env.NEW_PARTY_HINT, validatorApi);
             System.exit(0);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -34,12 +37,16 @@ public class Main {
         System.out.println("\n=== " + step + " ===");
     }
 
-    private static void printEnvironment() {
+    private static void setupEnvironment(String[] args) {
+        if (args.length > 0)
+            Env.NEW_PARTY_HINT = args[0];
+
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
         System.out.println("VALIDATOR_TOKEN: "
                 + (Env.VALIDATOR_TOKEN.isEmpty() ? "<empty>" : Env.VALIDATOR_TOKEN.substring(0, 5) + "..."));
+        System.out.println("NEW_PARTY_HINT: " + Env.NEW_PARTY_HINT);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -52,5 +59,12 @@ public class Main {
         printStep("Confirm authentication");
         System.out.println("Ledger end: " + ledgerApi.getLedgerEnd());
         System.out.println("Validator users: " + validatorApi.listUsers());
+    }
+
+    private static void onboardNewUser(String partyHint, Validator validatorApi) throws Exception {
+        printStep("Onboard " + partyHint);
+        KeyPair keyPair = Keys.generate();
+        String newParty = validatorApi.onboard(partyHint, keyPair);
+        System.out.println("New party: " + newParty);
     }
 }
