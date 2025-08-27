@@ -103,6 +103,16 @@ java -jar target/JsonLedgerApiSample-1.0-SNAPSHOT.jar
 ## Sample output
 
 ```
+=== Print environment variables ===
+LEDGER_API_URL: http://wallet.localhost/api/participant
+VALIDATOR_API_URL: http://wallet.localhost/api/validator
+VALIDATOR_TOKEN: eyJra...
+
+=== Confirm API connectivity ===
 Version: 3.3.0-SNAPSHOT
 Party: da-wallace-1::122055a866a25d4829b64f629f37dbde2abecc8832cad66ee85e11e5e268e25e539d
+
+=== Confirm authentication ===
+Ledger end: 25145
+Validator users: [administrator, test-wallet-1, da-wallace-1, da-wallace-2]
 ```
