@@ -14,11 +14,11 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ## Purpose
 
-A minimal sample of using Java to call the JSON Ledger API endpoints. The sample illustrates the endpoints, the request payloads, and their responses for the following:
+A minimal sample of using Java to call the JSON API endpoints (Ledger API, Validator API, etc.)
+The sample illustrates the endpoints, the request payloads, and their responses for the following:
 
-* use the validator API to create the external parties
-* external signing
-* token standard
+* Onboarding an external party
+* Signing transactions as an external party
 
 The sample uses the following tools:
 
@@ -40,7 +40,7 @@ which are typically required for production implementations:
 
 ## Setup
 
-1. **Start** a DevNet-connected validator.
+1. **Start** a DevNet-connected or LocalNet validator.
    For example, use [these instructions](https://docs.dev.sync.global/validator_operator/validator_compose.html)
    to start a Docker Compose-based validator on your workstation.
 2. **Navigate** to your validator's built-in wallet app.
@@ -63,7 +63,7 @@ which are typically required for production implementations:
    ```
 
    If using the Docker Compose-based validator, you may need to
-   [add a location to the `nginx.conf`](https://docs.dev.sync.global/app_dev/ledger_api/index.html#comments):
+   [add a location to the `nginx.conf`](https://docs.dev.sync.global/app_dev/ledger_api/index.html#comments) for the JSON Ledger API:
    
     ```
     server {
@@ -86,19 +86,24 @@ which are typically required for production implementations:
 
 ## Running
 
-**Run** the sample with either:
+1. **Define** environment variables for the values shown in
+   [Env.json](./JsonLedgerApiSample/src/main/java/com/example/Env.java),
+   including authentication tokens for the Validator's wallet,
+   a sender party, and a receiving party.
 
-```
-mvn clean compile exec:java
-```
+2. **Run** the sample with either:
 
-Or:
+    ```
+    mvn clean compile exec:java
+    ```
 
-```
-mvn clean package
+    Or:
 
-java -jar target/JsonLedgerApiSample-1.0-SNAPSHOT.jar
-```
+    ```
+    mvn clean package
+
+    java -jar target/JsonLedgerApiSample-1.0-SNAPSHOT.jar
+    ```
 
 ## Sample output
 
