@@ -45,7 +45,6 @@ public class Main {
             Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
             Keys.printKeyPair(Env.RECEIVER_PARTY_HINT, receiverKeyPair);
 
-            String hostParty = Env.VALIDATOR_NODE_PARTY;
             String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
             String receiverParty = onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, senderKeyPair);
 
