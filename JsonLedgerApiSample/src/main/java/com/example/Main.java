@@ -28,7 +28,6 @@ public class Main {
         setupEnvironment(args);
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
-        Wallet walletApi = new Wallet(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
 
         try {
             // confirm environment and inputs
@@ -43,7 +42,8 @@ public class Main {
             // grant the sender some coin
             double tapAmount = 500.0;
             long nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
-            walletApi.tap(tapAmount);
+            Wallet senderWallet = new Wallet(Env.VALIDATOR_API_URL, Env.SENDER_TOKEN);
+            senderWallet.tap(tapAmount);
 
             // onboard receiver
             KeyPair receiverKeyPair = Keys.generate();
@@ -73,15 +73,24 @@ public class Main {
         System.out.println("\n=== " + step + " ===");
     }
 
+    private static void printToken(String name, String token) {
+        int length = token.length();
+        System.out.println(name + ": " +
+            (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
+    }
+
     private static void setupEnvironment(String[] args) {
         if (args.length > 0)
             Env.SENDER_PARTY_HINT = args[0];
 
+
+
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
-        System.out.println("VALIDATOR_TOKEN: "
-                + (Env.VALIDATOR_TOKEN.isEmpty() ? "<empty>" : Env.VALIDATOR_TOKEN.substring(0, 5) + "..."));
+        printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
+        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
+        printToken("RECEIVER_TOKEN", Env.RECEIVER_TOKEN);
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
         System.out.println("RECEIVER_PARTY_HINT: " + Env.RECEIVER_PARTY_HINT);
     }
