@@ -51,13 +51,16 @@ public class Validator {
     }
 
     public List<TopologyTx> prepareOnboarding(String partyHint, PublicKey publicKey) throws ApiException {
+
         String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest();
         request.setPartyHint(partyHint);
         request.setPublicKey(publicKeyHex);
+
         GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
         System.out.println("\nNew party: " + response.getPartyId());
         System.out.println("\ngenerate response: " + response.toJson());
+
         return response.getTopologyTxs();
     }
 
