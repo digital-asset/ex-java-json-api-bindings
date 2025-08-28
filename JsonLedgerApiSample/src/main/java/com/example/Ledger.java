@@ -32,11 +32,13 @@ public class Ledger {
         this.ledgerApi = new DefaultApi(client);
     }
 
+    // does not require authentication
     public String getVersion() throws ApiException {
         GetLedgerApiVersionResponse response = this.ledgerApi.getV2Version();
         return response.getVersion();
     }
 
+    // requires authentication
     public Long getLedgerEnd() throws ApiException {
         GetLedgerEndResponse response = this.ledgerApi.getV2StateLedgerEnd();
         return response.getOffset();

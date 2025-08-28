@@ -41,11 +41,13 @@ public class Validator {
         this.validatorPublicApi = new ValidatorPublicApi(client);
     }
 
+    // does not require authentication
     public String getValidatorParty() throws ApiException {
         GetValidatorUserInfoResponse response = this.validatorPublicApi.getValidatorUserInfo();
         return response.getPartyId();
     }
 
+    // requires authentication
     public List<String> listUsers() throws ApiException {
         ListUsersResponse response = this.validatorApi.listUsers();
         return response.getUsernames();
