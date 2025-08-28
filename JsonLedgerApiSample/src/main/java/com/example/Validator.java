@@ -65,8 +65,9 @@ public class Validator {
         SubmitExternalPartyTopologyRequest request = new SubmitExternalPartyTopologyRequest();
         request.setSignedTopologyTxs(signedTxs);
         request.setPublicKey(publicKeyHex);
-        System.out.println("\nsubmit request: " + request.toJson() + "\n");
+        System.out.println("\nsubmit onboarding request: " + request.toJson() + "\n");
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
+        System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
         return response.getPartyId();
     }
 }
