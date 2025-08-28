@@ -123,7 +123,7 @@ public class Validator {
         return step3Response;
     }
 
-    public String sendWithPreApproval(KeyPair senderKeyPair, String senderPartyId, String receiverPartyId, double amount, int nonce) throws ApiException {
+    public String sendWithPreApproval(KeyPair senderKeyPair, String senderPartyId, String receiverPartyId, double amount, long nonce) throws ApiException {
 
         // step 1 - prepare a transaction that sends canton coin
         PrepareTransferPreapprovalSendRequest step1Request = new PrepareTransferPreapprovalSendRequest();
@@ -131,7 +131,7 @@ public class Validator {
         step1Request.setReceiverPartyId(receiverPartyId);
         step1Request.setAmount(new BigDecimal(amount));
         step1Request.setExpiresAt(OffsetDateTime.now().plusMinutes(3));
-        step1Request.setNonce(Long.valueOf(nonce));
+        step1Request.setNonce(nonce);
         step1Request.setVerboseHashing(true); // discouraged in production use
 
         System.out.println("\nprepare acceptance of external party setup proposal request: " + step1Request.toJson() + "\n");

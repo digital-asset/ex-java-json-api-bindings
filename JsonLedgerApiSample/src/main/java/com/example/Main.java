@@ -50,7 +50,7 @@ public class Main {
 
             double tapAmount = 500.0;
             double transferAmount = 30.0;
-            int nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
+            long nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
 
             SubmitAcceptExternalPartySetupProposalResponse transactionPreapproval = validatorApi.preapproveTransactions(receiverKeyPair, senderParty, receiverParty);
             walletApi.tap(tapAmount);
