@@ -51,8 +51,9 @@ public class Keys {
         return new KeyPair(publicKey, privateKey);
     }
 
-    public static void printKeyPair(KeyPair keyPair) throws Exception {
+    public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) throws Exception {
 
+        System.out.println("==================== KEY FOR " + relatedPartyHint + " ============");
         System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
         System.out.println("              format: " + keyPair.getPublic().getFormat());
         System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
@@ -64,13 +65,14 @@ public class Keys {
         System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
         System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
         System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+        System.out.println("");
     }
 
-    public static KeyPair createAndValidateKeypair(String publicKeyReference, String privateKeyReference) throws Exception {
+    public static KeyPair createAndValidateKeypair(String relatedPartyHint, String publicKeyReference, String privateKeyReference) throws Exception {
 
         KeyPair keyPair = createFromRawBase64(publicKeyReference, privateKeyReference);
 
-        printKeyPair(keyPair);
+        printKeyPair(relatedPartyHint, keyPair);
 
         if(!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
             throw new Exception("Conversion error with public keys.");

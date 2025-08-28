@@ -83,15 +83,11 @@ public class Validator {
         return response.getContractId();
     }
 
-    public SubmitAcceptExternalPartySetupProposalResponse establishTransactionPreapproval(KeyPair keyPair, String partyId) throws ApiException {
-
-        // TODO: deliverer and receiver
-
-        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(keyPair.getPublic()));
+    public SubmitAcceptExternalPartySetupProposalResponse preapproveTransactions(KeyPair receiverKeyPair, String senderPartyId, String receiverPartyId) throws ApiException {
 
         // step 1 - propose transfer pre-approval as the validator node operator
         CreateExternalPartySetupProposalRequest step1Request = new CreateExternalPartySetupProposalRequest();
-        step1Request.setUserPartyId(partyId);
+        step1Request.setUserPartyId(receiverPartyId);
 
         System.out.println("\ncreate external party setup proposal request: " + step1Request.toJson() + "\n");
         CreateExternalPartySetupProposalResponse step1Response = this.validatorApi.createExternalPartySetupProposal(step1Request);
@@ -100,7 +96,8 @@ public class Validator {
         // step 2 - prepare a transaction that accepts the pre-approval
         PrepareAcceptExternalPartySetupProposalRequest step2Request = new PrepareAcceptExternalPartySetupProposalRequest();
         step2Request.setContractId(step1Response.getContractId());
-        step2Request.setUserPartyId(partyId);
+        step2Request.setUserPartyId(receiverPartyId);
+        step2Request.setVerboseHashing(true); // discouraged in production use
 
         System.out.println("\nprepare acceptance of external party setup proposal request: " + step2Request.toJson() + "\n");
         PrepareAcceptExternalPartySetupProposalResponse step2Response = this.validatorApi.prepareAcceptExternalPartySetupProposal(step2Request);
@@ -108,9 +105,10 @@ public class Validator {
 
         // step 3 - submit the transaction that accepts the pre-approval
         ExternalPartySubmission step3Submission = new ExternalPartySubmission();
-        step3Submission.setPartyId(partyId);
+        step3Submission.setPartyId(receiverPartyId);
         step3Submission.setTransaction(step2Response.getTransaction());
-        step3Submission.setSignedTxHash(Keys.sign(keyPair.getPrivate(), step2Response.getTxHash()));
+        step3Submission.setSignedTxHash(Keys.sign(receiverKeyPair.getPrivate(), step2Response.getTxHash()));
+        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(receiverKeyPair.getPublic()));
         step3Submission.setPublicKey(publicKeyHex);
 
         SubmitAcceptExternalPartySetupProposalRequest step3Request = new SubmitAcceptExternalPartySetupProposalRequest();
@@ -124,8 +122,6 @@ public class Validator {
     }
 
     public String sendWithPreApproval(KeyPair senderKeyPair, String senderPartyId, String receiverPartyId, double amount, int nonce) throws ApiException {
-
-        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(senderKeyPair.getPublic()));
 
         // step 1 - prepare a transaction that sends canton coin
         PrepareTransferPreapprovalSendRequest step1Request = new PrepareTransferPreapprovalSendRequest();
@@ -145,6 +141,7 @@ public class Validator {
         step2Submission.setPartyId(senderPartyId);
         step2Submission.setTransaction(step1Response.getTransaction());
         step2Submission.setSignedTxHash(Keys.sign(senderKeyPair.getPrivate(), step1Response.getTxHash()));
+        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(senderKeyPair.getPublic()));
         step2Submission.setPublicKey(publicKeyHex);
 
         SubmitTransferPreapprovalSendRequest step2Request = new SubmitTransferPreapprovalSendRequest();
