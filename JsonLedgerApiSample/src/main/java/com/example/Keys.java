@@ -47,7 +47,40 @@ public class Keys {
         byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyString);
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
         PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+
         return new KeyPair(publicKey, privateKey);
+    }
+
+    public static void printKeyPair(KeyPair keyPair) throws Exception {
+
+        System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
+        System.out.println("              format: " + keyPair.getPublic().getFormat());
+        System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
+        System.out.println("       (raw, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
+        System.out.println("          (raw, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
+
+        System.out.println(" Private key algorithm: " + keyPair.getPrivate().getAlgorithm());
+        System.out.println("                format: " + keyPair.getPrivate().getFormat());
+        System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
+        System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+        System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+    }
+
+    public static KeyPair createAndValidateKeypair(String publicKeyReference, String privateKeyReference) throws Exception {
+
+        KeyPair keyPair = createFromRawBase64(publicKeyReference, privateKeyReference);
+
+        printKeyPair(keyPair);
+
+        if(!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
+            throw new Exception("Conversion error with public keys.");
+        };
+
+        if(!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
+            throw new Exception("Conversion error with private keys.");
+        }
+
+        return keyPair;
     }
 
     public static String sign(PrivateKey privateKey, String inputString) {

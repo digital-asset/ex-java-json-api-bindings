@@ -29,7 +29,30 @@ public class Main {
             Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
-            onboardNewUser(Env.NEW_PARTY_HINT, validatorApi);
+
+            KeyPair keyPair = Keys.generate();
+            /*
+            KeyPair keyPair = Keys.createAndValidateKeypair(
+                // from https://daholdings.slack.com/archives/C08P8TN7KKM/p1756315578998549?thread_ts=1756299658.068089&cid=C08P8TN7KKM
+                "PntesmqjJYbaxkQgYgeJ7OOgaQMCtwekOfDqronPgMY=",
+                "BrXeL1/4s0Hh7KJ5cdngj2rBJVFDehzax7a6KQ3HV90+e16yaqMlhtrGRCBiB4ns46BpAwK3B6Q58Oquic+Axg==");
+            */
+
+            Keys.printKeyPair(keyPair);
+
+            String hostParty = Env.VALIDATOR_NODE_PARTY;
+            String delivererParty = onboardNewUser(Env.DELIVERER_PARTY_HINT, validatorApi, keyPair);
+            String receiverParty = onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, keyPair);
+
+            double tapAmount = 500.0;
+            double transferAmount = 30.0;
+
+            String transferPreapprovalProposalContractId = createTransferPreapproval(delivererParty, receiverParty);
+            String transferPreapprovalContractId = acceptTransferPreapproval(receiverParty, transferPreapprovalProposalContractId);
+
+            String holdingContractId = tap(delivererParty, tapAmount);
+            transfer(delivererParty, receiverParty, holdingContractId, transferAmount);
+
             System.exit(0);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -43,14 +66,15 @@ public class Main {
 
     private static void setupEnvironment(String[] args) {
         if (args.length > 0)
-            Env.NEW_PARTY_HINT = args[0];
+            Env.DELIVERER_PARTY_HINT = args[0];
 
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
         System.out.println("VALIDATOR_TOKEN: "
                 + (Env.VALIDATOR_TOKEN.isEmpty() ? "<empty>" : Env.VALIDATOR_TOKEN.substring(0, 5) + "..."));
-        System.out.println("NEW_PARTY_HINT: " + Env.NEW_PARTY_HINT);
+        System.out.println("DELIVERER_PARTY_HINT: " + Env.DELIVERER_PARTY_HINT);
+        System.out.println("RECEIVER_PARTY_HINT: " + Env.RECEIVER_PARTY_HINT);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -65,39 +89,36 @@ public class Main {
         System.out.println("Validator users: " + validatorApi.listUsers());
     }
 
-    private static void onboardNewUser(String partyHint, Validator validatorApi) throws Exception {
+    private static String onboardNewUser(String partyHint, Validator validatorApi, KeyPair keyPair) throws Exception{
+
         printStep("Onboard " + partyHint);
-
-        // KeyPair keyPair = Keys.generate();
-
-        // from https://daholdings.slack.com/archives/C08P8TN7KKM/p1756315578998549?thread_ts=1756299658.068089&cid=C08P8TN7KKM
-        String publicKeyReference = "PntesmqjJYbaxkQgYgeJ7OOgaQMCtwekOfDqronPgMY=";
-        String privateKeyReference = "BrXeL1/4s0Hh7KJ5cdngj2rBJVFDehzax7a6KQ3HV90+e16yaqMlhtrGRCBiB4ns46BpAwK3B6Q58Oquic+Axg==";
-        KeyPair keyPair = Keys.createFromRawBase64(publicKeyReference, privateKeyReference);
-
-        System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
-        System.out.println("              format: " + keyPair.getPublic().getFormat());
-        System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
-        System.out.println("       (raw, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
-        System.out.println("          (raw, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
-
-        System.out.println(" Private key algorithm: " + keyPair.getPrivate().getAlgorithm());
-        System.out.println("                format: " + keyPair.getPrivate().getFormat());
-        System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
-        System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
-        System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
-
-        if(!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
-            throw new Exception("Conversion error with public keys.");
-        };
-
-        if(!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
-            throw new Exception("Conversion error with private keys.");
-        }
 
         List<TopologyTx> txs = validatorApi.prepareOnboarding(partyHint, keyPair.getPublic());
         List<SignedTopologyTx> signedTxs = ExternalSigning.signOnboarding(txs, keyPair.getPrivate());
         String newParty = validatorApi.submitOnboarding(signedTxs, keyPair.getPublic());
         System.out.println("New party: " + newParty);
+
+        return newParty;
+    }
+
+    private static String createTransferPreapproval(String externalParty, String hostParty) throws Exception {
+        throw new Exception("Need to create a transfer pre-approval contract");
+    }
+
+    private static String acceptTransferPreapproval(String hostparty, String transferPreapprovalProposalContractId) throws Exception {
+        throw new Exception("Need to accept the transfer pre-approval contract");
+    }
+
+    private static String tap(String delivererParty, double tapAmount) throws Exception {
+        throw new Exception("Need to accept the transfer pre-approval contract");
+    }
+
+    private static String transfer(
+            String delivererParty,
+            String receiverParty,
+            String holdingContractId,
+            double transferAmount) throws Exception {
+
+        throw new Exception("Need to accept the transfer pre-approval contract");
     }
 }
