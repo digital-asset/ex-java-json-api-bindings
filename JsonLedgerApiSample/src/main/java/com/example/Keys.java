@@ -52,9 +52,11 @@ public class Keys {
 
     public static String sign(PrivateKey privateKey, String inputString) {
         try {
+            byte[] rawHash = Encode.fromHexString(inputString);
+
             Signature signer = Signature.getInstance("Ed25519");
             signer.initSign(privateKey);
-            signer.update(inputString.getBytes());
+            signer.update(rawHash);
             byte[] signature = signer.sign();
             return Encode.toHexString(signature);
         } catch (Exception e) {
