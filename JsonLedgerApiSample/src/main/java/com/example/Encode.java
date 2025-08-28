@@ -15,8 +15,6 @@
 
 package com.example;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Base64;
 
 public class Encode {
@@ -27,10 +25,6 @@ public class Encode {
             sb.append(String.format("%02x", b));
         }
         return sb.toString();
-    }
-
-    public static String toHexString(Key key) {
-        return toHexString(key.getEncoded());
     }
 
     public static byte[] fromHexString(String hex) {
@@ -47,19 +41,7 @@ public class Encode {
         return bytes;
     }
 
-    public static String toEd25519HexString(Key key) {
-        byte[] encodedBytes = key.getEncoded();
-        byte[] rawKeyBytes = new byte[32];
-        System.arraycopy(encodedBytes, encodedBytes.length - 32, rawKeyBytes, 0, 32);
-        return toHexString(rawKeyBytes);
-    }
-
-    public static String toBase64String(Key key) {
-        return Base64.getEncoder().encodeToString(key.getEncoded());
-    }
-
-    public static String fromBase64String(String s) {
-        byte[] decodedBytes = Base64.getDecoder().decode(s);
-        return new String(decodedBytes, StandardCharsets.UTF_8);
+    public static String toBase64String(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
     }
 }

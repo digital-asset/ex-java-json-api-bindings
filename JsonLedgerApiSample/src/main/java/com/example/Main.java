@@ -67,7 +67,34 @@ public class Main {
 
     private static void onboardNewUser(String partyHint, Validator validatorApi) throws Exception {
         printStep("Onboard " + partyHint);
-        KeyPair keyPair = Keys.generate();
+
+        // KeyPair keyPair = Keys.generate();
+
+        // from https://daholdings.slack.com/archives/C08P8TN7KKM/p1756315578998549?thread_ts=1756299658.068089&cid=C08P8TN7KKM
+        String publicKeyReference = "PntesmqjJYbaxkQgYgeJ7OOgaQMCtwekOfDqronPgMY=";
+        String privateKeyReference = "BrXeL1/4s0Hh7KJ5cdngj2rBJVFDehzax7a6KQ3HV90+e16yaqMlhtrGRCBiB4ns46BpAwK3B6Q58Oquic+Axg==";
+        KeyPair keyPair = Keys.createFromRawBase64(publicKeyReference, privateKeyReference);
+
+        System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
+        System.out.println("              format: " + keyPair.getPublic().getFormat());
+        System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
+        System.out.println("       (raw, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
+        System.out.println("          (raw, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
+
+        System.out.println(" Private key algorithm: " + keyPair.getPrivate().getAlgorithm());
+        System.out.println("                format: " + keyPair.getPrivate().getFormat());
+        System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
+        System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+        System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+
+        if(!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
+            throw new Exception("Conversion error with public keys.");
+        };
+
+        if(!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
+            throw new Exception("Conversion error with private keys.");
+        }
+
         List<TopologyTx> txs = validatorApi.prepareOnboarding(partyHint, keyPair.getPublic());
         List<SignedTopologyTx> signedTxs = ExternalSigning.signOnboarding(txs, keyPair.getPrivate());
         String newParty = validatorApi.submitOnboarding(signedTxs, keyPair.getPublic());

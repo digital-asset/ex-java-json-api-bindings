@@ -49,20 +49,23 @@ public class Validator {
     }
 
     public List<TopologyTx> prepareOnboarding(String partyHint, PublicKey publicKey) throws ApiException {
-        String publicKeyHex = Keys.toEd25519HexString(publicKey);
+        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest();
         request.setPartyHint(partyHint);
         request.setPublicKey(publicKeyHex);
         GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
+        System.out.println("\nNew party: " + response.getPartyId());
+        System.out.println("\ngenerate response: " + response.toJson());
         return response.getTopologyTxs();
     }
 
     public String submitOnboarding(List<SignedTopologyTx> signedTxs, PublicKey publicKey) throws ApiException {
         // TODO: figure out why this fails
-        String publicKeyHex = Keys.toEd25519HexString(publicKey);
+        String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         SubmitExternalPartyTopologyRequest request = new SubmitExternalPartyTopologyRequest();
         request.setSignedTopologyTxs(signedTxs);
         request.setPublicKey(publicKeyHex);
+        System.out.println("\nsubmit request: " + request.toJson() + "\n");
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
         return response.getPartyId();
     }
