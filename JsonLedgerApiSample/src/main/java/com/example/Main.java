@@ -24,36 +24,34 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+
         setupEnvironment(args);
+        Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
+        Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+        ValidatorWallet walletApi = new ValidatorWallet(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+
         try {
-            Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
-            Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
-            ValidatorWallet walletApi = new ValidatorWallet(Env.VALIDATOR_API_URL);
+            // confirm environment and inputs
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
+            // onboard the sender
             KeyPair senderKeyPair = Keys.generate();
-            KeyPair receiverKeyPair = Keys.generate();
-            /*
-            KeyPair senderKeyPair = Keys.createAndValidateKeypair(
-                "example",
-                // from https://daholdings.slack.com/archives/C08P8TN7KKM/p1756315578998549?thread_ts=1756299658.068089&cid=C08P8TN7KKM
-                "PntesmqjJYbaxkQgYgeJ7OOgaQMCtwekOfDqronPgMY=",
-                "BrXeL1/4s0Hh7KJ5cdngj2rBJVFDehzax7a6KQ3HV90+e16yaqMlhtrGRCBiB4ns46BpAwK3B6Q58Oquic+Axg==");
-            */
-
             Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
-            Keys.printKeyPair(Env.RECEIVER_PARTY_HINT, receiverKeyPair);
-
             String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
+
+            // grant the sender some coin
+            double tapAmount = 500.0;
+            long nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
+            walletApi.tap(tapAmount);
+
+            // onboard receiver
+            KeyPair receiverKeyPair = Keys.generate();
+            Keys.printKeyPair(Env.RECEIVER_PARTY_HINT, receiverKeyPair);
             String receiverParty = onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, senderKeyPair);
 
-            double tapAmount = 500.0;
             double transferAmount = 30.0;
-            long nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
-
             SubmitAcceptExternalPartySetupProposalResponse transactionPreapproval = validatorApi.preapproveTransactions(receiverKeyPair, senderParty, receiverParty);
-            walletApi.tap(tapAmount);
             validatorApi.sendWithPreApproval(senderKeyPair, senderParty, receiverParty, transferAmount, nonce);
 
             /*
