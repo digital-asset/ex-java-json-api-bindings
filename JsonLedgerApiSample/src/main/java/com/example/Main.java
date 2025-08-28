@@ -16,8 +16,8 @@
 package com.example;
 
 import com.example.client.validator.model.SignedTopologyTx;
-import com.example.client.validator.model.TopologyTx;
 import com.example.client.validator.model.SubmitAcceptExternalPartySetupProposalResponse;
+import com.example.client.validator.model.TopologyTx;
 
 import java.security.KeyPair;
 import java.util.List;
@@ -101,7 +101,7 @@ public class Main {
         System.out.println("Validator users: " + validatorApi.listUsers());
     }
 
-    private static String onboardNewUser(String partyHint, Validator validatorApi, KeyPair keyPair) throws Exception{
+    private static String onboardNewUser(String partyHint, Validator validatorApi, KeyPair keyPair) throws Exception {
 
         printStep("Onboard " + partyHint);
 

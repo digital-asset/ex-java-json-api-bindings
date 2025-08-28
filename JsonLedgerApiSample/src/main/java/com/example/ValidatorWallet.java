@@ -18,13 +18,8 @@ package com.example;
 import com.example.client.wallet.internal.api.WalletApi;
 import com.example.client.wallet.internal.invoker.ApiClient;
 import com.example.client.wallet.internal.invoker.ApiException;
-import com.example.client.wallet.internal.model.*;
-
-import java.math.BigDecimal;
-import java.security.KeyPair;
-import java.security.PublicKey;
-import java.time.OffsetDateTime;
-import java.util.List;
+import com.example.client.wallet.internal.model.TapRequest;
+import com.example.client.wallet.internal.model.TapResponse;
 
 public class ValidatorWallet {
 

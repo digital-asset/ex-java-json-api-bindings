@@ -17,15 +17,15 @@ package com.example;
 
 public class Env {
 
-  public static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
-  public static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
-  public static String VALIDATOR_TOKEN = getenv("VALIDATOR_TOKEN", "");
-  public static String VALIDATOR_NODE_PARTY = getenv("VALIDATOR_NODE_PARTY", "");
-  public static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
-  public static String RECEIVER_PARTY_HINT = getenv("RECEIVER_PARTY_HINT", "bob");
+    public static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
+    public static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
+    public static String VALIDATOR_TOKEN = getenv("VALIDATOR_TOKEN", "");
+    public static String VALIDATOR_NODE_PARTY = getenv("VALIDATOR_NODE_PARTY", "");
+    public static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
+    public static String RECEIVER_PARTY_HINT = getenv("RECEIVER_PARTY_HINT", "bob");
 
-  private static String getenv(String name, String defaultValue) {
-    String envValue = System.getenv(name);
-    return envValue != null ? envValue : defaultValue;
-  }
+    private static String getenv(String name, String defaultValue) {
+        String envValue = System.getenv(name);
+        return envValue != null ? envValue : defaultValue;
+    }
 }

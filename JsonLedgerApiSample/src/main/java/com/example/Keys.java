@@ -16,13 +16,18 @@
 package com.example;
 
 import java.security.*;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 public class Keys {
+
+    static byte[] derPublicKeyHeader = {
+            0x30, 0x2A, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x70, 0x03, 0x21, 0x00
+    };
+    static byte[] derPrivateKeyHeader = {
+            0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20
+    };
 
     public static KeyPair generate() {
         try {
@@ -65,7 +70,7 @@ public class Keys {
         System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
         System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
         System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
-        System.out.println("");
+        System.out.println();
     }
 
     public static KeyPair createAndValidateKeypair(String relatedPartyHint, String publicKeyReference, String privateKeyReference) throws Exception {
@@ -74,11 +79,11 @@ public class Keys {
 
         printKeyPair(relatedPartyHint, keyPair);
 
-        if(!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
+        if (!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
             throw new Exception("Conversion error with public keys.");
-        };
+        }
 
-        if(!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
+        if (!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
             throw new Exception("Conversion error with private keys.");
         }
 
@@ -101,17 +106,9 @@ public class Keys {
         }
     }
 
-    static byte[] derPublicKeyHeader = {
-            0x30, 0x2A, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x70, 0x03, 0x21, 0x00
-    };
-
-    static byte[] derPrivateKeyHeader = {
-            0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20
-    };
-
     public static byte[] toRawBytes(PrivateKey key) {
         byte[] keyBytes = key.getEncoded();
-        if(keyBytes.length != derPrivateKeyHeader.length + 32) {
+        if (keyBytes.length != derPrivateKeyHeader.length + 32) {
             throw new IllegalArgumentException("unexpected key length");
         }
         byte[] keyBytesRaw = new byte[32];
@@ -121,7 +118,7 @@ public class Keys {
 
     public static byte[] toRawBytes(PublicKey key) {
         byte[] keyBytes = key.getEncoded();
-        if(keyBytes.length != derPublicKeyHeader.length + 32) {
+        if (keyBytes.length != derPublicKeyHeader.length + 32) {
             throw new IllegalArgumentException("unexpected key length");
         }
         byte[] keyBytesRaw = new byte[32];

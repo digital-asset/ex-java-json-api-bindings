@@ -27,7 +27,7 @@ public class Ledger {
     public Ledger(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
-        if(!bearerToken.isEmpty())
+        if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
         this.ledgerApi = new DefaultApi(client);
     }
