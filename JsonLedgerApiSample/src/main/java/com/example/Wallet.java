@@ -21,12 +21,14 @@ import com.example.client.wallet.internal.invoker.ApiException;
 import com.example.client.wallet.internal.model.TapRequest;
 import com.example.client.wallet.internal.model.TapResponse;
 
-public class ValidatorWallet {
+public class Wallet {
 
     private final WalletApi walletApi;
 
-    public ValidatorWallet(String baseUrl) {
+    public Wallet(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
+        if (!bearerToken.isEmpty())
+            client.setBearerToken(bearerToken);
         client.setBasePath(baseUrl);
         this.walletApi = new WalletApi(client);
     }

@@ -28,7 +28,7 @@ public class Main {
         setupEnvironment(args);
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
-        ValidatorWallet walletApi = new ValidatorWallet(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+        Wallet walletApi = new Wallet(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
 
         try {
             // confirm environment and inputs
