@@ -29,10 +29,12 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi.ledger-api.3.3.yaml</inputSpec>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.ledger-api.3.3.yaml
+                            </inputSpec>
                             <generatorName>java</generatorName>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
                                 <apiPackage>com.example.client.ledger.api</apiPackage>
                                 <modelPackage>com.example.client.ledger.model</modelPackage>
@@ -46,10 +48,12 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi.validator-api.0.0.1.yaml</inputSpec>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.validator-api.0.0.1.yaml
+                            </inputSpec>
                             <generatorName>java</generatorName>
                             <configOptions>
-                                <sourceFolder>src/main/java</sourceFolder>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
                                 <apiPackage>com.example.client.validator.api</apiPackage>
                                 <modelPackage>com.example.client.validator.model</modelPackage>
@@ -83,7 +87,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.example.Main</mainClass>
                                 </transformer>
                             </transformers>
@@ -92,6 +97,59 @@
                 </executions>
             </plugin>
 
+            <!-- generates java classes given daml jars -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <id>daml-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>daml</executable>
+                            <environmentVariables>
+                                <DAML_SDK_VERSION>
+                                    3.3.0-snapshot.20250603.0
+                                </DAML_SDK_VERSION>
+                            </environmentVariables>
+                            <arguments>
+                                <argument>codegen</argument>
+                                <argument>java</argument>
+                                <argument>
+                                    ${project.basedir}/src/main/resources/dars/splice-api-token-holding-v1-1.0.0.dar
+                                </argument>
+                                <argument>--output-directory</argument>
+                                <argument>target/generated-sources/dars</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- includes the codegen'd java classes in the project build -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/dars</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -139,6 +197,14 @@
             <version>5.13.4</version>
         </dependency>
         <!-- the above dependencies are required by the openapi-generator -->
+
+        <!-- the below dependencies are required by the daml codegen -->
+        <dependency>
+            <groupId>com.daml</groupId>
+            <artifactId>bindings-java</artifactId>
+            <version>3.3.0-snapshot.20250814.13842.0.vc5be9bb3</version>
+        </dependency>
+        <!-- the above dependencies are required by the daml codegen -->
 
     </dependencies>
 </project>

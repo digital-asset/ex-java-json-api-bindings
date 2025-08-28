@@ -18,7 +18,12 @@ A minimal sample of using Java to call the JSON API endpoints (Ledger API, Valid
 The sample illustrates the endpoints, the request payloads, and their responses for the following:
 
 * Onboarding an external party
-* Signing transactions as an external party
+
+This sample demonstrates how to:
+
+* Sign transactions as an external party
+* Use the Open API specs to generate Java bindings for API endpoints
+* Use the `daml codegen` to generate Java bindings for Daml types
 
 The sample uses the following tools:
 
