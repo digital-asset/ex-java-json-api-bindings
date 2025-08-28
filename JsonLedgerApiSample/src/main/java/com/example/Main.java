@@ -37,30 +37,12 @@ public class Main {
             // onboard the sender
             KeyPair senderKeyPair = Keys.generate();
             Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
-            String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
-
-            // grant the sender some coin
-            double tapAmount = 500.0;
-            long nonce = 42; // arbitrary; a real-world application should generate and retain distinct nonces for each business transaction
-            Wallet senderWallet = new Wallet(Env.VALIDATOR_API_URL, Env.SENDER_TOKEN);
-            senderWallet.tap(tapAmount);
+            onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
             // onboard receiver
             KeyPair receiverKeyPair = Keys.generate();
             Keys.printKeyPair(Env.RECEIVER_PARTY_HINT, receiverKeyPair);
-            String receiverParty = onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, senderKeyPair);
-
-            double transferAmount = 30.0;
-            SubmitAcceptExternalPartySetupProposalResponse transactionPreapproval = validatorApi.preapproveTransactions(receiverKeyPair, senderParty, receiverParty);
-            validatorApi.sendWithPreApproval(senderKeyPair, senderParty, receiverParty, transferAmount, nonce);
-
-            /*
-            String transferPreapprovalProposalContractId = createTransferPreapproval(senderParty, receiverParty);
-            String transferPreapprovalContractId = acceptTransferPreapproval(receiverParty, transferPreapprovalProposalContractId);
-
-            String holdingContractId = tap(senderParty, tapAmount);
-            transfer(senderParty, receiverParty, holdingContractId, transferAmount);
-            */
+            onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, senderKeyPair);
 
             System.exit(0);
         } catch (Exception ex) {
@@ -80,11 +62,6 @@ public class Main {
     }
 
     private static void setupEnvironment(String[] args) {
-        if (args.length > 0)
-            Env.SENDER_PARTY_HINT = args[0];
-
-
-
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
@@ -117,26 +94,5 @@ public class Main {
         System.out.println("New party: " + newParty);
 
         return newParty;
-    }
-
-    private static String createTransferPreapproval(String externalParty, String hostParty) throws Exception {
-        throw new Exception("Need to create a transfer pre-approval contract");
-    }
-
-    private static String acceptTransferPreapproval(String hostparty, String transferPreapprovalProposalContractId) throws Exception {
-        throw new Exception("Need to accept the transfer pre-approval contract");
-    }
-
-    private static String tap(String delivererParty, double tapAmount) throws Exception {
-        throw new Exception("Need to accept the transfer pre-approval contract");
-    }
-
-    private static String transfer(
-            String delivererParty,
-            String receiverParty,
-            String holdingContractId,
-            double transferAmount) throws Exception {
-
-        throw new Exception("Need to accept the transfer pre-approval contract");
     }
 }
