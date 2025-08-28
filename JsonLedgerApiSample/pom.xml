@@ -57,6 +57,23 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-validator-api-internal-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi.wallet-internal-api.0.0.1.yaml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.wallet.internal.api</apiPackage>
+                                <modelPackage>com.example.client.wallet.internal.model</modelPackage>
+                                <invokerPackage>com.example.client.wallet.internal.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
