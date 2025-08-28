@@ -43,10 +43,10 @@ public class Keys {
     public static KeyPair createFromRawBase64(String publicRawBase64, String privatePublicRawBase64) throws Exception {
         String publicKeyString = addPublicKeyDerHeader(publicRawBase64);
         String privateKeyString = addPrivateKeyDerHeader(stripPublicKey(privatePublicRawBase64));
+        KeyFactory keyFactory = KeyFactory.getInstance("Ed25519");
 
         byte[] publicKeyBytes = Base64.getDecoder().decode(publicKeyString);
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("Ed25519");
         PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
         byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyString);
@@ -73,7 +73,7 @@ public class Keys {
         System.out.println();
     }
 
-    public static KeyPair createAndValidateKeypair(String relatedPartyHint, String publicKeyReference, String privateKeyReference) throws Exception {
+    public static KeyPair createAndValidateKeyPair(String relatedPartyHint, String publicKeyReference, String privateKeyReference) throws Exception {
 
         KeyPair keyPair = createFromRawBase64(publicKeyReference, privateKeyReference);
 
@@ -92,11 +92,9 @@ public class Keys {
 
     public static String sign(PrivateKey privateKey, String inputString) {
         try {
-            byte[] rawHash = Encode.fromHexString(inputString);
-
             Signature signer = Signature.getInstance("Ed25519");
             signer.initSign(privateKey);
-            signer.update(rawHash);
+            signer.update(Encode.fromHexString(inputString));
             byte[] signature = signer.sign();
             return Encode.toHexString(signature);
         } catch (Exception e) {
@@ -144,7 +142,7 @@ public class Keys {
             System.arraycopy(keyBytes, 0, rawKeyBytes, 0, 32);
             return Base64.getEncoder().encodeToString(rawKeyBytes);
         } else {
-            throw new IllegalArgumentException("Invalid key length");
+            throw new IllegalArgumentException("Invalid key length of " + keyBytes.length);
         }
     }
 
