@@ -30,10 +30,13 @@ public class Validator {
     private final ValidatorPublicApi validatorPublicApi;
 
     public Validator(String baseUrl, String bearerToken) {
+
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
+        client.setReadTimeout(60 * 1000); // 60 seconds
         if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
+
         this.validatorApi = new ValidatorApi(client);
         this.validatorPublicApi = new ValidatorPublicApi(client);
     }
@@ -51,16 +54,13 @@ public class Validator {
     }
 
     public List<TopologyTx> prepareOnboarding(String partyHint, PublicKey publicKey) throws ApiException {
-
         String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest();
         request.setPartyHint(partyHint);
         request.setPublicKey(publicKeyHex);
-
         GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
         System.out.println("\nNew party: " + response.getPartyId());
         System.out.println("\ngenerate response: " + response.toJson());
-
         return response.getTopologyTxs();
     }
 
@@ -73,5 +73,32 @@ public class Validator {
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
         System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
         return response.getPartyId();
+    }
+
+    public CreateExternalPartySetupProposalResponse createExternalPartySetupProposal(String partyId) throws ApiException {
+        CreateExternalPartySetupProposalRequest request = new CreateExternalPartySetupProposalRequest();
+        request.setUserPartyId(partyId);
+
+        System.out.println("\ncreate external party setup proposal request: " + request.toJson() + "\n");
+        CreateExternalPartySetupProposalResponse response = this.validatorApi.createExternalPartySetupProposal(request);
+        System.out.println("\ncreate external party setup proposal response: " + response.toJson() + "\n");
+        return response;
+    }
+
+    public PrepareAcceptExternalPartySetupProposalResponse prepareAcceptExternalPartySetupProposal(String partyId, String contractId) throws ApiException {
+        PrepareAcceptExternalPartySetupProposalRequest request = new PrepareAcceptExternalPartySetupProposalRequest();
+        request.setUserPartyId(partyId);
+        request.setContractId(contractId);
+        return this.validatorApi.prepareAcceptExternalPartySetupProposal(request);
+    }
+
+    public SubmitAcceptExternalPartySetupProposalResponse submitAcceptExternalPartySetupProposal(ExternalPartySubmission acceptSubmission) throws ApiException {
+        SubmitAcceptExternalPartySetupProposalRequest request = new SubmitAcceptExternalPartySetupProposalRequest();
+        request.setSubmission(acceptSubmission);
+
+        System.out.println("\nsubmit acceptance of external party setup proposal request: " + request.toJson() + "\n");
+        SubmitAcceptExternalPartySetupProposalResponse response = this.validatorApi.submitAcceptExternalPartySetupProposal(request);
+        System.out.println("\nsubmit acceptance of external party setup proposal response: " + request.toJson() + "\n");
+        return response;
     }
 }

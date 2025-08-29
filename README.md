@@ -24,6 +24,7 @@ This sample demonstrates how to:
 * Sign transactions as an external party
 * Use the Open API specs to generate Java bindings for API endpoints
 * Use the `daml codegen` to generate Java bindings for Daml types
+* Establish transfer pre-approvals for an external party using the [Validator API](https://docs.dev.sync.global/app_dev/validator_api/index.html#external-signing-api)
 
 The sample uses the following tools:
 

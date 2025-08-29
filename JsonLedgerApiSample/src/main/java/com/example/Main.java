@@ -15,9 +15,8 @@
 
 package com.example;
 
-import com.example.client.validator.model.SignedTopologyTx;
-import com.example.client.validator.model.SubmitAcceptExternalPartySetupProposalResponse;
-import com.example.client.validator.model.TopologyTx;
+import com.example.client.validator.invoker.ApiException;
+import com.example.client.validator.model.*;
 
 import java.security.KeyPair;
 import java.util.List;
@@ -26,6 +25,7 @@ public class Main {
     public static void main(String[] args) {
 
         setupEnvironment(args);
+
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
 
@@ -37,12 +37,12 @@ public class Main {
             // onboard the sender
             KeyPair senderKeyPair = Keys.generate();
             Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
-            onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
+            String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
-            // onboard receiver
-            KeyPair receiverKeyPair = Keys.generate();
-            Keys.printKeyPair(Env.RECEIVER_PARTY_HINT, receiverKeyPair);
-            onboardNewUser(Env.RECEIVER_PARTY_HINT, validatorApi, senderKeyPair);
+            // preapprove Canton Coin transfers
+            preapproveTransfers(validatorApi, senderParty, senderKeyPair);
+
+
 
             System.exit(0);
         } catch (Exception ex) {
@@ -94,5 +94,12 @@ public class Main {
         System.out.println("New party: " + newParty);
 
         return newParty;
+    }
+
+    public static void preapproveTransfers(Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws ApiException {
+        CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(externalPartyId);
+        PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
+        ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
+        SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
     }
 }
