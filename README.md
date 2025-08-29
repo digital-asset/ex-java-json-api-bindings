@@ -1,4 +1,4 @@
-# JSON Ledger API Samples with Java
+# JSON API Samples with Java
 
 Copyright (c) 2025, by Digital Asset
 
