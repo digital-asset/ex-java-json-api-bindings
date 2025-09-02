@@ -78,7 +78,7 @@ public class Main {
             List<ContractAndId<HoldingView>> holdingsToTransfer = holdingsToTransfer(transferAmount, holdingViews);
 
             if (holdingsToTransfer == null) {
-                System.out.println("Insufficient holdings to transfer " + transferAmount + " Canton Coin");
+                System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
                 System.exit(0);
             }
 
