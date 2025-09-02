@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Main {
-    private final static String HOLDING_INTERFACE_ID = "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding";
 
     public static void main(String[] args) {
 
