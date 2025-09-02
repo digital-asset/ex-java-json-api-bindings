@@ -19,16 +19,20 @@ public class Env {
 
     public static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
     public static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
-    public static String SCAN_API_URL = getenv("SCAN_API_URL", "http://wallet.localhost/api/validator");
+    public static String SCAN_PROXY_API_URL = getenv("SCAN_PROXY_API_URL", Env.VALIDATOR_API_URL);
 
     public static String VALIDATOR_TOKEN = getenv("VALIDATOR_TOKEN", "");
 
-    public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
+    public static String TREASURY_PARTY_HINT = getenv("TREASURY_PARTY_HINT", "treasury");
+    public static String TREASURY_PARTY = getenv("TREASURY_PARTY", "");
+    public static String TREASURY_TOKEN = getenv("TREASURY_TOKEN", "");
+
     public static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
+    public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
     public static String SENDER_TOKEN = getenv("SENDER_TOKEN", "");
-    public static String RECEIVER_PARTY = getenv("RECEIVER_PARTY", "");
-    public static String RECEIVER_PARTY_HINT = getenv("RECEIVER_PARTY_HINT", "bob");
-    public static String RECEIVER_TOKEN = getenv("RECEIVER_TOKEN", "");
+
+    public static String DSO_PARTY = "";
+    public static String VALIDATOR_PARTY = "";
 
     private static String getenv(String name, String defaultValue) {
         String envValue = System.getenv(name);

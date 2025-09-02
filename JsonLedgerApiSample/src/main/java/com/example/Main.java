@@ -15,31 +15,26 @@
 
 package com.example;
 
-import com.daml.ledger.api.v2.EventOuterClass;
-import com.daml.ledger.javaapi.data.GetActiveContractsResponse;
-import com.daml.ledger.javaapi.data.Value;
 import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
-import com.daml.ledger.javaapi.data.codegen.json.JsonLfReader;
-import com.example.client.ledger.model.*;
-import com.example.client.ledger.model.AbstractOpenApiSchema;
+import com.example.client.ledger.model.JsActiveContract;
+import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.JsGetActiveContractsResponse;
+import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Main {
-    private final static String HOLDING_INTERFACE_ID = "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding";
 
     public static void main(String[] args) {
 
@@ -47,20 +42,31 @@ public class Main {
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
-        Scan scanApi = new Scan(Env.SCAN_API_URL, Env.VALIDATOR_TOKEN);
+        Scan scanApi = new Scan(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
 
         try {
             // confirm environment and inputs
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
-            String validatorParty = validatorApi.getValidatorParty();
-            String dsoParty = scanApi.getDsoPartyId();
-            System.out.println("Validator Party: " + validatorParty);
-            System.out.println("DSO Party: " + dsoParty);
+            // get network party ids
+            Env.VALIDATOR_PARTY = validatorApi.getValidatorParty();
+            Env.DSO_PARTY = scanApi.getDsoPartyId();
+            System.out.println("Validator Party: " + Env.VALIDATOR_PARTY);
+            System.out.println("DSO Party: " + Env.DSO_PARTY);
 
             // onboard the treasury, if necessary
-            if (Env.SENDER_PARTY.isEmpty()){
+            if (Env.TREASURY_PARTY.isEmpty()) {
+                KeyPair treasuryKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.TREASURY_PARTY_HINT, treasuryKeyPair);
+                Env.TREASURY_PARTY = onboardNewUser(Env.TREASURY_PARTY_HINT, validatorApi, treasuryKeyPair);
+
+                // preapprove Canton Coin transfers
+                preapproveTransfers(validatorApi, Env.TREASURY_PARTY, treasuryKeyPair);
+            }
+
+            // onboard the sender, if necessary
+            if (Env.SENDER_PARTY.isEmpty()) {
                 KeyPair senderKeyPair = Keys.generate();
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
@@ -70,7 +76,7 @@ public class Main {
             }
 
             // TODO: convert the result to a HoldingView (in this case)
-            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(validatorParty, TemplateId.HOLDING_INTERFACE_ID.getRaw());
+            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, TemplateId.HOLDING_INTERFACE_ID.getRaw());
 
             BigDecimal transferAmount = new BigDecimal(500);
 
@@ -100,7 +106,7 @@ public class Main {
     ) throws JsonProcessingException, JsonLfDecoder.Error {
 
         List<ContractAndId<T>> relevantHoldings = new ArrayList<>();
-        for (JsGetActiveContractsResponse responseItem: searchResults) {
+        for (JsGetActiveContractsResponse responseItem : searchResults) {
             System.out.println("Ledger API lookup result: " + responseItem.toJson());
             JsContractEntry contractEntry = responseItem.getContractEntry();
 
@@ -138,7 +144,8 @@ public class Main {
             transferAmount = transferAmount.subtract(next.record().amount);
         }
 
-        if (transferAmount.compareTo(BigDecimal.ZERO) > 0) return null; // there weren't enough holdings to satisfy the transfer amount
+        if (transferAmount.compareTo(BigDecimal.ZERO) > 0)
+            return null; // there weren't enough holdings to satisfy the transfer amount
 
         return toTransfer;
     }
@@ -150,18 +157,24 @@ public class Main {
     private static void printToken(String name, String token) {
         int length = token.length();
         System.out.println(name + ": " +
-            (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
+                (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
     private static void setupEnvironment(String[] args) {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
+        System.out.println("SCAN_PROXY_API_URL: " + Env.SCAN_PROXY_API_URL);
+        System.out.println();
         printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
-        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
-        printToken("RECEIVER_TOKEN", Env.RECEIVER_TOKEN);
+        System.out.println();
+        System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
+        System.out.println("TREASURY_PARTY: " + Env.TREASURY_PARTY);
+        printToken("TREASURY_TOKEN", Env.TREASURY_TOKEN);
+        System.out.println();
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
-        System.out.println("RECEIVER_PARTY_HINT: " + Env.RECEIVER_PARTY_HINT);
+        System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
+        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -205,6 +218,6 @@ public class Main {
 
     private static void getHoldings(Ledger ledger) throws Exception {
         long offset = ledger.getLedgerEnd();
-        
+
     }
 }
