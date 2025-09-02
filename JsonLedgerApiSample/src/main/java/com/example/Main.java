@@ -19,19 +19,15 @@ import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
 import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.ledger.model.JsContractEntry;
-import com.example.client.ledger.model.JsGetActiveContractsResponse;
-import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -75,23 +71,13 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
             }
 
-            // TODO: convert the result to a HoldingView (in this case)
-            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, TemplateId.HOLDING_INTERFACE_ID.getRaw());
 
-            BigDecimal transferAmount = new BigDecimal(500);
+            InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
 
-            List<ContractAndId<HoldingView>> holdingViews = fromInterfaces(result, HoldingView::fromJson);
-            // TODO: filter holdings to only one holding type (eg "Amulet")
-            List<ContractAndId<HoldingView>> holdingsToTransfer = holdingsToTransfer(transferAmount, holdingViews);
-
-            if (holdingsToTransfer == null) {
-                System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
-                System.exit(0);
-            }
-
-            for (ContractAndId<HoldingView> holding : holdingsToTransfer) {
-                System.out.println("Holding views: " + holding.record().toJson());
-            }
+            // select the holdings to use for a transfer from the Validator
+            List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
+                    ledgerApi, Env.VALIDATOR_PARTY,
+                    new BigDecimal(500), cantonCoinInstrumentId);
 
             System.exit(0);
         } catch (Exception ex) {
@@ -100,54 +86,58 @@ public class Main {
         }
     }
 
-    private static <T extends DamlRecord<T>> List<ContractAndId<T>> fromInterfaces(
-            List<JsGetActiveContractsResponse> searchResults,
+    private static <T extends DamlRecord<T>> ContractAndId<T> fromInterface(
+            JsContractEntry contractEntry,
+            TemplateId interfaceId,
             DamlDecoder<T> interfaceValueParser
-    ) throws JsonProcessingException, JsonLfDecoder.Error {
-
-        List<ContractAndId<T>> relevantHoldings = new ArrayList<>();
-        for (JsGetActiveContractsResponse responseItem : searchResults) {
-            System.out.println("Ledger API lookup result: " + responseItem.toJson());
-            JsContractEntry contractEntry = responseItem.getContractEntry();
-
-            // TODO: nice inheritance check, make getJsContractEntryOneOf exception-safe
-            JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
-
-            if (activeContract != null) {
-                List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
-                if (interfaceViews != null) {
-                    for (JsInterfaceView interfaceView : interfaceViews) {
-                        if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(interfaceView.getInterfaceId())) {
-
-                            String holdingJson = new ObjectMapper().writeValueAsString(interfaceView.getViewValue());
-
-                            String holdingContractId = activeContract.getCreatedEvent().getContractId();
-                            T holdingView = interfaceValueParser.decode(holdingJson);
-
-                            relevantHoldings.add(new ContractAndId<>(holdingContractId, holdingView));
-                        }
+    ) {
+        Gson gson = new Gson();
+        JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
+        String holdingContractId = activeContract.getCreatedEvent().getContractId();
+        T record = activeContract.getCreatedEvent().getInterfaceViews().stream()
+                .filter(v -> interfaceId.matchesModuleAndTypeName(v.getInterfaceId()))
+                .map(v -> gson.toJson(v.getViewValue()))
+                .map(json -> {
+                    try {
+                        return interfaceValueParser.decode(json);
+                    } catch (JsonLfDecoder.Error ex) {
+                        System.out.println("Cannot decode interface view.");
+                        System.exit(1);
+                        return null;
                     }
-
-                }
-                System.out.println("contractEntry: " + activeContract);
-            }
-        }
-        return relevantHoldings;
+                })
+                .findFirst()
+                .orElseThrow();
+        return new ContractAndId<>(holdingContractId, record);
     }
 
-    private static List<ContractAndId<HoldingView>> holdingsToTransfer(BigDecimal transferAmount, List<ContractAndId<HoldingView>> holdingViews) throws JsonProcessingException, JsonLfDecoder.Error {
-        List<ContractAndId<HoldingView>> toTransfer = new ArrayList<>();
-        Iterator<ContractAndId<HoldingView>> iterator = holdingViews.iterator();
-        while (transferAmount.compareTo(BigDecimal.ZERO) > 0 && iterator.hasNext()) {
-            ContractAndId<HoldingView> next = iterator.next();
-            toTransfer.add(next);
-            transferAmount = transferAmount.subtract(next.record().amount);
+    private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(Ledger ledgerApi, String party, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
+
+        printStep("Selecting holdings");
+        System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + party);
+
+        final BigDecimal[] remaining = {transferAmount};
+        List<ContractAndId<HoldingView>> holdingsForTransfer =
+                ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+                        .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
+                        .filter(v -> v.record().instrumentId.equals(instrumentId))
+                        .sorted(Comparator.comparing(c -> c.record().amount))
+                        .takeWhile(c -> {
+                            remaining[0] = remaining[0].subtract(c.record().amount);
+                            return remaining[0].compareTo(BigDecimal.ZERO) < 0;
+                        })
+                        .toList();
+        if (remaining[0].compareTo(BigDecimal.ZERO) > 0) {
+            System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
+            System.exit(1);
         }
-
-        if (transferAmount.compareTo(BigDecimal.ZERO) > 0)
-            return null; // there weren't enough holdings to satisfy the transfer amount
-
-        return toTransfer;
+        else
+        {
+            for (ContractAndId<HoldingView> holding : holdingsForTransfer) {
+                System.out.println("Holding views: " + holding.record().toJson());
+            }
+        }
+        return holdingsForTransfer;
     }
 
     private static void printStep(String step) {
