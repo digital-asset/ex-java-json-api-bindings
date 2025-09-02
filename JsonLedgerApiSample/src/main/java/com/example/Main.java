@@ -75,6 +75,7 @@ public class Main {
             BigDecimal transferAmount = new BigDecimal(500);
 
             List<ContractAndId<HoldingView>> holdingViews = fromInterfaces(result, HoldingView::fromJson);
+            // TODO: filter holdings to only one holding type (eg "Amulet")
             List<ContractAndId<HoldingView>> holdingsToTransfer = holdingsToTransfer(transferAmount, holdingViews);
 
             if (holdingsToTransfer == null) {
