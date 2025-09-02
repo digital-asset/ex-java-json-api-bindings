@@ -22,21 +22,21 @@ import com.example.client.scanProxy.model.*;
 
 public class Scan {
 
-    private final ScanProxyApi scanApi;
+    private final ScanProxyApi scanProxyApi;
 
-    public Scan(String baseUrl, String bearerToken) {
+    public Scan(String scanProxyBaseUrl, String bearerToken) {
 
         ApiClient client = new ApiClient();
-        client.setBasePath(baseUrl);
+        client.setBasePath(scanProxyBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
         if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
 
-        this.scanApi = new ScanProxyApi(client);
+        this.scanProxyApi = new ScanProxyApi(client);
     }
 
     public String getDsoPartyId() throws ApiException {
-        GetDsoPartyIdResponse response = this.scanApi.getDsoPartyId();
+        GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
         return response.getDsoPartyId();
     }
 }
