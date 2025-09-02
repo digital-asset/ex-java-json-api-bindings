@@ -55,7 +55,7 @@ public class Main {
 
             // TODO: convert the result to a HoldingView (in this case)
             splice.api.token.holdingv1.HoldingView hv;
-            var result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding");
+            var result = ledgerApi.getActiveContractsForInterface(validatorParty, "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding");
 
             System.exit(0);
         } catch (Exception ex) {
