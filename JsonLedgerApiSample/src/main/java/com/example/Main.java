@@ -49,10 +49,11 @@ public class Main {
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
-            String validatorParty = validatorApi.getValidatorParty();
-            String dsoParty = scanApi.getDsoPartyId();
-            System.out.println("Validator Party: " + validatorParty);
-            System.out.println("DSO Party: " + dsoParty);
+            // get network party ids
+            Env.VALIDATOR_PARTY = validatorApi.getValidatorParty();
+            Env.DSO_PARTY = scanApi.getDsoPartyId();
+            System.out.println("Validator Party: " + Env.VALIDATOR_PARTY);
+            System.out.println("DSO Party: " + Env.DSO_PARTY);
 
             // onboard the treasury, if necessary
             if (Env.TREASURY_PARTY.isEmpty()) {
@@ -75,7 +76,7 @@ public class Main {
             }
 
             // TODO: convert the result to a HoldingView (in this case)
-            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(validatorParty, TemplateId.HOLDING_INTERFACE_ID.getRaw());
+            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, TemplateId.HOLDING_INTERFACE_ID.getRaw());
 
             BigDecimal transferAmount = new BigDecimal(500);
 
@@ -164,11 +165,14 @@ public class Main {
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
         System.out.println("SCAN_PROXY_API_URL: " + Env.SCAN_PROXY_API_URL);
-        printToken("\nVALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
-        System.out.println("\nTREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
+        System.out.println();
+        printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
+        System.out.println();
+        System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
         System.out.println("TREASURY_PARTY: " + Env.TREASURY_PARTY);
         printToken("TREASURY_TOKEN", Env.TREASURY_TOKEN);
-        System.out.println("\nSENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
+        System.out.println();
+        System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
         System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
         printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
     }

@@ -31,6 +31,9 @@ public class Env {
     public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
     public static String SENDER_TOKEN = getenv("SENDER_TOKEN", "");
 
+    public static String DSO_PARTY = "";
+    public static String VALIDATOR_PARTY = "";
+
     private static String getenv(String name, String defaultValue) {
         String envValue = System.getenv(name);
         return envValue != null ? envValue : defaultValue;
