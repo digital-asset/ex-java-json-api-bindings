@@ -61,6 +61,46 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <!--
+                    <execution>
+                        <id>generate-scan-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.scan-api.0.0.1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.scan.api</apiPackage>
+                                <modelPackage>com.example.client.scan.model</modelPackage>
+                                <invokerPackage>com.example.client.scan.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    -->
+                    <execution>
+                        <id>generate-scan-proxy-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.scan-proxy-api.0.0.1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.scanProxy.api</apiPackage>
+                                <modelPackage>com.example.client.scanProxy.model</modelPackage>
+                                <invokerPackage>com.example.client.scanProxy.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -68,14 +108,10 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.1</version>
+                <configuration>
+                    <mainClass>com.example.Main</mainClass>
+                </configuration>
                 <executions>
-                    <execution>
-                        <!-- required for the mvn exec:java command -->
-                        <id>set-main-class</id>
-                        <configuration>
-                            <mainClass>com.example.Main</mainClass>
-                        </configuration>
-                    </execution>
                     <execution>
                         <!-- generates java classes given daml jars -->
                         <id>daml-codegen</id>

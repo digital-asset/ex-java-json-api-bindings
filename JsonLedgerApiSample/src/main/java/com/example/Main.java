@@ -31,11 +31,17 @@ public class Main {
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+        Scan scanApi = new Scan(Env.SCAN_API_URL, Env.VALIDATOR_TOKEN);
 
         try {
             // confirm environment and inputs
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
+
+            String validatorParty = validatorApi.getValidatorParty();
+            String dsoParty = scanApi.getDsoPartyId();
+            System.out.println("Validator Party: " + validatorParty);
+            System.out.println("DSO Party: " + dsoParty);
 
             // onboard the treasury, if necessary
             if (Env.SENDER_PARTY.isEmpty()){

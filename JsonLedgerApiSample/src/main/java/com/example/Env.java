@@ -19,8 +19,11 @@ public class Env {
 
     public static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
     public static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
+    public static String SCAN_API_URL = getenv("SCAN_API_URL", "http://wallet.localhost/api/validator");
+
     public static String VALIDATOR_TOKEN = getenv("VALIDATOR_TOKEN", "");
     // TODO: get this from Validator API, v0/validator-user, .party_id
+
     public static String VALIDATOR_PARTY = getenv("VALIDATOR_PARTY", "");
     public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
     public static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
