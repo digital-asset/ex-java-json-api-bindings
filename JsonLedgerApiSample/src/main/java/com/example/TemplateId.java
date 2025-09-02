@@ -5,7 +5,7 @@ public record TemplateId(
         String moduleName,
         String typeName
 ) {
-    public static final TemplateId HOLDING_INTERFACE_ID = new TemplateId("#splice-api-token-holding-v1","Splice.Api.Token.HoldingV1","Holding");
+    public static final TemplateId HOLDING_INTERFACE_ID = new TemplateId("#splice-api-token-holding-v1", "Splice.Api.Token.HoldingV1", "Holding");
 
     public static TemplateId parse(String input) {
         String[] parts = input.split(":");

@@ -20,9 +20,6 @@ import com.example.client.scanProxy.invoker.ApiClient;
 import com.example.client.scanProxy.invoker.ApiException;
 import com.example.client.scanProxy.model.*;
 
-import java.security.PublicKey;
-import java.util.List;
-
 public class Scan {
 
     private final ScanProxyApi scanApi;

@@ -15,28 +15,24 @@
 
 package com.example;
 
-import com.daml.ledger.api.v2.EventOuterClass;
-import com.daml.ledger.javaapi.data.GetActiveContractsResponse;
-import com.daml.ledger.javaapi.data.Value;
 import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
-import com.daml.ledger.javaapi.data.codegen.json.JsonLfReader;
-import com.example.client.ledger.model.*;
-import com.example.client.ledger.model.AbstractOpenApiSchema;
+import com.example.client.ledger.model.JsActiveContract;
+import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.JsGetActiveContractsResponse;
+import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Main {
     private final static String HOLDING_INTERFACE_ID = "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding";
@@ -60,7 +56,7 @@ public class Main {
             System.out.println("DSO Party: " + dsoParty);
 
             // onboard the treasury, if necessary
-            if (Env.SENDER_PARTY.isEmpty()){
+            if (Env.SENDER_PARTY.isEmpty()) {
                 KeyPair senderKeyPair = Keys.generate();
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
@@ -100,7 +96,7 @@ public class Main {
     ) throws JsonProcessingException, JsonLfDecoder.Error {
 
         List<ContractAndId<T>> relevantHoldings = new ArrayList<>();
-        for (JsGetActiveContractsResponse responseItem: searchResults) {
+        for (JsGetActiveContractsResponse responseItem : searchResults) {
             System.out.println("Ledger API lookup result: " + responseItem.toJson());
             JsContractEntry contractEntry = responseItem.getContractEntry();
 
@@ -138,7 +134,8 @@ public class Main {
             transferAmount = transferAmount.subtract(next.record().amount);
         }
 
-        if (transferAmount.compareTo(BigDecimal.ZERO) > 0) return null; // there weren't enough holdings to satisfy the transfer amount
+        if (transferAmount.compareTo(BigDecimal.ZERO) > 0)
+            return null; // there weren't enough holdings to satisfy the transfer amount
 
         return toTransfer;
     }
@@ -150,7 +147,7 @@ public class Main {
     private static void printToken(String name, String token) {
         int length = token.length();
         System.out.println(name + ": " +
-            (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
+                (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
     private static void setupEnvironment(String[] args) {
@@ -205,6 +202,6 @@ public class Main {
 
     private static void getHoldings(Ledger ledger) throws Exception {
         long offset = ledger.getLedgerEnd();
-        
+
     }
 }
