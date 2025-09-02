@@ -156,18 +156,21 @@ public class Main {
     private static void printToken(String name, String token) {
         int length = token.length();
         System.out.println(name + ": " +
-                (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
+                (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
     private static void setupEnvironment(String[] args) {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
-        printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
-        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
+        System.out.println("SCAN_PROXY_API_URL: " + Env.SCAN_PROXY_API_URL);
+        printToken("\nVALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
+        System.out.println("\nTREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
+        System.out.println("TREASURY_PARTY: " + Env.TREASURY_PARTY);
         printToken("TREASURY_TOKEN", Env.TREASURY_TOKEN);
-        System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
-        System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
+        System.out.println("\nSENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
+        System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
+        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
