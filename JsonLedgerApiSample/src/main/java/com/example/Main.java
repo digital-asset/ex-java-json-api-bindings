@@ -104,7 +104,7 @@ public class Main {
             System.out.println("Ledger API lookup result: " + responseItem.toJson());
             JsContractEntry contractEntry = responseItem.getContractEntry();
 
-            // TODO: nice inheritance check
+            // TODO: nice inheritance check, make getJsContractEntryOneOf exception-safe
             JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
 
             if (activeContract != null) {
