@@ -15,16 +15,32 @@
 
 package com.example;
 
+import com.daml.ledger.api.v2.EventOuterClass;
 import com.daml.ledger.javaapi.data.GetActiveContractsResponse;
-import com.example.client.ledger.model.JsActiveContract;
+import com.daml.ledger.javaapi.data.Value;
+import com.daml.ledger.javaapi.data.codegen.DamlRecord;
+import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
+import com.daml.ledger.javaapi.data.codegen.json.JsonLfReader;
+import com.example.client.ledger.model.*;
+import com.example.client.ledger.model.AbstractOpenApiSchema;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
+import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
+import java.math.BigDecimal;
 import java.security.KeyPair;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
 public class Main {
+    private final static String HOLDING_INTERFACE_ID = "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding";
+
     public static void main(String[] args) {
 
         setupEnvironment(args);
@@ -54,14 +70,76 @@ public class Main {
             }
 
             // TODO: convert the result to a HoldingView (in this case)
-            splice.api.token.holdingv1.HoldingView hv;
-            var result = ledgerApi.getActiveContractsForInterface(validatorParty, "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding");
+            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(validatorParty, TemplateId.HOLDING_INTERFACE_ID.getRaw());
+
+            BigDecimal transferAmount = new BigDecimal(500);
+
+            List<ContractAndId<HoldingView>> holdingViews = fromInterfaces(result, HoldingView::fromJson);
+            List<ContractAndId<HoldingView>> holdingsToTransfer = holdingsToTransfer(transferAmount, holdingViews);
+
+            if (holdingsToTransfer == null) {
+                System.out.println("Insufficient holdings to transfer " + transferAmount + " Canton Coin");
+                System.exit(0);
+            }
+
+            for (ContractAndId<HoldingView> holding : holdingsToTransfer) {
+                System.out.println("Holding views: " + holding.record().toJson());
+            }
 
             System.exit(0);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
         }
+    }
+
+    private static <T extends DamlRecord<T>> List<ContractAndId<T>> fromInterfaces(
+            List<JsGetActiveContractsResponse> searchResults,
+            DamlDecoder<T> interfaceValueParser
+    ) throws JsonProcessingException, JsonLfDecoder.Error {
+
+        List<ContractAndId<T>> relevantHoldings = new ArrayList<>();
+        for (JsGetActiveContractsResponse responseItem: searchResults) {
+            System.out.println("Ledger API lookup result: " + responseItem.toJson());
+            JsContractEntry contractEntry = responseItem.getContractEntry();
+
+            // TODO: nice inheritance check
+            JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
+
+            if (activeContract != null) {
+                List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
+                if (interfaceViews != null) {
+                    for (JsInterfaceView interfaceView : interfaceViews) {
+                        if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(interfaceView.getInterfaceId())) {
+
+                            String holdingJson = new ObjectMapper().writeValueAsString(interfaceView.getViewValue());
+
+                            String holdingContractId = activeContract.getCreatedEvent().getContractId();
+                            T holdingView = interfaceValueParser.decode(holdingJson);
+
+                            relevantHoldings.add(new ContractAndId<>(holdingContractId, holdingView));
+                        }
+                    }
+
+                }
+                System.out.println("contractEntry: " + activeContract);
+            }
+        }
+        return relevantHoldings;
+    }
+
+    private static List<ContractAndId<HoldingView>> holdingsToTransfer(BigDecimal transferAmount, List<ContractAndId<HoldingView>> holdingViews) throws JsonProcessingException, JsonLfDecoder.Error {
+        List<ContractAndId<HoldingView>> toTransfer = new ArrayList<>();
+        Iterator<ContractAndId<HoldingView>> iterator = holdingViews.iterator();
+        while (transferAmount.compareTo(BigDecimal.ZERO) > 0 && iterator.hasNext()) {
+            ContractAndId<HoldingView> next = iterator.next();
+            toTransfer.add(next);
+            transferAmount = transferAmount.subtract(next.record().amount);
+        }
+
+        if (transferAmount.compareTo(BigDecimal.ZERO) > 0) return null; // there weren't enough holdings to satisfy the transfer amount
+
+        return toTransfer;
     }
 
     private static void printStep(String step) {
