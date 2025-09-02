@@ -15,40 +15,139 @@
 
 package com.example;
 
+import com.daml.ledger.javaapi.data.codegen.DamlRecord;
+import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
+import com.example.client.ledger.model.JsActiveContract;
+import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.JsGetActiveContractsResponse;
+import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import splice.api.token.holdingv1.HoldingView;
+import splice.api.token.holdingv1.InstrumentId;
 
+import java.math.BigDecimal;
 import java.security.KeyPair;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
 
         setupEnvironment(args);
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+        Scan scanApi = new Scan(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
 
         try {
             // confirm environment and inputs
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
-            // onboard the sender
-            KeyPair senderKeyPair = Keys.generate();
-            Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
-            String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
+            // get network party ids
+            Env.VALIDATOR_PARTY = validatorApi.getValidatorParty();
+            Env.DSO_PARTY = scanApi.getDsoPartyId();
+            System.out.println("Validator Party: " + Env.VALIDATOR_PARTY);
+            System.out.println("DSO Party: " + Env.DSO_PARTY);
 
-            // preapprove Canton Coin transfers
-            preapproveTransfers(validatorApi, senderParty, senderKeyPair);
+            // onboard the treasury, if necessary
+            if (Env.TREASURY_PARTY.isEmpty()) {
+                KeyPair treasuryKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.TREASURY_PARTY_HINT, treasuryKeyPair);
+                Env.TREASURY_PARTY = onboardNewUser(Env.TREASURY_PARTY_HINT, validatorApi, treasuryKeyPair);
 
+                // preapprove Canton Coin transfers
+                preapproveTransfers(validatorApi, Env.TREASURY_PARTY, treasuryKeyPair);
+            }
 
+            // onboard the sender, if necessary
+            if (Env.SENDER_PARTY.isEmpty()) {
+                KeyPair senderKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
+                Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
+
+                // preapprove Canton Coin transfers
+                preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
+            }
+
+            // TODO: convert the result to a HoldingView (in this case)
+            List<JsGetActiveContractsResponse> result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, TemplateId.HOLDING_INTERFACE_ID.getRaw());
+
+            BigDecimal transferAmount = new BigDecimal(500);
+
+            List<ContractAndId<HoldingView>> holdingViews = fromInterfaces(result, HoldingView::fromJson);
+            // TODO: filter holdings to only one holding type (eg "Amulet")
+            List<ContractAndId<HoldingView>> holdingsToTransfer = holdingsToTransfer(transferAmount, holdingViews);
+
+            if (holdingsToTransfer == null) {
+                System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
+                System.exit(0);
+            }
+
+            for (ContractAndId<HoldingView> holding : holdingsToTransfer) {
+                System.out.println("Holding views: " + holding.record().toJson());
+            }
 
             System.exit(0);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.exit(1);
         }
+    }
+
+    private static <T extends DamlRecord<T>> List<ContractAndId<T>> fromInterfaces(
+            List<JsGetActiveContractsResponse> searchResults,
+            DamlDecoder<T> interfaceValueParser
+    ) throws JsonProcessingException, JsonLfDecoder.Error {
+
+        List<ContractAndId<T>> relevantHoldings = new ArrayList<>();
+        for (JsGetActiveContractsResponse responseItem : searchResults) {
+            System.out.println("Ledger API lookup result: " + responseItem.toJson());
+            JsContractEntry contractEntry = responseItem.getContractEntry();
+
+            // TODO: nice inheritance check, make getJsContractEntryOneOf exception-safe
+            JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
+
+            if (activeContract != null) {
+                List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
+                if (interfaceViews != null) {
+                    for (JsInterfaceView interfaceView : interfaceViews) {
+                        if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(interfaceView.getInterfaceId())) {
+
+                            String holdingJson = new ObjectMapper().writeValueAsString(interfaceView.getViewValue());
+
+                            String holdingContractId = activeContract.getCreatedEvent().getContractId();
+                            T holdingView = interfaceValueParser.decode(holdingJson);
+
+                            relevantHoldings.add(new ContractAndId<>(holdingContractId, holdingView));
+                        }
+                    }
+
+                }
+                System.out.println("contractEntry: " + activeContract);
+            }
+        }
+        return relevantHoldings;
+    }
+
+    private static List<ContractAndId<HoldingView>> holdingsToTransfer(BigDecimal transferAmount, List<ContractAndId<HoldingView>> holdingViews) throws JsonProcessingException, JsonLfDecoder.Error {
+        List<ContractAndId<HoldingView>> toTransfer = new ArrayList<>();
+        Iterator<ContractAndId<HoldingView>> iterator = holdingViews.iterator();
+        while (transferAmount.compareTo(BigDecimal.ZERO) > 0 && iterator.hasNext()) {
+            ContractAndId<HoldingView> next = iterator.next();
+            toTransfer.add(next);
+            transferAmount = transferAmount.subtract(next.record().amount);
+        }
+
+        if (transferAmount.compareTo(BigDecimal.ZERO) > 0)
+            return null; // there weren't enough holdings to satisfy the transfer amount
+
+        return toTransfer;
     }
 
     private static void printStep(String step) {
@@ -58,18 +157,24 @@ public class Main {
     private static void printToken(String name, String token) {
         int length = token.length();
         System.out.println(name + ": " +
-            (token.isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
+                (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
     private static void setupEnvironment(String[] args) {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
+        System.out.println("SCAN_PROXY_API_URL: " + Env.SCAN_PROXY_API_URL);
+        System.out.println();
         printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
-        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
-        printToken("RECEIVER_TOKEN", Env.RECEIVER_TOKEN);
+        System.out.println();
+        System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
+        System.out.println("TREASURY_PARTY: " + Env.TREASURY_PARTY);
+        printToken("TREASURY_TOKEN", Env.TREASURY_TOKEN);
+        System.out.println();
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
-        System.out.println("RECEIVER_PARTY_HINT: " + Env.RECEIVER_PARTY_HINT);
+        System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
+        printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -96,10 +201,23 @@ public class Main {
         return newParty;
     }
 
-    public static void preapproveTransfers(Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws ApiException {
+    // Note: the endpoints used here consume limited resources
+    // (i.e., the 200 parties-per-node limitation).
+    // TODO: Switch to "bare creating a TransferPreapprovalRequest"
+    private static void preapproveTransfers(Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws ApiException {
         CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(externalPartyId);
         PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
         ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
         SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
+    }
+
+    private static void transferAsset(String sender, String receiver, InstrumentId instrumentId, double amount) {
+
+
+    }
+
+    private static void getHoldings(Ledger ledger) throws Exception {
+        long offset = ledger.getLedgerEnd();
+
     }
 }

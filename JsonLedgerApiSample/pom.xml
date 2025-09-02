@@ -61,49 +61,60 @@
                             </configOptions>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-
-            <!-- required for the mvn exec:java command -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <mainClass>com.example.Main</mainClass>
-                </configuration>
-            </plugin>
-
-            <!-- required for the java -jar command -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
-                <executions>
+                    <!--
                     <execution>
-                        <phase>package</phase>
+                        <id>generate-scan-api-client</id>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.example.Main</mainClass>
-                                </transformer>
-                            </transformers>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.scan-api.0.0.1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.scan.api</apiPackage>
+                                <modelPackage>com.example.client.scan.model</modelPackage>
+                                <invokerPackage>com.example.client.scan.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    -->
+                    <execution>
+                        <id>generate-scan-proxy-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/openapi.scan-proxy-api.0.0.1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.scanProxy.api</apiPackage>
+                                <modelPackage>com.example.client.scanProxy.model</modelPackage>
+                                <invokerPackage>com.example.client.scanProxy.invoker</invokerPackage>
+                            </configOptions>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- generates java classes given daml jars -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.1</version>
+                <!-- required for the mvn exec:java command -->
+                <configuration>
+                    <mainClass>com.example.Main</mainClass>
+                </configuration>
                 <executions>
                     <execution>
+                        <!-- generates java classes given daml jars -->
                         <id>daml-codegen</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -125,6 +136,29 @@
                                 <argument>--output-directory</argument>
                                 <argument>target/generated-sources/dars</argument>
                             </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- required for the java -jar command -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.example.Main</mainClass>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>

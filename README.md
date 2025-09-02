@@ -44,6 +44,10 @@ which are typically required for production implementations:
 * Non-Blocking Calls
 * SSL/TLS
 
+## Version
+
+This sample was last tested with Canton Network APIs `0.4.13`.
+
 ## Setup
 
 1. **Start** a DevNet-connected or LocalNet validator.

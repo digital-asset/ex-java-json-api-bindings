@@ -18,8 +18,10 @@ package com.example;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
-import com.example.client.ledger.model.GetLedgerApiVersionResponse;
-import com.example.client.ledger.model.GetLedgerEndResponse;
+import com.example.client.ledger.model.*;
+
+import java.util.List;
+import java.util.Map;
 
 public class Ledger {
     private final DefaultApi ledgerApi;
@@ -42,5 +44,39 @@ public class Ledger {
     public Long getLedgerEnd() throws ApiException {
         GetLedgerEndResponse response = this.ledgerApi.getV2StateLedgerEnd();
         return response.getOffset();
+    }
+
+    public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String partyId, String interfaceId) throws Exception {
+        long offset = getLedgerEnd();
+
+        InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
+                .includeCreatedEventBlob(false)
+                .includeInterfaceView(true)
+                .interfaceId(interfaceId);
+
+        InterfaceFilter interfaceFilter = new InterfaceFilter()
+                .value(interfaceFilter1);
+
+        IdentifierFilterOneOf1 identifierFilterOneOf1 = new IdentifierFilterOneOf1()
+                .interfaceFilter(interfaceFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf1);
+
+        CumulativeFilter cumulativeFilter = new CumulativeFilter()
+                .identifierFilter(identifierFilter);
+
+        Filters filters = new Filters()
+                .addCumulativeItem(cumulativeFilter);
+
+        TransactionFilter transactionFilter = new TransactionFilter()
+                .filtersByParty(Map.of(partyId, filters));
+
+        GetActiveContractsRequest request = new GetActiveContractsRequest()
+                .verbose(false)
+                .activeAtOffset(offset)
+                .filter(transactionFilter);
+
+        return this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
     }
 }
