@@ -15,8 +15,11 @@
 
 package com.example;
 
+import com.daml.ledger.javaapi.data.GetActiveContractsResponse;
+import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
+import splice.api.token.holdingv1.InstrumentId;
 
 import java.security.KeyPair;
 import java.util.List;
@@ -34,15 +37,19 @@ public class Main {
             confirmConnectivity(ledgerApi, validatorApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
-            // onboard the sender
-            KeyPair senderKeyPair = Keys.generate();
-            Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
-            String senderParty = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
+            // onboard the treasury, if necessary
+            if (Env.SENDER_PARTY.isEmpty()){
+                KeyPair senderKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
+                Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
-            // preapprove Canton Coin transfers
-            preapproveTransfers(validatorApi, senderParty, senderKeyPair);
+                // preapprove Canton Coin transfers
+                preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
+            }
 
-
+            // TODO: convert the result to a HoldingView (in this case)
+            splice.api.token.holdingv1.HoldingView hv;
+            var result = ledgerApi.getActiveContractsForInterface(Env.VALIDATOR_PARTY, "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding");
 
             System.exit(0);
         } catch (Exception ex) {
@@ -96,10 +103,23 @@ public class Main {
         return newParty;
     }
 
-    public static void preapproveTransfers(Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws ApiException {
+    // Note: the endpoints used here consume limited resources
+    // (i.e., the 200 parties-per-node limitation).
+    // TODO: Switch to "bare creating a TransferPreapprovalRequest"
+    private static void preapproveTransfers(Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws ApiException {
         CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(externalPartyId);
         PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
         ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
         SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
+    }
+
+    private static void transferAsset(String sender, String receiver, InstrumentId instrumentId, double amount) {
+
+
+    }
+
+    private static void getHoldings(Ledger ledger) throws Exception {
+        long offset = ledger.getLedgerEnd();
+        
     }
 }
