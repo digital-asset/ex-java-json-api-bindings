@@ -55,6 +55,16 @@ public class Main {
             System.out.println("DSO Party: " + dsoParty);
 
             // onboard the treasury, if necessary
+            if (Env.TREASURY_PARTY.isEmpty()) {
+                KeyPair treasuryKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.TREASURY_PARTY_HINT, treasuryKeyPair);
+                Env.TREASURY_PARTY = onboardNewUser(Env.TREASURY_PARTY_HINT, validatorApi, treasuryKeyPair);
+
+                // preapprove Canton Coin transfers
+                preapproveTransfers(validatorApi, Env.TREASURY_PARTY, treasuryKeyPair);
+            }
+
+            // onboard the sender, if necessary
             if (Env.SENDER_PARTY.isEmpty()) {
                 KeyPair senderKeyPair = Keys.generate();
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
@@ -155,9 +165,9 @@ public class Main {
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
         printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
         printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
-        printToken("RECEIVER_TOKEN", Env.RECEIVER_TOKEN);
+        printToken("TREASURY_TOKEN", Env.TREASURY_TOKEN);
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
-        System.out.println("RECEIVER_PARTY_HINT: " + Env.RECEIVER_PARTY_HINT);
+        System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
