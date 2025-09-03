@@ -79,27 +79,13 @@ public class Main {
 
             // select the holdings to use for a transfer from the Validator
             BigDecimal transferAmount = new BigDecimal(500);
-            Instant requestDate = Instant.now();
-            Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
             List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
                     ledgerApi, Env.VALIDATOR_PARTY,
                     transferAmount, cantonCoinInstrumentId);
 
-            List<Holding.ContractId> contractIdsForTransfer = holdingsForTransfer
-                    .stream()
-                    .map((h) -> new Holding.ContractId(h.contractId()))
-                    .toList();
-
-            TransferFactoryWithChoiceContext transferFactoryPayload = transferInstructionApi.getTransferFactory(
-                    Env.DSO_PARTY,
-                    Env.VALIDATOR_PARTY,
-                    Env.SENDER_PARTY,
-                    transferAmount,
-                    cantonCoinInstrumentId,
-                    requestDate,
-                    requestExpiresDate,
-                    contractIdsForTransfer);
+            // get the "transfer factory"
+            queryForTransferFactory(transferInstructionApi, holdingsForTransfer, transferAmount, cantonCoinInstrumentId);
 
             System.exit(0);
         } catch (Exception ex) {
@@ -160,6 +146,28 @@ public class Main {
             }
         }
         return holdingsForTransfer;
+    }
+
+    private static TransferFactoryWithChoiceContext queryForTransferFactory(TransferInstruction transferInstructionApi, List<ContractAndId<HoldingView>> holdingsForTransfer, BigDecimal transferAmount, InstrumentId cantonCoinInstrumentId) throws com.example.client.transferInstruction.invoker.ApiException {
+        printStep("Query for Transfer Factory");
+
+        Instant requestDate = Instant.now();
+        Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
+
+        List<Holding.ContractId> contractIdsForTransfer = holdingsForTransfer
+                .stream()
+                .map((h) -> new Holding.ContractId(h.contractId()))
+                .toList();
+
+        return transferInstructionApi.getTransferFactory(
+                Env.DSO_PARTY,
+                Env.VALIDATOR_PARTY,
+                Env.SENDER_PARTY,
+                transferAmount,
+                cantonCoinInstrumentId,
+                requestDate,
+                requestExpiresDate,
+                contractIdsForTransfer);
     }
 
     private static void printStep(String step) {
@@ -223,13 +231,4 @@ public class Main {
         SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
     }
 
-    private static void transferAsset(String sender, String receiver, InstrumentId instrumentId, double amount) {
-
-
-    }
-
-    private static void getHoldings(Ledger ledger) throws Exception {
-        long offset = ledger.getLedgerEnd();
-
-    }
 }
