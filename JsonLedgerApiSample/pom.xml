@@ -150,7 +150,7 @@
                                 <argument>codegen</argument>
                                 <argument>java</argument>
                                 <argument>
-                                    ${project.basedir}/src/main/resources/dars/splice-api-token-holding-v1-1.0.0.dar
+                                    ${project.basedir}/src/main/resources/dars/splice-api-token-transfer-instruction-v1-1.0.0.dar
                                 </argument>
                                 <argument>--output-directory</argument>
                                 <argument>target/generated-sources/dars</argument>
