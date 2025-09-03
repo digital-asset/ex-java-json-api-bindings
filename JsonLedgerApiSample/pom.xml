@@ -101,6 +101,25 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-scan-transfer-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/transfer-instruction-v1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <apiPackage>com.example.client.transferInstruction.api</apiPackage>
+                                <modelPackage>com.example.client.transferInstruction.model</modelPackage>
+                                <invokerPackage>com.example.client.transferInstruction.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -131,7 +150,7 @@
                                 <argument>codegen</argument>
                                 <argument>java</argument>
                                 <argument>
-                                    ${project.basedir}/src/main/resources/dars/splice-api-token-holding-v1-1.0.0.dar
+                                    ${project.basedir}/src/main/resources/dars/splice-api-token-transfer-instruction-v1-1.0.0.dar
                                 </argument>
                                 <argument>--output-directory</argument>
                                 <argument>target/generated-sources/dars</argument>

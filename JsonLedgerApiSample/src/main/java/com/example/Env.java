@@ -20,6 +20,7 @@ public class Env {
     public static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
     public static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
     public static String SCAN_PROXY_API_URL = getenv("SCAN_PROXY_API_URL", Env.VALIDATOR_API_URL);
+    public static String SCAN_API_URL = getenv("SCAN_API_URL", "");
 
     public static String VALIDATOR_TOKEN = getenv("VALIDATOR_TOKEN", "");
 

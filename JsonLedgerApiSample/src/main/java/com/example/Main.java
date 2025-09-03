@@ -19,14 +19,17 @@ import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
 import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
 import com.google.gson.Gson;
+import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 
@@ -39,6 +42,7 @@ public class Main {
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
         Scan scanApi = new Scan(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
+        TransferInstruction transferInstructionApi = new TransferInstruction(Env.SCAN_API_URL);
 
         try {
             // confirm environment and inputs
@@ -71,13 +75,17 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
             }
 
-
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
 
             // select the holdings to use for a transfer from the Validator
+            BigDecimal transferAmount = new BigDecimal(500);
+
             List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
                     ledgerApi, Env.VALIDATOR_PARTY,
-                    new BigDecimal(500), cantonCoinInstrumentId);
+                    transferAmount, cantonCoinInstrumentId);
+
+            // get the "transfer factory"
+            queryForTransferFactory(transferInstructionApi, holdingsForTransfer, transferAmount, cantonCoinInstrumentId);
 
             System.exit(0);
         } catch (Exception ex) {
@@ -138,6 +146,28 @@ public class Main {
             }
         }
         return holdingsForTransfer;
+    }
+
+    private static TransferFactoryWithChoiceContext queryForTransferFactory(TransferInstruction transferInstructionApi, List<ContractAndId<HoldingView>> holdingsForTransfer, BigDecimal transferAmount, InstrumentId cantonCoinInstrumentId) throws com.example.client.transferInstruction.invoker.ApiException {
+        printStep("Query for Transfer Factory");
+
+        Instant requestDate = Instant.now();
+        Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
+
+        List<Holding.ContractId> contractIdsForTransfer = holdingsForTransfer
+                .stream()
+                .map((h) -> new Holding.ContractId(h.contractId()))
+                .toList();
+
+        return transferInstructionApi.getTransferFactory(
+                Env.DSO_PARTY,
+                Env.VALIDATOR_PARTY,
+                Env.SENDER_PARTY,
+                transferAmount,
+                cantonCoinInstrumentId,
+                requestDate,
+                requestExpiresDate,
+                contractIdsForTransfer);
     }
 
     private static void printStep(String step) {
@@ -201,13 +231,4 @@ public class Main {
         SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
     }
 
-    private static void transferAsset(String sender, String receiver, InstrumentId instrumentId, double amount) {
-
-
-    }
-
-    private static void getHoldings(Ledger ledger) throws Exception {
-        long offset = ledger.getLedgerEnd();
-
-    }
 }
