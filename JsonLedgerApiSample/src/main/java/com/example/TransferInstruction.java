@@ -56,22 +56,8 @@ public class TransferInstruction {
     }
 
     public TransferFactoryWithChoiceContext getTransferFactory(
-            String admin,
-            String sender,
-            String receiver,
-            BigDecimal amount,
-            InstrumentId instrumentId,
-            Instant requestedAt,
-            Instant executeBefore,
-            List<Holding.ContractId> inputHoldingCids
+            TransferFactory_Transfer choiceToSend
     ) throws ApiException {
-
-        Metadata emptyMetadata = new Metadata(new HashMap<>());
-        ChoiceContext noContext = new ChoiceContext(new HashMap<>());
-        ExtraArgs blankExtraArgs = new ExtraArgs(noContext, emptyMetadata);
-
-        Transfer transfer = new Transfer(sender, receiver, amount, instrumentId, requestedAt, executeBefore, inputHoldingCids, emptyMetadata);
-        TransferFactory_Transfer choiceToSend = new TransferFactory_Transfer(admin, transfer, blankExtraArgs);
 
         GetFactoryRequest request = new GetFactoryRequest();
         /*

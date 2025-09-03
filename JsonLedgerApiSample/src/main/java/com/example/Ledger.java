@@ -20,6 +20,7 @@ import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -78,5 +79,40 @@ public class Ledger {
                 .filter(transactionFilter);
 
         return this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
+    }
+
+    public void exercise(
+            TemplateId templateId,
+            String transferFactoryContractId,
+            String choiceName,
+            Object choicePayload,
+            List<DisclosedContract> disclosedContracts
+    ) throws ApiException {
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        ExerciseCommand exerciseTransferCommand = new ExerciseCommand();
+        exerciseTransferCommand.setTemplateId(templateId.getRaw());
+        exerciseTransferCommand.setContractId(transferFactoryContractId);
+        exerciseTransferCommand.setChoice(choiceName);
+        exerciseTransferCommand.setChoiceArgument(choicePayload);
+
+        Command command = new Command();
+        command.setActualInstance(exerciseTransferCommand);
+
+        List<Command> commandsList = new ArrayList<>();
+        commandsList.add(command);
+
+        JsCommands commands = new JsCommands();
+        // TODO: more fields may need to be set here: actAs, readAs
+        commands.setCommands(commandsList);
+        commands.setCommandId(commandId);
+        commands.setDisclosedContracts(disclosedContracts);
+
+        JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
+        request.setCommands(commands);
+
+        System.out.println("\nget transfer factory request: " + request.toJson() + "\n");
+        JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
+        System.out.println("\nget transfer factory response: " + response.toJson() + "\n");
     }
 }
