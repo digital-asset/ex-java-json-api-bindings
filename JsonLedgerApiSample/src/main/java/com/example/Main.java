@@ -42,7 +42,7 @@ public class Main {
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
         Scan scanApi = new Scan(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
-        TransferInstruction transferInstructionApi = new TransferInstruction(Env.TOKEN_ADMIN_URL);
+        TransferInstruction transferInstructionApi = new TransferInstruction(Env.SCAN_API_URL);
 
         try {
             // confirm environment and inputs
