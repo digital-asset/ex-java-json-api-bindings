@@ -15,7 +15,9 @@
 
 package com.example;
 
-import com.daml.ledger.javaapi.data.codegen.DamlRecord;
+import com.example.GsonTypeAdapters.ContractIdTypeAdapterFactory;
+import com.example.GsonTypeAdapters.InstantTypeAdapter;
+import com.example.GsonTypeAdapters.OffsetDateTimeTypeAdapter;
 import com.example.client.transferInstruction.api.DefaultApi;
 import com.example.client.transferInstruction.invoker.ApiClient;
 import com.example.client.transferInstruction.invoker.ApiException;
@@ -33,8 +35,8 @@ import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class TransferInstruction {
@@ -47,12 +49,16 @@ public class TransferInstruction {
         client.setBasePath(transferInstructionBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
 
-        this.transferInstructionApi = new DefaultApi(client);
-    }
+        // JSON serialization compatibility with Open API payloads
+        Gson customGson = new GsonBuilder()
+                .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())
+                .create();
 
-    private Object jsonPayload(/*TransferFactory_Transfer payload*/ String rawJson) {
-        Gson generalGson = new Gson();
-        return generalGson.fromJson(rawJson, LinkedHashMap.class);
+        client.getJSON().setGson(customGson);
+
+        this.transferInstructionApi = new DefaultApi(client);
     }
 
     public TransferFactoryWithChoiceContext getTransferFactory(
@@ -73,19 +79,7 @@ public class TransferInstruction {
         Transfer transfer = new Transfer(sender, receiver, amount, instrumentId, requestedAt, executeBefore, inputHoldingCids, emptyMetadata);
         TransferFactory_Transfer choiceToSend = new TransferFactory_Transfer(admin, transfer, blankExtraArgs);
 
-        GetFactoryRequest request = new GetFactoryRequest();
-        /*
-         TODO: openAPI's JSON encoder doesn't know how to encode Instant instances, instead it crashes with:
-
-         Failed making field 'java.time.Instant#seconds' accessible; either increase its visibility or write a custom TypeAdapter for its declaring type.
-         See https://github.com/google/gson/blob/main/Troubleshooting.md#reflection-inaccessible
-
-         For now, we work around this issue by using teh provided toJson methods to make a raw Json string, and then
-         parse the JSON string to a semi-structured LinkedHashMap (so that the string output of toJson is not then re-encoded as a single JSON string).
-
-         request.setChoiceArguments(choiceToSend);
-         */
-        request.setChoiceArguments(jsonPayload(choiceToSend.toJson()));
+        GetFactoryRequest request = new GetFactoryRequest().choiceArguments(choiceToSend);
 
         System.out.println("\nget transfer factory request: " + request.toJson() + "\n");
         TransferFactoryWithChoiceContext response = this.transferInstructionApi.getTransferFactory(request);
