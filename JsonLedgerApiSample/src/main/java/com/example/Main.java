@@ -18,10 +18,7 @@ package com.example;
 import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
 import com.example.GsonTypeAdapters.GsonSingleton;
-import com.example.client.ledger.model.DisclosedContract;
-import com.example.client.ledger.model.JsActiveContract;
-import com.example.client.ledger.model.JsContractEntry;
-import com.example.client.ledger.model.JsInterfaceView;
+import com.example.client.ledger.model.*;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.invoker.ApiException;
@@ -319,5 +316,29 @@ public class Main {
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
+    }
+
+    private static JsPrepareSubmissionResponse prepareTransferForSigning (
+            Ledger ledgerApi,
+            TransferFactoryWithChoiceContext factoryWithChoiceContext,
+            TransferFactory_Transfer choicePayload,
+            List<DisclosedContract> disclosedContracts) throws Exception {
+
+        ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
+                .templateId(TemplateId.TRANSFER_FACTORY_INTERFACE_ID.getRaw())
+                .contractId(factoryWithChoiceContext.getFactoryId())
+                .choice("TransferFactory_Transfer")
+                .choiceArgument(choicePayload);
+
+        CommandOneOf3 subtype = new CommandOneOf3()
+                .exerciseCommand(exerciseTransferCommand);
+
+        Command command = new Command();
+        command.setActualInstance(subtype);
+
+        return ledgerApi.prepareSubmissionForSigning(
+                choicePayload.transfer.sender,
+                List.of(command),
+                disclosedContracts);
     }
 }
