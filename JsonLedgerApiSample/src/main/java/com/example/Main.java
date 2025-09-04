@@ -31,6 +31,7 @@ import splice.api.token.metadatav1.ExtraArgs;
 import splice.api.token.metadatav1.Metadata;
 import splice.api.token.transferinstructionv1.Transfer;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
+import splice.api.token.transferinstructionv1.TransferInstructionResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -318,7 +319,7 @@ public class Main {
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
     }
 
-    private static JsPrepareSubmissionResponse prepareTransferForSigning (
+    private static JsPrepareSubmissionResponse prepareTransferForSigning(
             Ledger ledgerApi,
             TransferFactoryWithChoiceContext factoryWithChoiceContext,
             TransferFactory_Transfer choicePayload,
@@ -340,5 +341,14 @@ public class Main {
                 choicePayload.transfer.sender,
                 List.of(command),
                 disclosedContracts);
+    }
+
+    private static TransferInstructionResult executeSignedTransfer(
+            Ledger ledgerApi,
+            JsPrepareSubmissionResponse prepareSubmissionResponse,
+            PartySignatures partySignatures
+    ) throws Exception {
+        String result = ledgerApi.executeSignedSubmission(prepareSubmissionResponse, partySignatures);
+        return GsonSingleton.getInstance().fromJson(result, TransferInstructionResult.class);
     }
 }

@@ -151,4 +151,20 @@ public class Ledger {
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
         return response;
     }
+
+    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, PartySignatures partySignatures) throws ApiException {
+        String userId = "None"; // replaced with token sub: field
+        String submissionId = "Java JSON API Sample";
+        DeduplicationPeriod2 useMaximum = new DeduplicationPeriod2();
+        useMaximum.setActualInstance(new DeduplicationPeriod2().getDeduplicationPeriod2OneOf2().getEmpty());
+        JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
+                .userId(userId)
+                .submissionId(submissionId)
+                .preparedTransaction(preparedSubmission.getPreparedTransaction())
+                .hashingSchemeVersion(preparedSubmission.getHashingSchemeVersion())
+                .partySignatures(partySignatures)
+                .deduplicationPeriod(useMaximum);
+        Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
+        return GsonSingleton.getInstance().toJson(response);
+    }
 }
