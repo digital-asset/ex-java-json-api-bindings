@@ -131,4 +131,24 @@ public class Ledger {
         JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
         System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
     }
+
+    public JsPrepareSubmissionResponse prepareSubmissionForSigning(
+            String partyId,
+            List<Command> commands,
+            List<DisclosedContract> disclosedContracts
+    ) throws ApiException {
+        String userId = "None"; // replaced with token sub: field
+        String commandId = java.util.UUID.randomUUID().toString();
+        JsPrepareSubmissionRequest request = new JsPrepareSubmissionRequest()
+                .synchronizerId(Env.SYNCHRONIZER_ID)
+                .userId(userId)
+                .actAs(List.of(partyId))
+                .commandId(commandId)
+                .commands(commands)
+                .disclosedContracts(disclosedContracts)
+                .verboseHashing(false);
+
+        JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
+        return response;
+    }
 }
