@@ -40,6 +40,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
 
@@ -69,9 +70,18 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.TREASURY_PARTY, treasuryKeyPair);
             }
 
+            // get the sender key pair
+            KeyPair senderKeyPair = null;
+            if (Env.SENDER_PUBLIC_KEY.isEmpty() || Env.SENDER_PRIVATE_KEY.isEmpty()) {
+                senderKeyPair = Keys.generate();
+                Env.SENDER_PUBLIC_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPublic()));
+                Env.SENDER_PRIVATE_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPrivate(), senderKeyPair.getPublic()));
+            } else {
+                senderKeyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
+            }
+
             // onboard the sender, if necessary
             if (Env.SENDER_PARTY.isEmpty()) {
-                KeyPair senderKeyPair = Keys.generate();
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
@@ -79,19 +89,33 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
             }
 
+            // instrument and amount of transfer
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
-
-            // select the holdings to use for a transfer from the Validator
             BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
+            // perform a transfer from a local party
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
                     Env.DSO_PARTY,
                     Env.VALIDATOR_PARTY,
+                    Optional.empty(),
                     Env.SENDER_PARTY,
                     transferAmount,
                     cantonCoinInstrumentId);
+
+            /*
+            // perform a transfer from an external party
+            transferAsset(
+                    transferInstructionApi,
+                    ledgerApi,
+                    Env.DSO_PARTY,
+                    Env.SENDER_PARTY,
+                    Optional.of(senderKeyPair),
+                    Env.SENDER_PARTY,
+                    transferAmount,
+                    cantonCoinInstrumentId);
+            */
 
             System.exit(0);
         } catch (Exception ex) {
@@ -208,7 +232,7 @@ public class Main {
             System.exit(1);
         }
 
-        if(!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
+        if (!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
             try {
                 KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, keyPair);
@@ -272,11 +296,14 @@ public class Main {
             Ledger ledgerApi,
             String adminParty,
             String sender,
+            Optional<KeyPair> senderKeys,
             String receiver,
             BigDecimal amount,
             InstrumentId instrumentId) throws Exception {
 
-        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, Env.VALIDATOR_PARTY, amount, instrumentId);
+        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, sender, amount, instrumentId);
+
+        printStep("Get transfer factory");
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
@@ -290,6 +317,8 @@ public class Main {
                 .stream()
                 .map((d) -> convertRecordViaJson(d, DisclosedContract::fromJson))
                 .toList();
+
+        printStep("Transfer from " + sender + " to " + receiver);
 
         ledgerApi.exercise(
                 sender,
