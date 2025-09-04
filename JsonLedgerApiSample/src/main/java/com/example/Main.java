@@ -152,6 +152,7 @@ public class Main {
                 ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
                         .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                         .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
+                        .filter(v -> v.record().lock.isEmpty())
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
                             remaining[0] = remaining[0].subtract(c.record().amount);
