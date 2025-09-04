@@ -21,6 +21,7 @@ import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.model.DisclosedContract;
 import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
@@ -45,7 +46,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        setupEnvironment(args);
+        setupEnvironment();
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
@@ -88,10 +89,6 @@ public class Main {
             // select the holdings to use for a transfer from the Validator
             BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
-            List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
-                    ledgerApi, Env.VALIDATOR_PARTY,
-                    transferAmount, cantonCoinInstrumentId);
-
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
@@ -99,12 +96,10 @@ public class Main {
                     Env.VALIDATOR_PARTY,
                     Env.SENDER_PARTY,
                     transferAmount,
-                    cantonCoinInstrumentId,
-                    holdingsForTransfer);
+                    cantonCoinInstrumentId);
 
             System.exit(0);
         } catch (Exception ex) {
-            // System.out.println(ex.getMessage());
             ex.printStackTrace();
             System.exit(1);
         }
@@ -139,14 +134,18 @@ public class Main {
             JsonDecoder<T> interfaceValueParser
     ) {
         JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
-        String holdingContractId = activeContract.getCreatedEvent().getContractId();
-        T record = activeContract.getCreatedEvent().getInterfaceViews()
+        String instanceContractId = activeContract.getCreatedEvent().getContractId();
+
+        List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
+        if (interfaceViews == null) return null;
+
+        T record = interfaceViews
                 .stream()
                 .filter(v -> interfaceId.matchesModuleAndTypeName(v.getInterfaceId()))
                 .map(v -> convertRecordViaJson(v.getViewValue(), interfaceValueParser))
                 .findFirst()
                 .orElseThrow();
-        return new ContractAndId<>(holdingContractId, record);
+        return new ContractAndId<>(instanceContractId, record);
     }
 
     private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(Ledger ledgerApi, String party, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
@@ -158,7 +157,7 @@ public class Main {
         List<ContractAndId<HoldingView>> holdingsForTransfer =
                 ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
                         .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
-                        .filter(v -> v.record().instrumentId.equals(instrumentId))
+                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
                             remaining[0] = remaining[0].subtract(c.record().amount);
@@ -188,7 +187,7 @@ public class Main {
                 (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
-    private static void setupEnvironment(String[] args) {
+    private static void setupEnvironment() {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
@@ -203,6 +202,11 @@ public class Main {
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
         System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
         printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
+
+        if (Env.SCAN_API_URL == null || Env.SCAN_API_URL.isEmpty()) {
+            System.err.println("Error: SCAN_API_URL environment variable must be set");
+            System.exit(1);
+        }
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -236,7 +240,7 @@ public class Main {
         CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(externalPartyId);
         PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
         ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
-        SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
+        validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
     }
 
     private static void transferAsset(
@@ -246,8 +250,9 @@ public class Main {
             String sender,
             String receiver,
             BigDecimal amount,
-            InstrumentId instrumentId,
-            List<ContractAndId<HoldingView>> holdings) throws Exception{
+            InstrumentId instrumentId) throws Exception{
+
+        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, Env.VALIDATOR_PARTY, amount, instrumentId);
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
