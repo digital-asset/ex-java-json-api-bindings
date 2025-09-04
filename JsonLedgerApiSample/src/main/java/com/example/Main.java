@@ -51,13 +51,14 @@ public class Main {
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
+        Scan scanApi = new Scan(Env.SCAN_API_URL);
         ScanProxy scanProxyApi = new ScanProxy(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
         TransferInstruction transferInstructionApi = new TransferInstruction(Env.SCAN_API_URL);
         TokenMetadata tokenMetadataApi = new TokenMetadata(Env.SCAN_API_URL);
 
         try {
             // confirm environment and inputs
-            confirmConnectivity(ledgerApi, validatorApi, scanProxyApi, tokenMetadataApi);
+            confirmConnectivity(ledgerApi, validatorApi, scanApi, scanProxyApi, tokenMetadataApi);
             confirmAuthentication(ledgerApi, validatorApi);
 
             // onboard the treasury, if necessary
@@ -205,7 +206,7 @@ public class Main {
         }
     }
 
-    private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi, ScanProxy scanProxyApi, TokenMetadata tokenMetadataApi) throws Exception {
+    private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi, Scan scanApi, ScanProxy scanProxyApi, TokenMetadata tokenMetadataApi) throws Exception {
         printStep("Confirm API connectivity");
 
         System.out.println("Version: " + ledgerApi.getVersion());
@@ -213,8 +214,11 @@ public class Main {
         Env.VALIDATOR_PARTY = validatorApi.getValidatorParty();
         System.out.println("Validator Party: " + validatorApi.getValidatorParty());
 
+        Env.SYNCHRONIZER_ID = scanApi.getSynchronizerId();
+        System.out.println("Synchronizer id: " + Env.SYNCHRONIZER_ID);
+
         Env.DSO_PARTY = scanProxyApi.getDsoPartyId();
-        System.out.println("DSO Party: " + scanProxyApi.getDsoPartyId());
+        System.out.println("DSO Party: " + Env.DSO_PARTY);
 
         GetRegistryInfoResponse registryInfo = tokenMetadataApi.getRegistryInfo();
         System.out.println("Registry Party: " + registryInfo.getAdminId());

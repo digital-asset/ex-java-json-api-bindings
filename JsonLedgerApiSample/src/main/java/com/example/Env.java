@@ -33,6 +33,7 @@ public class Env {
     public static String SENDER_TOKEN = getenv("SENDER_TOKEN", "");
 
     public static String TRANSFER_AMOUNT = getenv("TRANSFER_AMOUNT", "100");
+    public static String SYNCHRONIZER_ID = "";
     public static String DSO_PARTY = "";
     public static String VALIDATOR_PARTY = "";
 
