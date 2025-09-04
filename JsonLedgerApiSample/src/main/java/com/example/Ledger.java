@@ -103,13 +103,13 @@ public class Ledger {
         parties.add(actAs);
 
         ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
-            .templateId(templateId.getRaw())
-            .contractId(transferFactoryContractId)
-            .choice(choiceName)
-            .choiceArgument(choicePayload);
+                .templateId(templateId.getRaw())
+                .contractId(transferFactoryContractId)
+                .choice(choiceName)
+                .choiceArgument(choicePayload);
 
         CommandOneOf3 subtype = new CommandOneOf3()
-            .exerciseCommand(exerciseTransferCommand);
+                .exerciseCommand(exerciseTransferCommand);
 
         Command command = new Command();
         command.setActualInstance(subtype);
@@ -118,11 +118,11 @@ public class Ledger {
         commandsList.add(command);
 
         JsCommands commands = new JsCommands()
-            .commands(commandsList)
-            .commandId(commandId)
-            .actAs(parties)
-            .readAs(parties)
-            .disclosedContracts(disclosedContracts);
+                .commands(commandsList)
+                .commandId(commandId)
+                .actAs(parties)
+                .readAs(parties)
+                .disclosedContracts(disclosedContracts);
 
         JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
         request.setCommands(commands);

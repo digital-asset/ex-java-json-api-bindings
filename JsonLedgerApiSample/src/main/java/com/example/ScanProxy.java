@@ -18,7 +18,7 @@ package com.example;
 import com.example.client.scanProxy.api.ScanProxyApi;
 import com.example.client.scanProxy.invoker.ApiClient;
 import com.example.client.scanProxy.invoker.ApiException;
-import com.example.client.scanProxy.model.*;
+import com.example.client.scanProxy.model.GetDsoPartyIdResponse;
 
 public class ScanProxy {
 

@@ -1,8 +1,8 @@
 package com.example;
 
-import com.example.client.tokenMetadata.invoker.ApiException;
 import com.example.client.tokenMetadata.api.DefaultApi;
 import com.example.client.tokenMetadata.invoker.ApiClient;
+import com.example.client.tokenMetadata.invoker.ApiException;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 
 public class TokenMetadata {

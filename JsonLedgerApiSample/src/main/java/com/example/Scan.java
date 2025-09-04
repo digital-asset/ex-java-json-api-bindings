@@ -18,7 +18,7 @@ package com.example;
 import com.example.client.scan.api.ScanApi;
 import com.example.client.scan.invoker.ApiClient;
 import com.example.client.scan.invoker.ApiException;
-import com.example.client.scan.model.*;
+import com.example.client.scan.model.DomainScans;
 
 import java.net.URI;
 import java.net.URISyntaxException;

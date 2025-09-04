@@ -111,7 +111,6 @@ public class Main {
     }
 
 
-
     private static <T> T useValueParser(
             String raw,
             JsonDecoder<T> valueParser
@@ -164,9 +163,7 @@ public class Main {
         if (remaining[0].compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
             System.exit(1);
-        }
-        else
-        {
+        } else {
             for (ContractAndId<HoldingView> holding : holdingsForTransfer) {
                 System.out.println("Holding views: " + holding.record().toJson());
             }
@@ -260,7 +257,7 @@ public class Main {
             String sender,
             String receiver,
             BigDecimal amount,
-            InstrumentId instrumentId) throws Exception{
+            InstrumentId instrumentId) throws Exception {
 
         List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, Env.VALIDATOR_PARTY, amount, instrumentId);
 

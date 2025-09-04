@@ -7,15 +7,16 @@ import splice.api.token.metadatav1.AnyContract;
 import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 import java.io.IOException;
-import java.time.Instant;
 
 public class AvContractIdTypeAdapter extends TypeAdapter<AV_ContractId> {
 
     @Override
     public void write(JsonWriter out, AV_ContractId value) throws IOException {
         out.beginObject();
-        out.name("tag"); out.value("AV_ContractId");
-        out.name("value"); out.value(value.contractIdValue.contractId);
+        out.name("tag");
+        out.value("AV_ContractId");
+        out.name("value");
+        out.value(value.contractIdValue.contractId);
         out.endObject();
     }
 
