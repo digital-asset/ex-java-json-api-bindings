@@ -90,7 +90,6 @@ public class Main {
 
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
 
-            // select the holdings to use for a transfer from the Validator
             BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
             transferAsset(
@@ -103,6 +102,7 @@ public class Main {
                     transferAmount,
                     cantonCoinInstrumentId);
 
+            /*
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
@@ -112,6 +112,7 @@ public class Main {
                     Env.SENDER_PARTY,
                     transferAmount,
                     cantonCoinInstrumentId);
+            */
 
             System.exit(0);
         } catch (Exception ex) {
@@ -228,7 +229,7 @@ public class Main {
             System.exit(1);
         }
 
-        if(!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
+        if (!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
             try {
                 KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, keyPair);
@@ -297,7 +298,9 @@ public class Main {
             BigDecimal amount,
             InstrumentId instrumentId) throws Exception {
 
-        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, Env.VALIDATOR_PARTY, amount, instrumentId);
+        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, sender, amount, instrumentId);
+
+        printStep("Get transfer factory");
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
@@ -311,6 +314,8 @@ public class Main {
                 .stream()
                 .map((d) -> convertRecordViaJson(d, DisclosedContract::fromJson))
                 .toList();
+
+        printStep("Transfer from " + sender + " to " + receiver);
 
         ledgerApi.exercise(
                 sender,
