@@ -40,6 +40,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
 
@@ -70,8 +71,16 @@ public class Main {
             }
 
             // onboard the sender, if necessary
+            KeyPair senderKeyPair = null;
+            if (Env.SENDER_PUBLIC_KEY.isEmpty() || Env.SENDER_PRIVATE_KEY.isEmpty()) {
+                senderKeyPair = Keys.generate();
+                Env.SENDER_PUBLIC_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPublic()));
+                Env.SENDER_PRIVATE_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPrivate(), senderKeyPair.getPublic()));
+            } else {
+                senderKeyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
+            }
+
             if (Env.SENDER_PARTY.isEmpty()) {
-                KeyPair senderKeyPair = Keys.generate();
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
@@ -89,6 +98,17 @@ public class Main {
                     ledgerApi,
                     Env.DSO_PARTY,
                     Env.VALIDATOR_PARTY,
+                    Optional.empty(),
+                    Env.SENDER_PARTY,
+                    transferAmount,
+                    cantonCoinInstrumentId);
+
+            transferAsset(
+                    transferInstructionApi,
+                    ledgerApi,
+                    Env.DSO_PARTY,
+                    Env.SENDER_PARTY,
+                    Optional.of(senderKeyPair),
                     Env.SENDER_PARTY,
                     transferAmount,
                     cantonCoinInstrumentId);
@@ -272,6 +292,7 @@ public class Main {
             Ledger ledgerApi,
             String adminParty,
             String sender,
+            Optional<KeyPair> senderKeys,
             String receiver,
             BigDecimal amount,
             InstrumentId instrumentId) throws Exception {
