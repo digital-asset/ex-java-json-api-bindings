@@ -70,7 +70,7 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.TREASURY_PARTY, treasuryKeyPair);
             }
 
-            // onboard the sender, if necessary
+            // get the sender key pair
             KeyPair senderKeyPair = null;
             if (Env.SENDER_PUBLIC_KEY.isEmpty() || Env.SENDER_PRIVATE_KEY.isEmpty()) {
                 senderKeyPair = Keys.generate();
@@ -80,6 +80,7 @@ public class Main {
                 senderKeyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
             }
 
+            // onboard the sender, if necessary
             if (Env.SENDER_PARTY.isEmpty()) {
                 Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
@@ -88,10 +89,11 @@ public class Main {
                 preapproveTransfers(validatorApi, Env.SENDER_PARTY, senderKeyPair);
             }
 
+            // instrument and amount of transfer
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
-
             BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
+            // perform a transfer from a local party
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
@@ -103,6 +105,7 @@ public class Main {
                     cantonCoinInstrumentId);
 
             /*
+            // perform a transfer from an external party
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
