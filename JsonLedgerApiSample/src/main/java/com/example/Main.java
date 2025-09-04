@@ -50,7 +50,7 @@ public class Main {
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
         Scan scanApi = new Scan(Env.SCAN_PROXY_API_URL, Env.VALIDATOR_TOKEN);
-        TransferInstruction transferInstructionApi = new TransferInstruction(Env.TOKEN_ADMIN_URL);
+        TransferInstruction transferInstructionApi = new TransferInstruction(Env.SCAN_API_URL);
 
         try {
             // confirm environment and inputs
@@ -92,11 +92,6 @@ public class Main {
                     ledgerApi, Env.VALIDATOR_PARTY,
                     transferAmount, cantonCoinInstrumentId);
 
-            List<Holding.ContractId> contractIdsForTransfer = holdingsForTransfer
-                    .stream()
-                    .map((h) -> new Holding.ContractId(h.contractId()))
-                    .toList();
-
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
@@ -105,7 +100,7 @@ public class Main {
                     Env.SENDER_PARTY,
                     transferAmount,
                     cantonCoinInstrumentId,
-                    contractIdsForTransfer);
+                    holdingsForTransfer);
 
             System.exit(0);
         } catch (Exception ex) {
@@ -254,12 +249,12 @@ public class Main {
             String receiver,
             BigDecimal amount,
             InstrumentId instrumentId,
-            List<Holding.ContractId> inputHoldingCids) throws Exception{
+            List<ContractAndId<HoldingView>> holdings) throws Exception{
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
-        TransferFactory_Transfer proposedTransfer = makeProposedTransfer(admin, sender, receiver, amount, instrumentId, requestDate, requestExpiresDate, inputHoldingCids);
+        TransferFactory_Transfer proposedTransfer = makeProposedTransfer(admin, sender, receiver, amount, instrumentId, requestDate, requestExpiresDate, holdings);
         TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = transferInstructionApi.getTransferFactory(proposedTransfer);
         TransferFactory_Transfer sentTransfer = adoptChoiceContext(proposedTransfer, transferFactoryWithChoiceContext);
         List<DisclosedContract> disclosures = transferFactoryWithChoiceContext
@@ -285,13 +280,18 @@ public class Main {
             InstrumentId instrumentId,
             Instant requestedAt,
             Instant executeBefore,
-            List<Holding.ContractId> inputHoldingCids) {
+            List<ContractAndId<HoldingView>> holdings) {
+
+        List<Holding.ContractId> holdingCids = holdings
+                .stream()
+                .map((h) -> new Holding.ContractId(h.contractId()))
+                .toList();
 
         Metadata emptyMetadata = new Metadata(new HashMap<>());
         ChoiceContext noContext = new ChoiceContext(new HashMap<>());
         ExtraArgs blankExtraArgs = new ExtraArgs(noContext, emptyMetadata);
 
-        Transfer transfer = new Transfer(sender, receiver, amount, instrumentId, requestedAt, executeBefore, inputHoldingCids, emptyMetadata);
+        Transfer transfer = new Transfer(sender, receiver, amount, instrumentId, requestedAt, executeBefore, holdingCids, emptyMetadata);
         return new TransferFactory_Transfer(admin, transfer, blankExtraArgs);
     }
 
@@ -306,10 +306,5 @@ public class Main {
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
-    }
-
-    private static void getHoldings(Ledger ledger) throws Exception {
-        long offset = ledger.getLedgerEnd();
-
     }
 }
