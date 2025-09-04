@@ -86,7 +86,7 @@ public class Main {
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
 
             // select the holdings to use for a transfer from the Validator
-            BigDecimal transferAmount = new BigDecimal(500);
+            BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
             List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
                     ledgerApi, Env.VALIDATOR_PARTY,
@@ -249,8 +249,6 @@ public class Main {
             InstrumentId instrumentId,
             List<ContractAndId<HoldingView>> holdings) throws Exception{
 
-        String adminUser = adminParty.split("")[0];
-
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
@@ -265,7 +263,6 @@ public class Main {
                 .toList();
 
         ledgerApi.exercise(
-                adminUser,
                 sender,
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
                 transferFactoryWithChoiceContext.getFactoryId(),
@@ -305,6 +302,7 @@ public class Main {
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
         String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
+        System.out.println("Intermediate choice context JSON: " + choiceJson);
         ChoiceContext choiceContextFromApi = useValueParser(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);

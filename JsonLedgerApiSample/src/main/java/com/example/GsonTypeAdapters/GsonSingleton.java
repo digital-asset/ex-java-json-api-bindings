@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 
 import com.example.client.ledger.model.IdentifierFilter;
+import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 public class GsonSingleton {
 
@@ -18,6 +19,7 @@ public class GsonSingleton {
     public static Gson getInstance() {
         if (sharedInstance == null) {
             sharedInstance = new GsonBuilder()
+                    .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
                     .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
                     .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
                     .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeTypeAdapter())

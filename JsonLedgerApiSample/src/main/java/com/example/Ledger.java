@@ -91,7 +91,6 @@ public class Ledger {
     }
 
     public void exercise(
-            String user,
             String actAs,
             TemplateId templateId,
             String transferFactoryContractId,
@@ -122,7 +121,6 @@ public class Ledger {
         JsCommands commands = new JsCommands()
             .commands(commandsList)
             .commandId(commandId)
-            .userId(user)
             .actAs(actAsParties)
             .disclosedContracts(disclosedContracts);
 
