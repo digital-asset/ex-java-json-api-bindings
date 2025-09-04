@@ -36,7 +36,6 @@ public class Ledger {
             client.setBearerToken(bearerToken);
 
         JSON.setGson(GsonSingleton.getInstance());
-        client.setUserAgent("Java POC");
         this.ledgerApi = new DefaultApi(client);
     }
 
