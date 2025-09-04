@@ -17,11 +17,13 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 A minimal sample of using Java to call the JSON API endpoints (Ledger API, Validator API, etc.)
 The sample illustrates the endpoints, the request payloads, and their responses for the following:
 
+* Programmatically retrieve the Synchronizer id
 * Programmatically retrieve the DSO party
 * Programmatically retrieve the Validator party
 * Onboard an external party
 * Establish transfer pre-approvals for an external party using the [Validator API](https://docs.dev.sync.global/app_dev/validator_api/index.html#external-signing-api)
 * Query for a list of token standard holdings
+* Transfer token standard assets to an external party
 
 This sample demonstrates how to:
 
