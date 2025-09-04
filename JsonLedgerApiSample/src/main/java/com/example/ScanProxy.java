@@ -20,11 +20,11 @@ import com.example.client.scanProxy.invoker.ApiClient;
 import com.example.client.scanProxy.invoker.ApiException;
 import com.example.client.scanProxy.model.*;
 
-public class Scan {
+public class ScanProxy {
 
     private final ScanProxyApi scanProxyApi;
 
-    public Scan(String scanProxyBaseUrl, String bearerToken) {
+    public ScanProxy(String scanProxyBaseUrl, String bearerToken) {
 
         ApiClient client = new ApiClient();
         client.setBasePath(scanProxyBaseUrl);
