@@ -242,17 +242,19 @@ public class Main {
     private static void transferAsset(
             TransferInstruction transferInstructionApi,
             Ledger ledgerApi,
-            String admin,
+            String adminParty,
             String sender,
             String receiver,
             BigDecimal amount,
             InstrumentId instrumentId,
             List<ContractAndId<HoldingView>> holdings) throws Exception{
 
+        String adminUser = adminParty.split("")[0];
+
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
-        TransferFactory_Transfer proposedTransfer = makeProposedTransfer(admin, sender, receiver, amount, instrumentId, requestDate, requestExpiresDate, holdings);
+        TransferFactory_Transfer proposedTransfer = makeProposedTransfer(adminParty, sender, receiver, amount, instrumentId, requestDate, requestExpiresDate, holdings);
         TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = transferInstructionApi.getTransferFactory(proposedTransfer);
         TransferFactory_Transfer sentTransfer = adoptChoiceContext(proposedTransfer, transferFactoryWithChoiceContext);
         List<DisclosedContract> disclosures = transferFactoryWithChoiceContext
@@ -263,6 +265,8 @@ public class Main {
                 .toList();
 
         ledgerApi.exercise(
+                adminUser,
+                sender,
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
                 transferFactoryWithChoiceContext.getFactoryId(),
                 "TransferFactory_Transfer",

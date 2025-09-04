@@ -91,6 +91,8 @@ public class Ledger {
     }
 
     public void exercise(
+            String user,
+            String actAs,
             TemplateId templateId,
             String transferFactoryContractId,
             String choiceName,
@@ -98,6 +100,9 @@ public class Ledger {
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
         String commandId = java.util.UUID.randomUUID().toString();
+
+        List<String> actAsParties = new ArrayList<>();
+        actAsParties.add(actAs);
 
         ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
             .templateId(templateId.getRaw())
@@ -117,6 +122,8 @@ public class Ledger {
         JsCommands commands = new JsCommands()
             .commands(commandsList)
             .commandId(commandId)
+            .userId(user)
+            .actAs(actAsParties)
             .disclosedContracts(disclosedContracts);
 
         JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
