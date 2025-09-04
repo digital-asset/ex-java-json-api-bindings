@@ -17,13 +17,13 @@ package com.example;
 
 import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
+import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.model.DisclosedContract;
 import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.ledger.model.JsContractEntry;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
-import com.google.gson.Gson;
 import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -104,7 +104,7 @@ public class Main {
 
             System.exit(0);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            // System.out.println(ex.getMessage());
             ex.printStackTrace();
             System.exit(1);
         }
@@ -114,8 +114,7 @@ public class Main {
             Object recordPayload,
             JsonDecoder<T> valueParser
     ) {
-        Gson gson = new Gson();
-        String raw = gson.toJson(recordPayload);
+        String raw = GsonSingleton.getInstance().toJson(recordPayload);
         return useValueParser(raw, valueParser);
     }
 
@@ -139,7 +138,6 @@ public class Main {
             TemplateId interfaceId,
             JsonDecoder<T> interfaceValueParser
     ) {
-        Gson gson = new Gson();
         JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
         String holdingContractId = activeContract.getCreatedEvent().getContractId();
         T record = activeContract.getCreatedEvent().getInterfaceViews()
@@ -265,7 +263,7 @@ public class Main {
                 .toList();
 
         ledgerApi.exercise(
-                TemplateId.TRANSFERFACTORY_INTERFACE_ID,
+                TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
                 transferFactoryWithChoiceContext.getFactoryId(),
                 "TransferFactory_Transfer",
                 sentTransfer,
@@ -302,7 +300,8 @@ public class Main {
         Metadata emptyMetadata = new Metadata(new HashMap<>());
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
-        ChoiceContext choiceContextFromApi = convertRecordViaJson(fromApi.getChoiceContext().getChoiceContextData(), ChoiceContext::fromJson);
+        String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
+        ChoiceContext choiceContextFromApi = useValueParser(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);

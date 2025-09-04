@@ -36,6 +36,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.ledger.api</apiPackage>
                                 <modelPackage>com.example.client.ledger.model</modelPackage>
                                 <invokerPackage>com.example.client.ledger.invoker</invokerPackage>
@@ -55,6 +56,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.validator.api</apiPackage>
                                 <modelPackage>com.example.client.validator.model</modelPackage>
                                 <invokerPackage>com.example.client.validator.invoker</invokerPackage>
@@ -75,6 +77,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.scan.api</apiPackage>
                                 <modelPackage>com.example.client.scan.model</modelPackage>
                                 <invokerPackage>com.example.client.scan.invoker</invokerPackage>
@@ -95,6 +98,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.scanProxy.api</apiPackage>
                                 <modelPackage>com.example.client.scanProxy.model</modelPackage>
                                 <invokerPackage>com.example.client.scanProxy.invoker</invokerPackage>
@@ -114,6 +118,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.transferInstruction.api</apiPackage>
                                 <modelPackage>com.example.client.transferInstruction.model</modelPackage>
                                 <invokerPackage>com.example.client.transferInstruction.invoker</invokerPackage>
