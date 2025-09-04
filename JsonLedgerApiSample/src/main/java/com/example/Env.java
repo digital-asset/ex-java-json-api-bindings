@@ -31,6 +31,8 @@ public class Env {
     public static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
     public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
     public static String SENDER_TOKEN = getenv("SENDER_TOKEN", "");
+    public static String SENDER_PUBLIC_KEY = getenv("SENDER_PUBLIC_KEY", "");
+    public static String SENDER_PRIVATE_KEY = getenv("SENDER_PRIVATE_KEY", "");
 
     public static String TRANSFER_AMOUNT = getenv("TRANSFER_AMOUNT", "100");
     public static String SYNCHRONIZER_ID = "";

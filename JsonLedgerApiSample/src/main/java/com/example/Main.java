@@ -194,10 +194,28 @@ public class Main {
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
         System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
         printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
+        System.out.println("SENDER_PUBLIC_KEY: " + Env.SENDER_PUBLIC_KEY);
+        System.out.println("SENDER_PRIVATE_KEY: " + Env.SENDER_PRIVATE_KEY);
 
         if (Env.SCAN_API_URL == null || Env.SCAN_API_URL.isEmpty()) {
             System.err.println("Error: SCAN_API_URL environment variable must be set");
             System.exit(1);
+        }
+
+        if (!Env.SENDER_PARTY.isEmpty() && (Env.SENDER_PRIVATE_KEY.isEmpty() || Env.SENDER_PUBLIC_KEY.isEmpty())) {
+            System.err.println("Error: If SENDER_PARTY is set, then both SENDER_PRIVATE_KEY and SENDER_PUBLIC_KEY must be set.");
+            System.exit(1);
+        }
+
+        if(!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
+            try {
+                KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
+                Keys.printKeyPair(Env.SENDER_PARTY_HINT, keyPair);
+            } catch (Exception ex) {
+                System.err.println("Error: Check that keys are valid and in raw + public, base64 format.");
+                System.err.println(ex.getMessage());
+                System.exit(1);
+            }
         }
     }
 
