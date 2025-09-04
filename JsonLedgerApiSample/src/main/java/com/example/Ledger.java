@@ -15,11 +15,14 @@
 
 package com.example;
 
+import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
+import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +34,8 @@ public class Ledger {
         client.setBasePath(baseUrl);
         if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
+
+        JSON.setGson(GsonSingleton.getInstance());
         this.ledgerApi = new DefaultApi(client);
     }
 
@@ -77,6 +82,53 @@ public class Ledger {
                 .activeAtOffset(offset)
                 .filter(transactionFilter);
 
-        return this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
+        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
+        List<JsGetActiveContractsResponse> response = this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
+        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
+
+        return response;
+    }
+
+    public void exercise(
+            String actAs,
+            TemplateId templateId,
+            String transferFactoryContractId,
+            String choiceName,
+            Object choicePayload,
+            List<DisclosedContract> disclosedContracts
+    ) throws ApiException {
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        List<String> parties = new ArrayList<>();
+        parties.add(actAs);
+
+        ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
+            .templateId(templateId.getRaw())
+            .contractId(transferFactoryContractId)
+            .choice(choiceName)
+            .choiceArgument(choicePayload);
+
+        CommandOneOf3 subtype = new CommandOneOf3()
+            .exerciseCommand(exerciseTransferCommand);
+
+        Command command = new Command();
+        command.setActualInstance(subtype);
+
+        List<Command> commandsList = new ArrayList<>();
+        commandsList.add(command);
+
+        JsCommands commands = new JsCommands()
+            .commands(commandsList)
+            .commandId(commandId)
+            .actAs(parties)
+            .readAs(parties)
+            .disclosedContracts(disclosedContracts);
+
+        JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
+        request.setCommands(commands);
+
+        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
+        JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
+        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
     }
 }

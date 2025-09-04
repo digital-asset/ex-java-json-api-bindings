@@ -17,6 +17,8 @@ package com.example;
 
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
 
-public interface DamlDecoder<T> {
-    T decode(String input) throws JsonLfDecoder.Error;
+import java.io.IOException;
+
+public interface JsonDecoder<T> {
+    T decode(String input) throws IOException;
 }

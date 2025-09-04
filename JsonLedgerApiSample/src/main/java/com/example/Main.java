@@ -17,27 +17,36 @@ package com.example;
 
 import com.daml.ledger.javaapi.data.codegen.DamlRecord;
 import com.daml.ledger.javaapi.data.codegen.json.JsonLfDecoder;
+import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.client.ledger.model.DisclosedContract;
 import com.example.client.ledger.model.JsActiveContract;
 import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.JsInterfaceView;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
-import com.google.gson.Gson;
 import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
+import splice.api.token.metadatav1.ChoiceContext;
+import splice.api.token.metadatav1.ExtraArgs;
+import splice.api.token.metadatav1.Metadata;
+import splice.api.token.transferinstructionv1.Transfer;
+import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.KeyPair;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        setupEnvironment(args);
+        setupEnvironment();
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
@@ -78,45 +87,65 @@ public class Main {
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
 
             // select the holdings to use for a transfer from the Validator
-            BigDecimal transferAmount = new BigDecimal(500);
+            BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
 
-            List<ContractAndId<HoldingView>> holdingsForTransfer = selectHoldingsForTransfer(
-                    ledgerApi, Env.VALIDATOR_PARTY,
-                    transferAmount, cantonCoinInstrumentId);
-
-            // get the "transfer factory"
-            queryForTransferFactory(transferInstructionApi, holdingsForTransfer, transferAmount, cantonCoinInstrumentId);
+            transferAsset(
+                    transferInstructionApi,
+                    ledgerApi,
+                    Env.DSO_PARTY,
+                    Env.VALIDATOR_PARTY,
+                    Env.SENDER_PARTY,
+                    transferAmount,
+                    cantonCoinInstrumentId);
 
             System.exit(0);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    private static <T> T convertRecordViaJson(
+            Object recordPayload,
+            JsonDecoder<T> valueParser
+    ) {
+        String raw = GsonSingleton.getInstance().toJson(recordPayload);
+        return useValueParser(raw, valueParser);
+    }
+
+
+
+    private static <T> T useValueParser(
+            String raw,
+            JsonDecoder<T> valueParser
+    ) {
+        try {
+            return valueParser.decode(raw);
+        } catch (IOException ex) {
+            System.out.println("Cannot decode interface view.");
+            System.exit(1);
+            return null;
         }
     }
 
     private static <T extends DamlRecord<T>> ContractAndId<T> fromInterface(
             JsContractEntry contractEntry,
             TemplateId interfaceId,
-            DamlDecoder<T> interfaceValueParser
+            JsonDecoder<T> interfaceValueParser
     ) {
-        Gson gson = new Gson();
         JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
-        String holdingContractId = activeContract.getCreatedEvent().getContractId();
-        T record = activeContract.getCreatedEvent().getInterfaceViews().stream()
+        String instanceContractId = activeContract.getCreatedEvent().getContractId();
+
+        List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
+        if (interfaceViews == null) return null;
+
+        T record = interfaceViews
+                .stream()
                 .filter(v -> interfaceId.matchesModuleAndTypeName(v.getInterfaceId()))
-                .map(v -> gson.toJson(v.getViewValue()))
-                .map(json -> {
-                    try {
-                        return interfaceValueParser.decode(json);
-                    } catch (JsonLfDecoder.Error ex) {
-                        System.out.println("Cannot decode interface view.");
-                        System.exit(1);
-                        return null;
-                    }
-                })
+                .map(v -> convertRecordViaJson(v.getViewValue(), interfaceValueParser))
                 .findFirst()
                 .orElseThrow();
-        return new ContractAndId<>(holdingContractId, record);
+        return new ContractAndId<>(instanceContractId, record);
     }
 
     private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(Ledger ledgerApi, String party, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
@@ -128,7 +157,7 @@ public class Main {
         List<ContractAndId<HoldingView>> holdingsForTransfer =
                 ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
                         .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
-                        .filter(v -> v.record().instrumentId.equals(instrumentId))
+                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
                             remaining[0] = remaining[0].subtract(c.record().amount);
@@ -148,28 +177,6 @@ public class Main {
         return holdingsForTransfer;
     }
 
-    private static TransferFactoryWithChoiceContext queryForTransferFactory(TransferInstruction transferInstructionApi, List<ContractAndId<HoldingView>> holdingsForTransfer, BigDecimal transferAmount, InstrumentId cantonCoinInstrumentId) throws com.example.client.transferInstruction.invoker.ApiException {
-        printStep("Query for Transfer Factory");
-
-        Instant requestDate = Instant.now();
-        Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
-
-        List<Holding.ContractId> contractIdsForTransfer = holdingsForTransfer
-                .stream()
-                .map((h) -> new Holding.ContractId(h.contractId()))
-                .toList();
-
-        return transferInstructionApi.getTransferFactory(
-                Env.DSO_PARTY,
-                Env.VALIDATOR_PARTY,
-                Env.SENDER_PARTY,
-                transferAmount,
-                cantonCoinInstrumentId,
-                requestDate,
-                requestExpiresDate,
-                contractIdsForTransfer);
-    }
-
     private static void printStep(String step) {
         System.out.println("\n=== " + step + " ===");
     }
@@ -180,7 +187,7 @@ public class Main {
                 (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
-    private static void setupEnvironment(String[] args) {
+    private static void setupEnvironment() {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
@@ -195,6 +202,11 @@ public class Main {
         System.out.println("SENDER_PARTY_HINT: " + Env.SENDER_PARTY_HINT);
         System.out.println("SENDER_PARTY: " + Env.SENDER_PARTY);
         printToken("SENDER_TOKEN", Env.SENDER_TOKEN);
+
+        if (Env.SCAN_API_URL == null || Env.SCAN_API_URL.isEmpty()) {
+            System.err.println("Error: SCAN_API_URL environment variable must be set");
+            System.exit(1);
+        }
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi) throws Exception {
@@ -228,7 +240,77 @@ public class Main {
         CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(externalPartyId);
         PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
         ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
-        SubmitAcceptExternalPartySetupProposalResponse acceptResponse = validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
+        validatorApi.submitAcceptExternalPartySetupProposal(acceptSubmission);
     }
 
+    private static void transferAsset(
+            TransferInstruction transferInstructionApi,
+            Ledger ledgerApi,
+            String adminParty,
+            String sender,
+            String receiver,
+            BigDecimal amount,
+            InstrumentId instrumentId) throws Exception{
+
+        List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, Env.VALIDATOR_PARTY, amount, instrumentId);
+
+        Instant requestDate = Instant.now();
+        Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
+
+        TransferFactory_Transfer proposedTransfer = makeProposedTransfer(adminParty, sender, receiver, amount, instrumentId, requestDate, requestExpiresDate, holdings);
+        TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = transferInstructionApi.getTransferFactory(proposedTransfer);
+        TransferFactory_Transfer sentTransfer = adoptChoiceContext(proposedTransfer, transferFactoryWithChoiceContext);
+        List<DisclosedContract> disclosures = transferFactoryWithChoiceContext
+                .getChoiceContext()
+                .getDisclosedContracts()
+                .stream()
+                .map((d) -> convertRecordViaJson(d, DisclosedContract::fromJson))
+                .toList();
+
+        ledgerApi.exercise(
+                sender,
+                TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
+                transferFactoryWithChoiceContext.getFactoryId(),
+                "TransferFactory_Transfer",
+                sentTransfer,
+                disclosures);
+    }
+
+    private static TransferFactory_Transfer makeProposedTransfer(
+            String admin,
+            String sender,
+            String receiver,
+            BigDecimal amount,
+            InstrumentId instrumentId,
+            Instant requestedAt,
+            Instant executeBefore,
+            List<ContractAndId<HoldingView>> holdings) {
+
+        List<Holding.ContractId> holdingCids = holdings
+                .stream()
+                .map((h) -> new Holding.ContractId(h.contractId()))
+                .toList();
+
+        Metadata emptyMetadata = new Metadata(new HashMap<>());
+        ChoiceContext noContext = new ChoiceContext(new HashMap<>());
+        ExtraArgs blankExtraArgs = new ExtraArgs(noContext, emptyMetadata);
+
+        Transfer transfer = new Transfer(sender, receiver, amount, instrumentId, requestedAt, executeBefore, holdingCids, emptyMetadata);
+        return new TransferFactory_Transfer(admin, transfer, blankExtraArgs);
+    }
+
+    private static TransferFactory_Transfer adoptChoiceContext(
+            TransferFactory_Transfer proposed,
+            TransferFactoryWithChoiceContext fromApi) throws JsonLfDecoder.Error {
+
+        Metadata emptyMetadata = new Metadata(new HashMap<>());
+
+        // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
+        String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
+        System.out.println("Intermediate choice context JSON: " + choiceJson);
+        ChoiceContext choiceContextFromApi = useValueParser(choiceJson, ChoiceContext::fromJson);
+
+        ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
+        return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
+    }
 }
