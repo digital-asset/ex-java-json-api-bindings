@@ -63,7 +63,6 @@
                             </configOptions>
                         </configuration>
                     </execution>
-                    <!--
                     <execution>
                         <id>generate-scan-api-client</id>
                         <goals>
@@ -84,7 +83,6 @@
                             </configOptions>
                         </configuration>
                     </execution>
-                    -->
                     <execution>
                         <id>generate-scan-proxy-api-client</id>
                         <goals>
@@ -122,6 +120,26 @@
                                 <apiPackage>com.example.client.transferInstruction.api</apiPackage>
                                 <modelPackage>com.example.client.transferInstruction.model</modelPackage>
                                 <invokerPackage>com.example.client.transferInstruction.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-token-metadata-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/token-metadata-v1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                                <apiPackage>com.example.client.tokenMetadata.api</apiPackage>
+                                <modelPackage>com.example.client.tokenMetadata.model</modelPackage>
+                                <invokerPackage>com.example.client.tokenMetadata.invoker</invokerPackage>
                             </configOptions>
                         </configuration>
                     </execution>
