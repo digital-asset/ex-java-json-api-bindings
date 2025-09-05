@@ -45,9 +45,9 @@ public class TransferInstruction {
 
         GetFactoryRequest request = new GetFactoryRequest().choiceArguments(choiceToSend);
 
-        System.out.println("\nget transfer factory request: " + request.toJson() + "\n");
+//        System.out.println("\nget transfer factory request: " + request.toJson() + "\n");
         TransferFactoryWithChoiceContext response = this.transferInstructionApi.getTransferFactory(request);
-        System.out.println("\nget transfer factory response: " + response.toJson() + "\n");
+//        System.out.println("\nget transfer factory response: " + response.toJson() + "\n");
 
         return response;
     }
