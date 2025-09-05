@@ -104,6 +104,33 @@ public class Keys {
         }
     }
 
+    private static byte[] concatByteArrays(byte[] lhs, byte[] rhs) {
+        byte[] result = new byte[lhs.length + rhs.length];
+        System.arraycopy(lhs, 0, result, 0, lhs.length);
+        System.arraycopy(rhs, 0, result, lhs.length, lhs.length);
+        return result;
+    }
+
+    private static byte[] uint32ToByteArray(long value) {
+        byte[] buf = new byte[4];
+        buf[0] = (byte)(value >>> 24);
+        buf[1] = (byte)(value >>> 16);
+        buf[2] = (byte)(value >>>  8);
+        buf[3] = (byte)(value >>>  0);
+        return buf;
+    }
+
+    public static byte[] fingerPrintOf(PublicKey key) throws NoSuchAlgorithmException {
+
+        byte[] purposeBytes = uint32ToByteArray(12L);
+        byte[] digestInput = concatByteArrays(purposeBytes, toRawBytes(key));
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] digestOutput = digest.digest(digestInput);
+        byte[] hashPrefix = new byte[] { 0x12, 0x20 };
+        return concatByteArrays(hashPrefix, digestOutput);
+    }
+
     public static byte[] toRawBytes(PrivateKey key) {
         byte[] keyBytes = key.getEncoded();
         if (keyBytes.length != derPrivateKeyHeader.length + 32) {

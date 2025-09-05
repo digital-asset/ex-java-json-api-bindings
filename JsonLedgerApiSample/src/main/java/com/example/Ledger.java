@@ -24,6 +24,7 @@ import com.example.client.ledger.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -152,13 +153,37 @@ public class Ledger {
         return response;
     }
 
-    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, PartySignatures partySignatures) throws ApiException {
+    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String party, KeyPair partyKeyPair) throws NoSuchAlgorithmException {
+
+        String format = partyKeyPair.getPublic().getFormat();
+        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(partyKeyPair.getPublic()));
+        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
+
+        System.out.println("Signature format: " + format);
+        System.out.println("Signature fingerprint: " + fingerprint);
+        System.out.println("Signature signing algorithm: " + signingAlgorithm);
+
+        Signature signature = new Signature()
+                .format("SIGNATURE_FORMAT_CONCAT")
+                .signature(Keys.sign(partyKeyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransaction()))
+                .signedBy(fingerprint)
+                .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+
+        return new SinglePartySignatures()
+                .party(party)
+                .signatures(List.of(signature));
+    }
+
+    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
         String submissionId = "Java JSON API Sample";
 
         DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
 
         DeduplicationPeriod2 useMaximum = new DeduplicationPeriod2();
         useMaximum.setActualInstance(deduplicationPeriodSelection);
+
+        PartySignatures partySignatures = new PartySignatures()
+                .signatures(singlePartySignatures);
 
         JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
                 .userId(Env.LEDGER_USER_ID)

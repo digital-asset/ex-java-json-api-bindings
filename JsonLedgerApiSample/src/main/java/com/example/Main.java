@@ -336,8 +336,9 @@ public class Main {
                     disclosures);
         } else {
             JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(sender, transferCommands, disclosures);
+            SinglePartySignatures signature = ledgerApi.makeSingleSignature(preparedTransaction, sender, senderKeys.get());
 
-            ledgerApi.executeSignedSubmission(preparedTransaction, null);
+            ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
         }
     }
 
@@ -401,14 +402,5 @@ public class Main {
                 choicePayload.transfer.sender,
                 List.of(command),
                 disclosedContracts);
-    }
-
-    private static TransferInstructionResult executeSignedTransfer(
-            Ledger ledgerApi,
-            JsPrepareSubmissionResponse prepareSubmissionResponse,
-            PartySignatures partySignatures
-    ) throws Exception {
-        String result = ledgerApi.executeSignedSubmission(prepareSubmissionResponse, partySignatures);
-        return GsonSingleton.getInstance().fromJson(result, TransferInstructionResult.class);
     }
 }
