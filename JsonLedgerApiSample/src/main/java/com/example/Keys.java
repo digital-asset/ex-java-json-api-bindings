@@ -90,13 +90,24 @@ public class Keys {
         return keyPair;
     }
 
-    public static String sign(PrivateKey privateKey, String inputString) {
+    public static String signHex(PrivateKey privateKey, String inputString) {
+        byte[] inputBytes = Encode.fromHexString(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toHexString(signature);
+    }
+
+    public static String signBase64(PrivateKey privateKey, String inputString) {
+        byte[] inputBytes = Encode.fromBase64String(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toBase64String(signature);
+    }
+
+    private static byte[] signBytes(PrivateKey privateKey, byte[] inputBytes) {
         try {
             Signature signer = Signature.getInstance("Ed25519");
             signer.initSign(privateKey);
-            signer.update(Encode.fromHexString(inputString));
-            byte[] signature = signer.sign();
-            return Encode.toHexString(signature);
+            signer.update(inputBytes);
+            return signer.sign();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.exit(1);

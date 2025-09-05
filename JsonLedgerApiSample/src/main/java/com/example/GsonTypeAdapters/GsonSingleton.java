@@ -15,9 +15,8 @@
 
 package com.example.GsonTypeAdapters;
 
-import com.example.client.ledger.model.Command;
-import com.example.client.ledger.model.IdentifierFilter;
-import com.example.client.ledger.model.JsContractEntry;
+import com.example.client.ledger.model.*;
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import splice.api.token.metadatav1.anyvalue.AV_ContractId;
@@ -40,6 +39,7 @@ public class GsonSingleton {
                     .registerTypeAdapterFactory(new IdentifierFilter.CustomTypeAdapterFactory())
                     .registerTypeAdapterFactory(new JsContractEntry.CustomTypeAdapterFactory())
                     .registerTypeAdapterFactory(new Command.CustomTypeAdapterFactory())
+                    .registerTypeAdapterFactory(new DeduplicationPeriod2.CustomTypeAdapterFactory())
                     .create();
         }
 

@@ -34,6 +34,7 @@ public class Ledger {
     public Ledger(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
+        client.setReadTimeout(60 * 1000); // 60 seconds
         if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
 
@@ -165,7 +166,7 @@ public class Ledger {
 
         Signature signature = new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.sign(partyKeyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransaction()))
+                .signature(Keys.signBase64(partyKeyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
 
@@ -175,7 +176,7 @@ public class Ledger {
     }
 
     public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
-        String submissionId = "Java JSON API Sample";
+        String submissionId = java.util.UUID.randomUUID().toString();
 
         DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
 

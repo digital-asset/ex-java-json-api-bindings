@@ -117,6 +117,13 @@ public class Main {
                     transferAmount,
                     cantonCoinInstrumentId);
 
+            List<ContractAndId<HoldingView>> treasuryHoldings = selectHoldingsForTransfer(ledgerApi, Env.TREASURY_PARTY, transferAmount, cantonCoinInstrumentId);
+            for (int countdown = 10;countdown > 0 && treasuryHoldings == null; countdown--) {
+                System.out.println("Waiting for holdings transfer to complete");
+                Thread.sleep(2 * 1000);
+                treasuryHoldings = selectHoldingsForTransfer(ledgerApi, Env.TREASURY_PARTY, transferAmount, cantonCoinInstrumentId);
+            }
+
             System.exit(0);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -185,8 +192,7 @@ public class Main {
                         })
                         .toList();
         if (remainingReference[0].compareTo(BigDecimal.ZERO) > 0) {
-            System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
-            System.exit(1);
+            return null;
         } else {
             System.out.println("Found sufficient holdings for transfer: ");
             for (ContractAndId<HoldingView> holding : holdingsForTransfer) {
@@ -304,6 +310,10 @@ public class Main {
             InstrumentId instrumentId) throws Exception {
 
         List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, sender, amount, instrumentId);
+        if (holdings == null) {
+            System.err.println("Insufficient holdings to transfer " + amount + " units");
+            System.exit(1);
+        }
 
         printStep("Get transfer factory for " + sender);
 
