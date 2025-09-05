@@ -54,6 +54,11 @@ public class Ledger {
         return response.getOffset();
     }
 
+    public List<String> getUsers() throws ApiException {
+        ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
+        return response.getUsers().stream().map(u -> u.getId()).toList();
+    }
+
     public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String partyId, String interfaceId) throws Exception {
         long offset = getLedgerEnd();
 
@@ -85,9 +90,9 @@ public class Ledger {
                 .activeAtOffset(offset)
                 .filter(transactionFilter);
 
-        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
+//        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
         List<JsGetActiveContractsResponse> response = this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
-        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
+//        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
     }
@@ -128,9 +133,9 @@ public class Ledger {
         JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
         request.setCommands(commands);
 
-        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
+//        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
         JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
-        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
+//        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
     }
 
     public JsPrepareSubmissionResponse prepareSubmissionForSigning(
@@ -148,21 +153,21 @@ public class Ledger {
                 .disclosedContracts(disclosedContracts)
                 .verboseHashing(false);
 
-        System.out.println("\nprepare submission request: " + request.toJson() + "\n");
+//        System.out.println("\nprepare submission request: " + request.toJson() + "\n");
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
-        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
+//        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
         return response;
     }
 
     public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String party, KeyPair partyKeyPair) throws NoSuchAlgorithmException {
 
-        String format = partyKeyPair.getPublic().getFormat();
+//        String format = partyKeyPair.getPublic().getFormat();
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(partyKeyPair.getPublic()));
-        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
+//        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
 
-        System.out.println("Signature format: " + format);
-        System.out.println("Signature fingerprint: " + fingerprint);
-        System.out.println("Signature signing algorithm: " + signingAlgorithm);
+//        System.out.println("Signature format: " + format);
+//        System.out.println("Signature fingerprint: " + fingerprint);
+//        System.out.println("Signature signing algorithm: " + signingAlgorithm);
 
         Signature signature = new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
@@ -194,9 +199,9 @@ public class Ledger {
                 .partySignatures(partySignatures)
                 .deduplicationPeriod(useMaximum);
 
-        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
+//        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
-        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+//        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
 
         return GsonSingleton.getInstance().toJson(response);
     }
