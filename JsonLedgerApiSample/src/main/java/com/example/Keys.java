@@ -118,7 +118,7 @@ public class Keys {
     private static byte[] concatByteArrays(byte[] lhs, byte[] rhs) {
         byte[] result = new byte[lhs.length + rhs.length];
         System.arraycopy(lhs, 0, result, 0, lhs.length);
-        System.arraycopy(rhs, 0, result, lhs.length, lhs.length);
+        System.arraycopy(rhs, 0, result, lhs.length, rhs.length);
         return result;
     }
 
