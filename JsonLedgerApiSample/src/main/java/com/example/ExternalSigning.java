@@ -31,7 +31,7 @@ public class ExternalSigning {
 
             String topologyTx = tx.getTopologyTx();
             String hash = tx.getHash();
-            String signedHash = Keys.sign(privateKey, hash);
+            String signedHash = Keys.signHex(privateKey, hash);
 
             SignedTopologyTx signedTx = new SignedTopologyTx();
             signedTx.setTopologyTx(topologyTx);
@@ -45,7 +45,7 @@ public class ExternalSigning {
         ExternalPartySubmission submission = new ExternalPartySubmission();
         submission.setPartyId(partyId);
         submission.setTransaction(tx);
-        submission.setSignedTxHash(Keys.sign(keyPair.getPrivate(), txHash));
+        submission.setSignedTxHash(Keys.signHex(keyPair.getPrivate(), txHash));
         submission.setPublicKey(Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
         return submission;
     }

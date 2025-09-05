@@ -59,8 +59,8 @@ public class Validator {
         request.setPartyHint(partyHint);
         request.setPublicKey(publicKeyHex);
         GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
-        System.out.println("\nNew party: " + response.getPartyId());
-        System.out.println("\ngenerate response: " + response.toJson());
+//        System.out.println("\nNew party: " + response.getPartyId());
+//        System.out.println("\ngenerate response: " + response.toJson());
         return response.getTopologyTxs();
     }
 
@@ -69,9 +69,9 @@ public class Validator {
         SubmitExternalPartyTopologyRequest request = new SubmitExternalPartyTopologyRequest();
         request.setSignedTopologyTxs(signedTxs);
         request.setPublicKey(publicKeyHex);
-        System.out.println("\nsubmit onboarding request: " + request.toJson() + "\n");
+//        System.out.println("\nsubmit onboarding request: " + request.toJson() + "\n");
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
-        System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
+//        System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
         return response.getPartyId();
     }
 
@@ -79,9 +79,9 @@ public class Validator {
         CreateExternalPartySetupProposalRequest request = new CreateExternalPartySetupProposalRequest();
         request.setUserPartyId(partyId);
 
-        System.out.println("\ncreate external party setup proposal request: " + request.toJson() + "\n");
+//        System.out.println("\ncreate external party setup proposal request: " + request.toJson() + "\n");
         CreateExternalPartySetupProposalResponse response = this.validatorApi.createExternalPartySetupProposal(request);
-        System.out.println("\ncreate external party setup proposal response: " + response.toJson() + "\n");
+//        System.out.println("\ncreate external party setup proposal response: " + response.toJson() + "\n");
         return response;
     }
 
@@ -96,9 +96,9 @@ public class Validator {
         SubmitAcceptExternalPartySetupProposalRequest request = new SubmitAcceptExternalPartySetupProposalRequest();
         request.setSubmission(acceptSubmission);
 
-        System.out.println("\nsubmit acceptance of external party setup proposal request: " + request.toJson() + "\n");
+//        System.out.println("\nsubmit acceptance of external party setup proposal request: " + request.toJson() + "\n");
         SubmitAcceptExternalPartySetupProposalResponse response = this.validatorApi.submitAcceptExternalPartySetupProposal(request);
-        System.out.println("\nsubmit acceptance of external party setup proposal response: " + request.toJson() + "\n");
+//        System.out.println("\nsubmit acceptance of external party setup proposal response: " + request.toJson() + "\n");
         return response;
     }
 }

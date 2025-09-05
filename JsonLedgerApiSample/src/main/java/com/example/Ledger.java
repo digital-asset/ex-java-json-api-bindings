@@ -21,8 +21,10 @@ import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +34,7 @@ public class Ledger {
     public Ledger(String baseUrl, String bearerToken) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
+        client.setReadTimeout(60 * 1000); // 60 seconds
         if (!bearerToken.isEmpty())
             client.setBearerToken(bearerToken);
 
@@ -49,6 +52,11 @@ public class Ledger {
     public Long getLedgerEnd() throws ApiException {
         GetLedgerEndResponse response = this.ledgerApi.getV2StateLedgerEnd();
         return response.getOffset();
+    }
+
+    public List<String> getUsers() throws ApiException {
+        ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
+        return response.getUsers().stream().map(u -> u.getId()).toList();
     }
 
     public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String partyId, String interfaceId) throws Exception {
@@ -82,26 +90,15 @@ public class Ledger {
                 .activeAtOffset(offset)
                 .filter(transactionFilter);
 
-        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
+//        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
         List<JsGetActiveContractsResponse> response = this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
-        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
+//        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
     }
 
-    public void exercise(
-            String actAs,
-            TemplateId templateId,
-            String transferFactoryContractId,
-            String choiceName,
-            Object choicePayload,
-            List<DisclosedContract> disclosedContracts
-    ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
-
-        List<String> parties = new ArrayList<>();
-        parties.add(actAs);
-
+    @NotNull
+    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String transferFactoryContractId, Object choicePayload) {
         ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
                 .templateId(templateId.getRaw())
                 .contractId(transferFactoryContractId)
@@ -114,8 +111,17 @@ public class Ledger {
         Command command = new Command();
         command.setActualInstance(subtype);
 
-        List<Command> commandsList = new ArrayList<>();
-        commandsList.add(command);
+        return List.of(command);
+    }
+
+    public void submitAndWaitForCommands(
+            String actAs,
+            List<Command> commandsList,
+            List<DisclosedContract> disclosedContracts
+    ) throws ApiException {
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        List<String> parties = List.of(actAs);
 
         JsCommands commands = new JsCommands()
                 .commands(commandsList)
@@ -127,9 +133,9 @@ public class Ledger {
         JsSubmitAndWaitForTransactionRequest request = new JsSubmitAndWaitForTransactionRequest();
         request.setCommands(commands);
 
-        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
+//        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
         JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
-        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
+//        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
     }
 
     public JsPrepareSubmissionResponse prepareSubmissionForSigning(
@@ -137,34 +143,66 @@ public class Ledger {
             List<Command> commands,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String userId = "None"; // replaced with token sub: field
         String commandId = java.util.UUID.randomUUID().toString();
         JsPrepareSubmissionRequest request = new JsPrepareSubmissionRequest()
                 .synchronizerId(Env.SYNCHRONIZER_ID)
-                .userId(userId)
+                .userId(Env.LEDGER_USER_ID)
                 .actAs(List.of(partyId))
                 .commandId(commandId)
                 .commands(commands)
                 .disclosedContracts(disclosedContracts)
                 .verboseHashing(false);
 
+//        System.out.println("\nprepare submission request: " + request.toJson() + "\n");
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
+//        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
         return response;
     }
 
-    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, PartySignatures partySignatures) throws ApiException {
-        String userId = "None"; // replaced with token sub: field
-        String submissionId = "Java JSON API Sample";
+    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String party, KeyPair partyKeyPair) throws NoSuchAlgorithmException {
+
+//        String format = partyKeyPair.getPublic().getFormat();
+        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(partyKeyPair.getPublic()));
+//        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
+
+//        System.out.println("Signature format: " + format);
+//        System.out.println("Signature fingerprint: " + fingerprint);
+//        System.out.println("Signature signing algorithm: " + signingAlgorithm);
+
+        Signature signature = new Signature()
+                .format("SIGNATURE_FORMAT_CONCAT")
+                .signature(Keys.signBase64(partyKeyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
+                .signedBy(fingerprint)
+                .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+
+        return new SinglePartySignatures()
+                .party(party)
+                .signatures(List.of(signature));
+    }
+
+    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
+        String submissionId = java.util.UUID.randomUUID().toString();
+
+        DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
+
         DeduplicationPeriod2 useMaximum = new DeduplicationPeriod2();
-        useMaximum.setActualInstance(new DeduplicationPeriod2().getDeduplicationPeriod2OneOf2().getEmpty());
+        useMaximum.setActualInstance(deduplicationPeriodSelection);
+
+        PartySignatures partySignatures = new PartySignatures()
+                .signatures(singlePartySignatures);
+
         JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
-                .userId(userId)
+                .userId(Env.LEDGER_USER_ID)
                 .submissionId(submissionId)
                 .preparedTransaction(preparedSubmission.getPreparedTransaction())
                 .hashingSchemeVersion(preparedSubmission.getHashingSchemeVersion())
                 .partySignatures(partySignatures)
                 .deduplicationPeriod(useMaximum);
+
+//        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
+//        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+
         return GsonSingleton.getInstance().toJson(response);
     }
 }

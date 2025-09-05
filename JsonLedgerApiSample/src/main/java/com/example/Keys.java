@@ -58,7 +58,7 @@ public class Keys {
 
     public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) throws Exception {
 
-        System.out.println("==================== KEY FOR " + relatedPartyHint + " ============");
+        System.out.println("\n==================== KEY FOR " + relatedPartyHint + " ============");
         System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
         System.out.println("              format: " + keyPair.getPublic().getFormat());
         System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
@@ -90,18 +90,56 @@ public class Keys {
         return keyPair;
     }
 
-    public static String sign(PrivateKey privateKey, String inputString) {
+    public static String signHex(PrivateKey privateKey, String inputString) {
+        byte[] inputBytes = Encode.fromHexString(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toHexString(signature);
+    }
+
+    public static String signBase64(PrivateKey privateKey, String inputString) {
+        byte[] inputBytes = Encode.fromBase64String(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toBase64String(signature);
+    }
+
+    private static byte[] signBytes(PrivateKey privateKey, byte[] inputBytes) {
         try {
             Signature signer = Signature.getInstance("Ed25519");
             signer.initSign(privateKey);
-            signer.update(Encode.fromHexString(inputString));
-            byte[] signature = signer.sign();
-            return Encode.toHexString(signature);
+            signer.update(inputBytes);
+            return signer.sign();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.exit(1);
             return null;
         }
+    }
+
+    private static byte[] concatByteArrays(byte[] lhs, byte[] rhs) {
+        byte[] result = new byte[lhs.length + rhs.length];
+        System.arraycopy(lhs, 0, result, 0, lhs.length);
+        System.arraycopy(rhs, 0, result, lhs.length, rhs.length);
+        return result;
+    }
+
+    private static byte[] uint32ToByteArray(long value) {
+        byte[] buf = new byte[4];
+        buf[0] = (byte)(value >>> 24);
+        buf[1] = (byte)(value >>> 16);
+        buf[2] = (byte)(value >>>  8);
+        buf[3] = (byte)(value >>>  0);
+        return buf;
+    }
+
+    public static byte[] fingerPrintOf(PublicKey key) throws NoSuchAlgorithmException {
+
+        byte[] purposeBytes = uint32ToByteArray(12L);
+        byte[] digestInput = concatByteArrays(purposeBytes, toRawBytes(key));
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] digestOutput = digest.digest(digestInput);
+        byte[] hashPrefix = new byte[] { 0x12, 0x20 };
+        return concatByteArrays(hashPrefix, digestOutput);
     }
 
     public static byte[] toRawBytes(PrivateKey key) {

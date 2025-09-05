@@ -31,7 +31,6 @@ import splice.api.token.metadatav1.ExtraArgs;
 import splice.api.token.metadatav1.Metadata;
 import splice.api.token.transferinstructionv1.Transfer;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
-import splice.api.token.transferinstructionv1.TransferInstructionResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -41,12 +40,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class Main {
 
+    private static final BigDecimal estimatedFeesMultiplier = new BigDecimal(0.1);
+
     public static void main(String[] args) {
 
-        setupEnvironment();
+        validateEnvironment();
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
@@ -74,6 +76,7 @@ public class Main {
             KeyPair senderKeyPair = null;
             if (Env.SENDER_PUBLIC_KEY.isEmpty() || Env.SENDER_PRIVATE_KEY.isEmpty()) {
                 senderKeyPair = Keys.generate();
+                Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PUBLIC_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPublic()));
                 Env.SENDER_PRIVATE_KEY = Encode.toBase64String(Keys.toRawBytes(senderKeyPair.getPrivate(), senderKeyPair.getPublic()));
             } else {
@@ -82,7 +85,6 @@ public class Main {
 
             // onboard the sender, if necessary
             if (Env.SENDER_PARTY.isEmpty()) {
-                Keys.printKeyPair(Env.SENDER_PARTY_HINT, senderKeyPair);
                 Env.SENDER_PARTY = onboardNewUser(Env.SENDER_PARTY_HINT, validatorApi, senderKeyPair);
 
                 // preapprove Canton Coin transfers
@@ -91,7 +93,14 @@ public class Main {
 
             // instrument and amount of transfer
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
-            BigDecimal transferAmount = new BigDecimal(Env.TRANSFER_AMOUNT);
+            printTotalHoldings(ledgerApi, cantonCoinInstrumentId);
+
+            // calculate transfer amount
+            BigDecimal transferAmount1 = new BigDecimal(Env.TRANSFER_AMOUNT);
+            BigDecimal estimatedFees = transferAmount1.multiply(estimatedFeesMultiplier);
+            if(getTotalHoldings(ledgerApi, Env.SENDER_PARTY, cantonCoinInstrumentId).subtract(estimatedFees).compareTo(BigDecimal.ZERO) < 0) {
+                transferAmount1 = transferAmount1.add(estimatedFees);
+            }
 
             // perform a transfer from a local party
             transferAsset(
@@ -101,27 +110,58 @@ public class Main {
                     Env.VALIDATOR_PARTY,
                     Optional.empty(),
                     Env.SENDER_PARTY,
-                    transferAmount,
+                    transferAmount1,
                     cantonCoinInstrumentId);
 
-            /*
+            printTotalHoldings(ledgerApi, cantonCoinInstrumentId);
+
+            // calculate transfer amount
+            BigDecimal transferAmount2 = new BigDecimal(Env.TRANSFER_AMOUNT);
+
             // perform a transfer from an external party
+            BigDecimal priorBalance = getTotalHoldings(ledgerApi, Env.TREASURY_PARTY, cantonCoinInstrumentId);
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
                     Env.DSO_PARTY,
                     Env.SENDER_PARTY,
                     Optional.of(senderKeyPair),
-                    Env.SENDER_PARTY,
-                    transferAmount,
+                    Env.TREASURY_PARTY,
+                    transferAmount2,
                     cantonCoinInstrumentId);
-            */
 
+            // wait for the treasury party to receive the transfer
+            BigDecimal updatedBalance = priorBalance;
+            printStep("Waiting for holdings transfer to complete");
+            do {
+                System.out.println("Waiting...");
+                Thread.sleep(2 * 1000);
+                updatedBalance = getTotalHoldings(ledgerApi, Env.TREASURY_PARTY, cantonCoinInstrumentId);
+            } while(updatedBalance.compareTo(priorBalance) == 0);
+
+            printStep("Success!");
+            printTotalHoldings(ledgerApi, cantonCoinInstrumentId);
             System.exit(0);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private static void printTotalHoldings(Ledger ledgerApi, InstrumentId cantonCoinInstrumentId) throws Exception {
+        BiConsumer<String, String> printTotalHoldingsInternal = (name, party) -> {
+            try {
+                BigDecimal totalHoldings = getTotalHoldings(ledgerApi, party, cantonCoinInstrumentId);
+                System.out.println(name + " has " + totalHoldings + " " + cantonCoinInstrumentId.id);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.exit(1);
+            }
+        };
+
+        printTotalHoldingsInternal.accept(Env.LEDGER_USER_ID, Env.VALIDATOR_PARTY);
+        printTotalHoldingsInternal.accept(Env.SENDER_PARTY_HINT, Env.SENDER_PARTY);
+        printTotalHoldingsInternal.accept(Env.TREASURY_PARTY_HINT, Env.TREASURY_PARTY);
     }
 
     private static <T> T convertRecordViaJson(
@@ -166,29 +206,46 @@ public class Main {
         return new ContractAndId<>(instanceContractId, record);
     }
 
+    private static BigDecimal getTotalHoldings(Ledger ledgerApi, String party, InstrumentId instrumentId) throws Exception {
+        return queryForHoldings(ledgerApi, party, instrumentId).stream()
+                .map(h -> h.record().amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static List<ContractAndId<HoldingView>> queryForHoldings(Ledger ledgerApi, String party, InstrumentId instrumentId) throws Exception {
+//        printStep("Querying for holdings");
+//        System.out.println("Querying for holdings of " + instrumentId.id + " by " + party);
+
+        return ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+                        .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
+                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
+                        .toList();
+    }
+
     private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(Ledger ledgerApi, String party, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
 
         printStep("Selecting holdings");
         System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + party);
 
-        final BigDecimal[] remaining = {transferAmount};
+        final BigDecimal[] remainingReference = {transferAmount};
+
         List<ContractAndId<HoldingView>> holdingsForTransfer =
-                ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
-                        .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
-                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
-                        .filter(v -> v.record().lock.isEmpty())
+                queryForHoldings(ledgerApi, party, instrumentId).stream()
+                        .filter(h -> h.record().lock.isEmpty())
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
-                            remaining[0] = remaining[0].subtract(c.record().amount);
-                            return remaining[0].compareTo(BigDecimal.ZERO) < 0;
+                            BigDecimal previousTotal = remainingReference[0];
+                            remainingReference[0] = previousTotal.subtract(c.record().amount);
+                            return previousTotal.compareTo(BigDecimal.ZERO) > 0;
                         })
                         .toList();
-        if (remaining[0].compareTo(BigDecimal.ZERO) > 0) {
-            System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
-            System.exit(1);
+
+        if (remainingReference[0].compareTo(BigDecimal.ZERO) > 0) {
+            return null;
         } else {
+            System.out.println("Found sufficient holdings for transfer: ");
             for (ContractAndId<HoldingView> holding : holdingsForTransfer) {
-                System.out.println("Holding views: " + holding.record().toJson());
+                System.out.println("- " + holding.record().amount + " " + holding.record().instrumentId.id);
             }
         }
         return holdingsForTransfer;
@@ -204,12 +261,13 @@ public class Main {
                 (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
-    private static void setupEnvironment() {
+    private static void validateEnvironment() {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
         System.out.println("SCAN_PROXY_API_URL: " + Env.SCAN_PROXY_API_URL);
         System.out.println();
+        System.out.println("LEDGER_USER_ID: " + Env.LEDGER_USER_ID);
         printToken("VALIDATOR_TOKEN", Env.VALIDATOR_TOKEN);
         System.out.println();
         System.out.println("TREASURY_PARTY_HINT: " + Env.TREASURY_PARTY_HINT);
@@ -234,14 +292,29 @@ public class Main {
 
         if (!Env.SENDER_PUBLIC_KEY.isEmpty() || !Env.SENDER_PRIVATE_KEY.isEmpty()) {
             try {
-                KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
-                Keys.printKeyPair(Env.SENDER_PARTY_HINT, keyPair);
+                Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
             } catch (Exception ex) {
                 System.err.println("Error: Check that keys are valid and in raw + public, base64 format.");
                 System.err.println(ex.getMessage());
                 System.exit(1);
             }
         }
+
+        if (!Env.SENDER_PUBLIC_KEY.isEmpty() && !Env.SENDER_PRIVATE_KEY.isEmpty()) {
+            try {
+                KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
+                String calculatedFingerPrint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
+                String partyIdFingerPrint = Env.SENDER_PARTY.split("::")[1];
+                if(!calculatedFingerPrint.equals(partyIdFingerPrint)) {
+                    throw new IllegalArgumentException("The calculated finger print " + calculatedFingerPrint + " does not match the party id.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Error: Check that keys are valid and in raw + public, base64 format.");
+                System.err.println(ex.getMessage());
+                System.exit(1);
+            }
+        }
+
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi, Scan scanApi, ScanProxy scanProxyApi, TokenMetadata tokenMetadataApi) throws Exception {
@@ -266,6 +339,7 @@ public class Main {
         printStep("Confirm authentication");
         // these require a valid Validator token
         System.out.println("Ledger end: " + ledgerApi.getLedgerEnd());
+        System.out.println("Participant users: " + ledgerApi.getUsers());
         System.out.println("Validator users: " + validatorApi.listUsers());
     }
 
@@ -302,8 +376,12 @@ public class Main {
             InstrumentId instrumentId) throws Exception {
 
         List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, sender, amount, instrumentId);
+        if (holdings == null) {
+            System.err.println("Insufficient holdings to transfer " + amount + " units");
+            System.exit(1);
+        }
 
-        printStep("Get transfer factory");
+        printStep("Get transfer factory for " + sender);
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
@@ -317,16 +395,31 @@ public class Main {
                 .stream()
                 .map((d) -> convertRecordViaJson(d, DisclosedContract::fromJson))
                 .toList();
+        printToken("Transfer factory: ", transferFactoryWithChoiceContext.getFactoryId());
 
         printStep("Transfer from " + sender + " to " + receiver);
 
-        ledgerApi.exercise(
-                sender,
+        List<Command> transferCommands = Ledger.makeExerciseCommand(
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
-                transferFactoryWithChoiceContext.getFactoryId(),
                 "TransferFactory_Transfer",
-                sentTransfer,
-                disclosures);
+                transferFactoryWithChoiceContext.getFactoryId(),
+                sentTransfer
+        );
+
+        if (senderKeys.isEmpty()) {
+            System.out.println("Transferring from local party");
+            ledgerApi.submitAndWaitForCommands(
+                    sender,
+                    transferCommands,
+                    disclosures);
+        } else {
+            System.out.println("Transferring from external party");
+            JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(sender, transferCommands, disclosures);
+            SinglePartySignatures signature = ledgerApi.makeSingleSignature(preparedTransaction, sender, senderKeys.get());
+
+            ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
+        }
+        System.out.println("Transfer complete");
     }
 
     private static TransferFactory_Transfer makeProposedTransfer(
@@ -360,7 +453,7 @@ public class Main {
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
         String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
-        System.out.println("Intermediate choice context JSON: " + choiceJson);
+//        System.out.println("Intermediate choice context JSON: " + choiceJson);
         ChoiceContext choiceContextFromApi = useValueParser(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
@@ -389,14 +482,5 @@ public class Main {
                 choicePayload.transfer.sender,
                 List.of(command),
                 disclosedContracts);
-    }
-
-    private static TransferInstructionResult executeSignedTransfer(
-            Ledger ledgerApi,
-            JsPrepareSubmissionResponse prepareSubmissionResponse,
-            PartySignatures partySignatures
-    ) throws Exception {
-        String result = ledgerApi.executeSignedSubmission(prepareSubmissionResponse, partySignatures);
-        return GsonSingleton.getInstance().fromJson(result, TransferInstructionResult.class);
     }
 }
