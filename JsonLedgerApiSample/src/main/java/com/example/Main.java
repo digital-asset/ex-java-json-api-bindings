@@ -31,7 +31,6 @@ import splice.api.token.metadatav1.ExtraArgs;
 import splice.api.token.metadatav1.Metadata;
 import splice.api.token.transferinstructionv1.Transfer;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
-import splice.api.token.transferinstructionv1.TransferInstructionResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -48,7 +47,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        setupEnvironment();
+        validateEnvironment();
 
         Ledger ledgerApi = new Ledger(Env.LEDGER_API_URL, Env.VALIDATOR_TOKEN);
         Validator validatorApi = new Validator(Env.VALIDATOR_API_URL, Env.VALIDATOR_TOKEN);
@@ -206,7 +205,7 @@ public class Main {
                 (token.trim().isEmpty() ? "<empty>" : token.substring(0, 10) + "..." + token.substring(length - 11, length - 1)));
     }
 
-    private static void setupEnvironment() {
+    private static void validateEnvironment() {
         printStep("Print environment variables");
         System.out.println("LEDGER_API_URL: " + Env.LEDGER_API_URL);
         System.out.println("VALIDATOR_API_URL: " + Env.VALIDATOR_API_URL);
@@ -244,6 +243,22 @@ public class Main {
                 System.exit(1);
             }
         }
+
+        if (!Env.SENDER_PUBLIC_KEY.isEmpty() && !Env.SENDER_PRIVATE_KEY.isEmpty()) {
+            try {
+                KeyPair keyPair = Keys.createFromRawBase64(Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
+                String calculatedFingerPrint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
+                String partyIdFingerPrint = Env.SENDER_PARTY.split("::")[1];
+                if(!calculatedFingerPrint.equals(partyIdFingerPrint)) {
+                    throw new IllegalArgumentException("The calculated finger print " + calculatedFingerPrint + " does not match the party id.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Error: Check that keys are valid and in raw + public, base64 format.");
+                System.err.println(ex.getMessage());
+                System.exit(1);
+            }
+        }
+
     }
 
     private static void confirmConnectivity(Ledger ledgerApi, Validator validatorApi, Scan scanApi, ScanProxy scanProxyApi, TokenMetadata tokenMetadataApi) throws Exception {
