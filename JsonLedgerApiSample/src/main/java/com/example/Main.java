@@ -105,7 +105,9 @@ public class Main {
                     transferAmount.multiply(nominalRatio),
                     cantonCoinInstrumentId);
 
+
             // perform a transfer from an external party
+            BigDecimal priorBalance = getTotalHoldings(ledgerApi, Env.TREASURY_PARTY, cantonCoinInstrumentId);
             transferAsset(
                     transferInstructionApi,
                     ledgerApi,
@@ -116,13 +118,15 @@ public class Main {
                     transferAmount,
                     cantonCoinInstrumentId);
 
-            List<ContractAndId<HoldingView>> treasuryHoldings = selectHoldingsForTransfer(ledgerApi, Env.TREASURY_PARTY, transferAmount, cantonCoinInstrumentId);
-            for (int countdown = 10;countdown > 0 && treasuryHoldings == null; countdown--) {
-                System.out.println("Waiting for holdings transfer to complete");
+            // wait for the treasury party to receive the transfer
+            BigDecimal updatedBalance = priorBalance;
+            do {
+                printStep("Waiting for holdings transfer to complete");
                 Thread.sleep(2 * 1000);
-                treasuryHoldings = selectHoldingsForTransfer(ledgerApi, Env.TREASURY_PARTY, transferAmount, cantonCoinInstrumentId);
-            }
+                updatedBalance = getTotalHoldings(ledgerApi, Env.TREASURY_PARTY, cantonCoinInstrumentId);
+            } while(updatedBalance.compareTo(priorBalance) == 0);
 
+            printStep("Success!");
             System.exit(0);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -172,17 +176,32 @@ public class Main {
         return new ContractAndId<>(instanceContractId, record);
     }
 
+    private static BigDecimal getTotalHoldings(Ledger ledgerApi, String party, InstrumentId instrumentId) throws Exception {
+        return queryForHoldings(ledgerApi, party, instrumentId).stream()
+                .map(h -> h.record().amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static List<ContractAndId<HoldingView>> queryForHoldings(Ledger ledgerApi, String party, InstrumentId instrumentId) throws Exception {
+        printStep("Querying for holdings");
+        System.out.println("Querying for holdings of " + instrumentId.id + " by " + party);
+
+        return ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+                        .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
+                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
+                        .toList();
+    }
+
     private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(Ledger ledgerApi, String party, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
 
         printStep("Selecting holdings");
         System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + party);
 
         final BigDecimal[] remainingReference = {transferAmount.multiply(nominalRatio)};
+
         List<ContractAndId<HoldingView>> holdingsForTransfer =
-                ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
-                        .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
-                        .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
-                        .filter(v -> v.record().lock.isEmpty())
+                queryForHoldings(ledgerApi, party, instrumentId).stream()
+                        .filter(h -> h.record().lock.isEmpty())
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
                             BigDecimal previousTotal = remainingReference[0];
@@ -190,6 +209,7 @@ public class Main {
                             return previousTotal.compareTo(BigDecimal.ZERO) > 0;
                         })
                         .toList();
+
         if (remainingReference[0].compareTo(BigDecimal.ZERO) > 0) {
             return null;
         } else {
