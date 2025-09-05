@@ -58,7 +58,7 @@ public class Keys {
 
     public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) throws Exception {
 
-        System.out.println("==================== KEY FOR " + relatedPartyHint + " ============");
+        System.out.println("\n==================== KEY FOR " + relatedPartyHint + " ============");
         System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
         System.out.println("              format: " + keyPair.getPublic().getFormat());
         System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
