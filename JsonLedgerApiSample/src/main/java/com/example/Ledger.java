@@ -23,7 +23,7 @@ import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
 
@@ -136,34 +136,42 @@ public class Ledger {
             List<Command> commands,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String userId = "None"; // replaced with token sub: field
         String commandId = java.util.UUID.randomUUID().toString();
         JsPrepareSubmissionRequest request = new JsPrepareSubmissionRequest()
                 .synchronizerId(Env.SYNCHRONIZER_ID)
-                .userId(userId)
+                .userId(Env.LEDGER_USER_ID)
                 .actAs(List.of(partyId))
                 .commandId(commandId)
                 .commands(commands)
                 .disclosedContracts(disclosedContracts)
                 .verboseHashing(false);
 
+        System.out.println("\nprepare submission request: " + request.toJson() + "\n");
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
+        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
         return response;
     }
 
     public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, PartySignatures partySignatures) throws ApiException {
-        String userId = "None"; // replaced with token sub: field
         String submissionId = "Java JSON API Sample";
+
+        DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
+
         DeduplicationPeriod2 useMaximum = new DeduplicationPeriod2();
-        useMaximum.setActualInstance(new DeduplicationPeriod2().getDeduplicationPeriod2OneOf2().getEmpty());
+        useMaximum.setActualInstance(deduplicationPeriodSelection);
+
         JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
-                .userId(userId)
+                .userId(Env.LEDGER_USER_ID)
                 .submissionId(submissionId)
                 .preparedTransaction(preparedSubmission.getPreparedTransaction())
                 .hashingSchemeVersion(preparedSubmission.getHashingSchemeVersion())
                 .partySignatures(partySignatures)
                 .deduplicationPeriod(useMaximum);
+
+        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
+        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+
         return GsonSingleton.getInstance().toJson(response);
     }
 }

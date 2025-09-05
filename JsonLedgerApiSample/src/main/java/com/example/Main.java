@@ -44,6 +44,8 @@ import java.util.Optional;
 
 public class Main {
 
+    private static final BigDecimal nominalRatio = new BigDecimal("1.1");
+
     public static void main(String[] args) {
 
         setupEnvironment();
@@ -101,10 +103,9 @@ public class Main {
                     Env.VALIDATOR_PARTY,
                     Optional.empty(),
                     Env.SENDER_PARTY,
-                    transferAmount,
+                    transferAmount.multiply(nominalRatio),
                     cantonCoinInstrumentId);
 
-            /*
             // perform a transfer from an external party
             transferAsset(
                     transferInstructionApi,
@@ -112,10 +113,9 @@ public class Main {
                     Env.DSO_PARTY,
                     Env.SENDER_PARTY,
                     Optional.of(senderKeyPair),
-                    Env.SENDER_PARTY,
+                    Env.TREASURY_PARTY,
                     transferAmount,
                     cantonCoinInstrumentId);
-            */
 
             System.exit(0);
         } catch (Exception ex) {
@@ -171,7 +171,7 @@ public class Main {
         printStep("Selecting holdings");
         System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + party);
 
-        final BigDecimal[] remaining = {transferAmount};
+        final BigDecimal[] remainingReference = {transferAmount.multiply(nominalRatio)};
         List<ContractAndId<HoldingView>> holdingsForTransfer =
                 ledgerApi.getActiveContractsForInterface(party, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
                         .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
@@ -179,14 +179,16 @@ public class Main {
                         .filter(v -> v.record().lock.isEmpty())
                         .sorted(Comparator.comparing(c -> c.record().amount))
                         .takeWhile(c -> {
-                            remaining[0] = remaining[0].subtract(c.record().amount);
-                            return remaining[0].compareTo(BigDecimal.ZERO) < 0;
+                            BigDecimal previousTotal = remainingReference[0];
+                            remainingReference[0] = previousTotal.subtract(c.record().amount);
+                            return previousTotal.compareTo(BigDecimal.ZERO) > 0;
                         })
                         .toList();
-        if (remaining[0].compareTo(BigDecimal.ZERO) > 0) {
+        if (remainingReference[0].compareTo(BigDecimal.ZERO) > 0) {
             System.out.println("Insufficient holdings to transfer " + transferAmount + " units");
             System.exit(1);
         } else {
+            System.out.println("Found sufficient holdings for transfer: ");
             for (ContractAndId<HoldingView> holding : holdingsForTransfer) {
                 System.out.println("Holding views: " + holding.record().toJson());
             }
@@ -303,7 +305,7 @@ public class Main {
 
         List<ContractAndId<HoldingView>> holdings = selectHoldingsForTransfer(ledgerApi, sender, amount, instrumentId);
 
-        printStep("Get transfer factory");
+        printStep("Get transfer factory for " + sender);
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
@@ -320,17 +322,23 @@ public class Main {
 
         printStep("Transfer from " + sender + " to " + receiver);
 
-        List<Command> exerciseCommand = Ledger.makeExerciseCommand(
+        List<Command> transferCommands = Ledger.makeExerciseCommand(
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
                 "TransferFactory_Transfer",
                 transferFactoryWithChoiceContext.getFactoryId(),
                 sentTransfer
         );
 
-        ledgerApi.submitAndWaitForCommands(
-                sender,
-                exerciseCommand,
-                disclosures);
+        if (senderKeys.isEmpty()) {
+            ledgerApi.submitAndWaitForCommands(
+                    sender,
+                    transferCommands,
+                    disclosures);
+        } else {
+            JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(sender, transferCommands, disclosures);
+
+            ledgerApi.executeSignedSubmission(preparedTransaction, null);
+        }
     }
 
     private static TransferFactory_Transfer makeProposedTransfer(

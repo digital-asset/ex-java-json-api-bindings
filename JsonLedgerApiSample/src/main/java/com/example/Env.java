@@ -34,6 +34,7 @@ public class Env {
     public static String SENDER_PUBLIC_KEY = getenv("SENDER_PUBLIC_KEY", "");
     public static String SENDER_PRIVATE_KEY = getenv("SENDER_PRIVATE_KEY", "");
 
+    public static String LEDGER_USER_ID = getenv("LEDGER_USER_ID", "");
     public static String TRANSFER_AMOUNT = getenv("TRANSFER_AMOUNT", "100");
     public static String SYNCHRONIZER_ID = "";
     public static String DSO_PARTY = "";
