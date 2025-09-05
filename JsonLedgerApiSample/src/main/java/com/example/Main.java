@@ -320,12 +320,16 @@ public class Main {
 
         printStep("Transfer from " + sender + " to " + receiver);
 
-        ledgerApi.exercise(
-                sender,
+        List<Command> exerciseCommand = Ledger.makeExerciseCommand(
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
-                transferFactoryWithChoiceContext.getFactoryId(),
                 "TransferFactory_Transfer",
-                sentTransfer,
+                transferFactoryWithChoiceContext.getFactoryId(),
+                sentTransfer
+        );
+
+        ledgerApi.submitAndWaitForCommands(
+                sender,
+                exerciseCommand,
                 disclosures);
     }
 

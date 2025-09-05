@@ -21,6 +21,7 @@ import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,19 +90,8 @@ public class Ledger {
         return response;
     }
 
-    public void exercise(
-            String actAs,
-            TemplateId templateId,
-            String transferFactoryContractId,
-            String choiceName,
-            Object choicePayload,
-            List<DisclosedContract> disclosedContracts
-    ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
-
-        List<String> parties = new ArrayList<>();
-        parties.add(actAs);
-
+    @NotNull
+    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String transferFactoryContractId, Object choicePayload) {
         ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
                 .templateId(templateId.getRaw())
                 .contractId(transferFactoryContractId)
@@ -114,8 +104,17 @@ public class Ledger {
         Command command = new Command();
         command.setActualInstance(subtype);
 
-        List<Command> commandsList = new ArrayList<>();
-        commandsList.add(command);
+        return List.of(command);
+    }
+
+    public void submitAndWaitForCommands(
+            String actAs,
+            List<Command> commandsList,
+            List<DisclosedContract> disclosedContracts
+    ) throws ApiException {
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        List<String> parties = List.of(actAs);
 
         JsCommands commands = new JsCommands()
                 .commands(commandsList)
