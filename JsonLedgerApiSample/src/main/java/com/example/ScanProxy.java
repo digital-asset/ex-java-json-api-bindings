@@ -24,18 +24,16 @@ public class ScanProxy {
 
     private final ScanProxyApi scanProxyApi;
 
-    public ScanProxy(String scanProxyBaseUrl, String bearerToken) {
+    public ScanProxy(String scanProxyBaseUrl) {
 
         ApiClient client = new ApiClient();
         client.setBasePath(scanProxyBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
-        if (!bearerToken.isEmpty())
-            client.setBearerToken(bearerToken);
-
         this.scanProxyApi = new ScanProxyApi(client);
     }
 
-    public String getDsoPartyId() throws ApiException {
+    public String getDsoPartyId(String bearerToken) throws ApiException {
+        this.scanProxyApi.getApiClient().setBearerToken(bearerToken);
         GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
         return response.getDsoPartyId();
     }
