@@ -16,6 +16,7 @@
 package com.example;
 
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -29,18 +30,12 @@ public class Keys {
             0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20
     };
 
-    public static KeyPair generate() {
-        try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
-            return keyGen.generateKeyPair();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
-            return null;
-        }
+    public static KeyPair generate() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
+        return keyGen.generateKeyPair();
     }
 
-    public static KeyPair createFromRawBase64(String publicRawBase64, String privatePublicRawBase64) throws Exception {
+    public static KeyPair createFromRawBase64(String publicRawBase64, String privatePublicRawBase64) throws NoSuchAlgorithmException, InvalidKeySpecException {
         String publicKeyString = addPublicKeyDerHeader(publicRawBase64);
         String privateKeyString = addPrivateKeyDerHeader(stripPublicKey(privatePublicRawBase64));
         KeyFactory keyFactory = KeyFactory.getInstance("Ed25519");
@@ -56,9 +51,9 @@ public class Keys {
         return new KeyPair(publicKey, privateKey);
     }
 
-    public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) throws Exception {
+    public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) {
 
-        System.out.println("==================== KEY FOR " + relatedPartyHint + " ============");
+        System.out.println("\n==================== KEY FOR " + relatedPartyHint + " ============");
         System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
         System.out.println("              format: " + keyPair.getPublic().getFormat());
         System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
@@ -73,35 +68,65 @@ public class Keys {
         System.out.println();
     }
 
-    public static KeyPair createAndValidateKeyPair(String relatedPartyHint, String publicKeyReference, String privateKeyReference) throws Exception {
+    public static KeyPair createAndValidateKeyPair(String publicKeyReference, String privateKeyReference) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         KeyPair keyPair = createFromRawBase64(publicKeyReference, privateKeyReference);
 
-        printKeyPair(relatedPartyHint, keyPair);
-
         if (!publicKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())))) {
-            throw new Exception("Conversion error with public keys.");
+            throw new IllegalArgumentException("Conversion error with public keys.");
         }
 
         if (!privateKeyReference.equals(Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())))) {
-            throw new Exception("Conversion error with private keys.");
+            throw new IllegalArgumentException("Conversion error with private keys.");
         }
 
         return keyPair;
     }
 
-    public static String sign(PrivateKey privateKey, String inputString) {
-        try {
-            Signature signer = Signature.getInstance("Ed25519");
-            signer.initSign(privateKey);
-            signer.update(Encode.fromHexString(inputString));
-            byte[] signature = signer.sign();
-            return Encode.toHexString(signature);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
-            return null;
-        }
+    public static String signHex(PrivateKey privateKey, String inputString) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        byte[] inputBytes = Encode.fromHexString(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toHexString(signature);
+    }
+
+    public static String signBase64(PrivateKey privateKey, String inputString) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        byte[] inputBytes = Encode.fromBase64String(inputString);
+        byte[] signature = signBytes(privateKey, inputBytes);
+        return Encode.toBase64String(signature);
+    }
+
+    private static byte[] signBytes(PrivateKey privateKey, byte[] inputBytes) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        Signature signer = Signature.getInstance("Ed25519");
+        signer.initSign(privateKey);
+        signer.update(inputBytes);
+        return signer.sign();
+    }
+
+    private static byte[] concatByteArrays(byte[] lhs, byte[] rhs) {
+        byte[] result = new byte[lhs.length + rhs.length];
+        System.arraycopy(lhs, 0, result, 0, lhs.length);
+        System.arraycopy(rhs, 0, result, lhs.length, rhs.length);
+        return result;
+    }
+
+    private static byte[] uint32ToByteArray(long value) {
+        byte[] buf = new byte[4];
+        buf[0] = (byte) (value >>> 24);
+        buf[1] = (byte) (value >>> 16);
+        buf[2] = (byte) (value >>> 8);
+        buf[3] = (byte) (value >>> 0);
+        return buf;
+    }
+
+    public static byte[] fingerPrintOf(PublicKey key) throws NoSuchAlgorithmException {
+
+        byte[] purposeBytes = uint32ToByteArray(12L);
+        byte[] digestInput = concatByteArrays(purposeBytes, toRawBytes(key));
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] digestOutput = digest.digest(digestInput);
+        byte[] hashPrefix = new byte[]{0x12, 0x20};
+        return concatByteArrays(hashPrefix, digestOutput);
     }
 
     public static byte[] toRawBytes(PrivateKey key) {

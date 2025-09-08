@@ -36,6 +36,7 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.ledger.api</apiPackage>
                                 <modelPackage>com.example.client.ledger.model</modelPackage>
                                 <invokerPackage>com.example.client.ledger.invoker</invokerPackage>
@@ -55,13 +56,13 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.validator.api</apiPackage>
                                 <modelPackage>com.example.client.validator.model</modelPackage>
                                 <invokerPackage>com.example.client.validator.invoker</invokerPackage>
                             </configOptions>
                         </configuration>
                     </execution>
-                    <!--
                     <execution>
                         <id>generate-scan-api-client</id>
                         <goals>
@@ -75,13 +76,13 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.scan.api</apiPackage>
                                 <modelPackage>com.example.client.scan.model</modelPackage>
                                 <invokerPackage>com.example.client.scan.invoker</invokerPackage>
                             </configOptions>
                         </configuration>
                     </execution>
-                    -->
                     <execution>
                         <id>generate-scan-proxy-api-client</id>
                         <goals>
@@ -95,9 +96,50 @@
                             <configOptions>
                                 <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
                                 <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                                 <apiPackage>com.example.client.scanProxy.api</apiPackage>
                                 <modelPackage>com.example.client.scanProxy.model</modelPackage>
                                 <invokerPackage>com.example.client.scanProxy.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-scan-transfer-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/transfer-instruction-v1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                                <apiPackage>com.example.client.transferInstruction.api</apiPackage>
+                                <modelPackage>com.example.client.transferInstruction.model</modelPackage>
+                                <invokerPackage>com.example.client.transferInstruction.invoker</invokerPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-token-metadata-api-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/token-metadata-v1.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <configOptions>
+                                <sourceFolder>${project.basedir}/src/main/java</sourceFolder>
+                                <useJakartaEe>true</useJakartaEe>
+                                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                                <apiPackage>com.example.client.tokenMetadata.api</apiPackage>
+                                <modelPackage>com.example.client.tokenMetadata.model</modelPackage>
+                                <invokerPackage>com.example.client.tokenMetadata.invoker</invokerPackage>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -131,7 +173,7 @@
                                 <argument>codegen</argument>
                                 <argument>java</argument>
                                 <argument>
-                                    ${project.basedir}/src/main/resources/dars/splice-api-token-holding-v1-1.0.0.dar
+                                    ${project.basedir}/src/main/resources/dars/splice-api-token-transfer-instruction-v1-1.0.0.dar
                                 </argument>
                                 <argument>--output-directory</argument>
                                 <argument>target/generated-sources/dars</argument>

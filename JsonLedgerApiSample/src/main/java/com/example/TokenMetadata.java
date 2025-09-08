@@ -15,32 +15,25 @@
 
 package com.example;
 
-import com.example.client.scan.api.ScanApi;
-import com.example.client.scan.invoker.ApiClient;
-import com.example.client.scan.invoker.ApiException;
-import com.example.client.scan.model.DomainScans;
+import com.example.client.tokenMetadata.api.DefaultApi;
+import com.example.client.tokenMetadata.invoker.ApiClient;
+import com.example.client.tokenMetadata.invoker.ApiException;
+import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+public class TokenMetadata {
 
-public class Scan {
+    private final DefaultApi tokenMetadataApi;
 
-    private final ScanApi scanApi;
-
-    public Scan(String scanHostUrl) throws URISyntaxException {
+    public TokenMetadata(String scanBaseUrl) {
 
         ApiClient client = new ApiClient();
+        client.setBasePath(scanBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
 
-        URI scanBaseUrl = (new URI(scanHostUrl)).resolve("/api/scan");
-        client.setBasePath(scanBaseUrl.toString());
-
-        this.scanApi = new ScanApi(client);
+        this.tokenMetadataApi = new DefaultApi(client);
     }
 
-    public String getSynchronizerId() throws ApiException {
-        DomainScans domainScans = this.scanApi.listDsoScans()
-                .getScans().stream().findFirst().orElseThrow();
-        return domainScans.getDomainId();
+    public GetRegistryInfoResponse getRegistryInfo() throws ApiException {
+        return this.tokenMetadataApi.getRegistryInfo();
     }
 }
