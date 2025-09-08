@@ -15,33 +15,35 @@
 
 package com.example;
 
-import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.ExternalPartySubmission;
 import com.example.client.validator.model.SignedTopologyTx;
 import com.example.client.validator.model.TopologyTx;
 
-import java.security.KeyPair;
-import java.security.PrivateKey;
+import java.security.*;
 import java.util.List;
 
 public class ExternalSigning {
 
-    public static List<SignedTopologyTx> signOnboarding(List<TopologyTx> topologyTxs, PrivateKey privateKey) throws ApiException {
+    public static List<SignedTopologyTx> signOnboarding(List<TopologyTx> topologyTxs, PrivateKey privateKey) {
         return topologyTxs.stream().map(tx -> {
 
             String topologyTx = tx.getTopologyTx();
             String hash = tx.getHash();
-            String signedHash = Keys.signHex(privateKey, hash);
 
-            SignedTopologyTx signedTx = new SignedTopologyTx();
-            signedTx.setTopologyTx(topologyTx);
-            signedTx.setSignedHash(signedHash);
+            try {
+                String signedHash = Keys.signHex(privateKey, hash);
+                SignedTopologyTx signedTx = new SignedTopologyTx();
+                signedTx.setTopologyTx(topologyTx);
+                signedTx.setSignedHash(signedHash);
+                return signedTx;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-            return signedTx;
         }).toList();
     }
 
-    public static ExternalPartySubmission signSubmission(String partyId, String tx, String txHash, KeyPair keyPair) {
+    public static ExternalPartySubmission signSubmission(String partyId, String tx, String txHash, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         ExternalPartySubmission submission = new ExternalPartySubmission();
         submission.setPartyId(partyId);
         submission.setTransaction(tx);

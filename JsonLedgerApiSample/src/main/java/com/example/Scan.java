@@ -27,19 +27,13 @@ public class Scan {
 
     private final ScanApi scanApi;
 
-    public Scan(String scanHostUrl) {
+    public Scan(String scanHostUrl) throws URISyntaxException {
 
         ApiClient client = new ApiClient();
         client.setReadTimeout(60 * 1000); // 60 seconds
 
-        try {
-            URI scanBaseUrl = (new URI(scanHostUrl)).resolve("/api/scan");
-            client.setBasePath(scanBaseUrl.toString());
-        } catch (URISyntaxException ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
-            System.exit(1);
-        }
+        URI scanBaseUrl = (new URI(scanHostUrl)).resolve("/api/scan");
+        client.setBasePath(scanBaseUrl.toString());
 
         this.scanApi = new ScanApi(client);
     }
