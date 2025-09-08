@@ -130,7 +130,7 @@ public class Main {
         printStep("Print total holdings");
         for (SampleUser user : users) {
             BigDecimal totalHoldings = getTotalHoldings(operator, ledgerApi, user, cantonCoinInstrumentId);
-            System.out.println(user.Name + " has " + totalHoldings + " " + cantonCoinInstrumentId.id);
+            System.out.println(user.name + " has " + totalHoldings + " " + cantonCoinInstrumentId.id);
         }
     }
 
@@ -186,7 +186,7 @@ public class Main {
 //        printStep("Querying for holdings");
 //        System.out.println("Querying for holdings of " + instrumentId.id + " by " + party);
 
-        return ledgerApi.getActiveContractsForInterface(operator.BearerToken, user.PartyId, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+        return ledgerApi.getActiveContractsForInterface(operator.bearerToken, user.partyId, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
                 .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                 .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                 .toList();
@@ -195,7 +195,7 @@ public class Main {
     private static List<ContractAndId<HoldingView>> selectHoldingsForTransfer(SampleUser operator, Ledger ledgerApi, SampleUser user, BigDecimal transferAmount, InstrumentId instrumentId) throws Exception {
 
         printStep("Selecting holdings");
-        System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + user.PartyId);
+        System.out.println("Selecting holdings for a " + transferAmount + " unit transfer from " + user.partyId);
 
         final BigDecimal[] remainingReference = {transferAmount};
 
@@ -304,11 +304,11 @@ public class Main {
         printStep("Confirm authentication");
 
         // these require a valid Validator token
-        Env.DSO_PARTY = scanProxyApi.getDsoPartyId(user.BearerToken);
+        Env.DSO_PARTY = scanProxyApi.getDsoPartyId(user.bearerToken);
         System.out.println("DSO Party: " + Env.DSO_PARTY);
-        System.out.println("Ledger end: " + ledgerApi.getLedgerEnd(user.BearerToken));
-        System.out.println("Participant users: " + ledgerApi.getUsers(user.BearerToken));
-        System.out.println("Validator users: " + validatorApi.listUsers(user.BearerToken));
+        System.out.println("Ledger end: " + ledgerApi.getLedgerEnd(user.bearerToken));
+        System.out.println("Participant users: " + ledgerApi.getUsers(user.bearerToken));
+        System.out.println("Validator users: " + validatorApi.listUsers(user.bearerToken));
     }
 
     private static BiFunction<String, KeyPair, String> onboardExternalParty(SampleUser operator, Validator validatorApi) {
@@ -316,9 +316,9 @@ public class Main {
             printStep("Onboard " + partyHint);
 
             try {
-                List<TopologyTx> txs = validatorApi.prepareOnboarding(operator.BearerToken, partyHint, externalPartyKeyPair.getPublic());
+                List<TopologyTx> txs = validatorApi.prepareOnboarding(operator.bearerToken, partyHint, externalPartyKeyPair.getPublic());
                 List<SignedTopologyTx> signedTxs = ExternalSigning.signOnboarding(txs, externalPartyKeyPair.getPrivate());
-                String newParty = validatorApi.submitOnboarding(operator.BearerToken, signedTxs, externalPartyKeyPair.getPublic());
+                String newParty = validatorApi.submitOnboarding(operator.bearerToken, signedTxs, externalPartyKeyPair.getPublic());
                 System.out.println("New party: " + newParty);
                 Keys.printKeyPair(partyHint, externalPartyKeyPair);
                 preapproveTransfers(operator, validatorApi, newParty, externalPartyKeyPair);
@@ -335,10 +335,10 @@ public class Main {
     // (i.e., the 200 parties-per-node limitation).
     // TODO: Switch to "bare creating a TransferPreapprovalRequest"
     private static void preapproveTransfers(SampleUser operator, Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
-        CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(operator.BearerToken, externalPartyId);
+        CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(operator.bearerToken, externalPartyId);
         PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
         ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
-        validatorApi.submitAcceptExternalPartySetupProposal(operator.BearerToken, acceptSubmission);
+        validatorApi.submitAcceptExternalPartySetupProposal(operator.bearerToken, acceptSubmission);
     }
 
     private static void transferAsset(
@@ -356,7 +356,7 @@ public class Main {
             System.exit(1);
         }
 
-        printStep("Get transfer factory for " + sender.Name);
+        printStep("Get transfer factory for " + sender.name);
 
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
@@ -372,7 +372,7 @@ public class Main {
                 .toList();
         printToken("Transfer factory: ", transferFactoryWithChoiceContext.getFactoryId());
 
-        printStep("Transfer from " + sender.PartyId + " to " + receiver.PartyId);
+        printStep("Transfer from " + sender.partyId + " to " + receiver.partyId);
 
         List<Command> transferCommands = Ledger.makeExerciseCommand(
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
@@ -381,16 +381,16 @@ public class Main {
                 sentTransfer
         );
 
-        if (sender.KeyPair.isEmpty()) {
+        if (sender.keyPair.isEmpty()) {
             // transfer from local party
             ledgerApi.submitAndWaitForCommands(
-                    operator.BearerToken,
-                    sender.PartyId,
+                    operator.bearerToken,
+                    sender.partyId,
                     transferCommands,
                     disclosures);
         } else {
             // transfer from external party
-            JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(operator.BearerToken, sender.PartyId, transferCommands, disclosures);
+            JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(operator.bearerToken, sender.partyId, transferCommands, disclosures);
             SinglePartySignatures signature = Ledger.makeSingleSignature(preparedTransaction, sender);
             ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
         }
@@ -415,7 +415,7 @@ public class Main {
         ChoiceContext noContext = new ChoiceContext(new HashMap<>());
         ExtraArgs blankExtraArgs = new ExtraArgs(noContext, emptyMetadata);
 
-        Transfer transfer = new Transfer(sender.PartyId, receiver.PartyId, amount, instrumentId, requestedAt, executeBefore, holdingCids, emptyMetadata);
+        Transfer transfer = new Transfer(sender.partyId, receiver.partyId, amount, instrumentId, requestedAt, executeBefore, holdingCids, emptyMetadata);
         return new TransferFactory_Transfer(instrumentId.admin, transfer, blankExtraArgs);
     }
 
@@ -454,16 +454,15 @@ public class Main {
         command.setActualInstance(subtype);
 
         return ledgerApi.prepareSubmissionForSigning(
-                operator.BearerToken,
+                operator.bearerToken,
                 choicePayload.transfer.sender,
                 List.of(command),
                 disclosedContracts);
     }
 
-    private static String handleException(Exception ex) {
+    private static void handleException(Exception ex) {
         System.err.println(ex.getMessage());
         ex.printStackTrace();
         System.exit(1);
-        return null;
     }
 }

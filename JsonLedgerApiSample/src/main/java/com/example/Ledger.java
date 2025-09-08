@@ -168,7 +168,7 @@ public class Ledger {
     public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, SampleUser user) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
 //        String format = partyKeyPair.getPublic().getFormat();
-        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(user.KeyPair.orElseThrow().getPublic()));
+        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(user.keyPair.orElseThrow().getPublic()));
 //        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
 
 //        System.out.println("Signature format: " + format);
@@ -177,12 +177,12 @@ public class Ledger {
 
         Signature signature = new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.signBase64(user.KeyPair.orElseThrow().getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
+                .signature(Keys.signBase64(user.keyPair.orElseThrow().getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
 
         return new SinglePartySignatures()
-                .party(user.PartyId)
+                .party(user.partyId)
                 .signatures(List.of(signature));
     }
 

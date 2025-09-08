@@ -23,20 +23,20 @@ import java.util.function.BiFunction;
 
 public class SampleUser {
 
-    public final String Name;
-    public final String PartyId;
-    public final String BearerToken;
-    public final Optional<KeyPair> KeyPair;
+    public final String name;
+    public final String partyId;
+    public final String bearerToken;
+    public final Optional<KeyPair> keyPair;
 
     // partyId is not provided
     public SampleUser(String name, String bearerToken, BiFunction<String, KeyPair, String> onboardNewParty) throws Exception {
         if (isNullOrBlank(name)) {
             throw new IllegalArgumentException("The field name cannot be blank.");
         }
-        this.Name = name;
-        this.KeyPair = Optional.of(createKeyPair(null, null));
-        this.PartyId = onboardNewParty.apply(name, this.KeyPair.get());
-        this.BearerToken = bearerToken;
+        this.name = name;
+        this.keyPair = Optional.of(createKeyPair(null, null));
+        this.partyId = onboardNewParty.apply(name, this.keyPair.get());
+        this.bearerToken = bearerToken;
     }
 
     // keypair is not provided
@@ -44,14 +44,14 @@ public class SampleUser {
         if (isNullOrBlank(name)) {
             throw new IllegalArgumentException("The field name cannot be blank.");
         }
-        this.Name = name;
-        this.BearerToken = bearerToken;
+        this.name = name;
+        this.bearerToken = bearerToken;
 
         if (isNullOrBlank(partyId)) {
             throw new IllegalArgumentException("The field partyId for " + name + " cannot be blank.");
         }
-        this.PartyId = partyId;
-        this.KeyPair = Optional.empty();
+        this.partyId = partyId;
+        this.keyPair = Optional.empty();
     }
 
     // everything is provided
@@ -59,18 +59,18 @@ public class SampleUser {
         if (isNullOrBlank(name)) {
             throw new IllegalArgumentException("The field name cannot be blank.");
         }
-        this.Name = name;
-        this.BearerToken = bearerToken;
+        this.name = name;
+        this.bearerToken = bearerToken;
 
         if (isNullOrBlank(partyId)) {
             throw new IllegalArgumentException("The field partyId for " + name + " cannot be blank.");
         }
-        this.PartyId = partyId;
+        this.partyId = partyId;
 
         if (isNullOrBlank(publicKey) || isNullOrBlank(privateKey)) {
             throw new IllegalArgumentException("The public and private keys for " + name + " cannot be unset.");
         }
-        this.KeyPair = Optional.of(createKeyPair(publicKey, privateKey));
+        this.keyPair = Optional.of(createKeyPair(publicKey, privateKey));
     }
 
     private static KeyPair createKeyPair(String publicKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
