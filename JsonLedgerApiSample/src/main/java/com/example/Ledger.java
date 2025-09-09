@@ -15,7 +15,6 @@
 
 package com.example;
 
-import com.daml.ledger.javaapi.data.Template;
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -42,6 +41,92 @@ public class Ledger {
 
         JSON.setGson(GsonSingleton.getInstance());
         this.ledgerApi = new DefaultApi(client);
+    }
+
+    public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
+
+        InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
+                .includeCreatedEventBlob(false)
+                .includeInterfaceView(true)
+                .interfaceId(interfaceId.getRaw());
+
+        InterfaceFilter interfaceFilter = new InterfaceFilter()
+                .value(interfaceFilter1);
+
+        IdentifierFilterOneOf1 identifierFilterOneOf1 = new IdentifierFilterOneOf1()
+                .interfaceFilter(interfaceFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf1);
+
+        return new CumulativeFilter()
+                .identifierFilter(identifierFilter);
+    }
+
+    public static CumulativeFilter createFilterByTemplate(TemplateId templateId) {
+        TemplateFilter1 templateFilter1 = new TemplateFilter1()
+                .templateId(templateId.getRaw())
+                .includeCreatedEventBlob(true);
+
+        TemplateFilter templateFilter = new TemplateFilter()
+                .value(templateFilter1);
+
+        IdentifierFilterOneOf2 identifierFilterOneOf2 = new IdentifierFilterOneOf2()
+                .templateFilter(templateFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf2);
+
+        return new CumulativeFilter()
+                .identifierFilter(identifierFilter);
+    }
+
+    @NotNull
+    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String transferFactoryContractId, Object choicePayload) {
+        ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
+                .templateId(templateId.getRaw())
+                .contractId(transferFactoryContractId)
+                .choice(choiceName)
+                .choiceArgument(choicePayload);
+
+        CommandOneOf3 subtype = new CommandOneOf3()
+                .exerciseCommand(exerciseTransferCommand);
+
+        Command command = new Command();
+        command.setActualInstance(subtype);
+
+        return List.of(command);
+    }
+
+    @NotNull
+    public static List<Command> makeCreateCommand(TemplateId templateId, Object payload) {
+
+        CreateCommand createCommand = new CreateCommand()
+                .templateId(templateId.getRaw())
+                .createArguments(payload);
+
+        CommandOneOf1 subtype = new CommandOneOf1()
+                .createCommand(createCommand);
+
+        Command command = new Command();
+        command.setActualInstance(subtype);
+
+        return List.of(command);
+    }
+
+    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+
+        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
+
+        Signature signature = new Signature()
+                .format("SIGNATURE_FORMAT_CONCAT")
+                .signature(Keys.signBase64(keyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
+                .signedBy(fingerprint)
+                .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+
+        return new SinglePartySignatures()
+                .party(partyId)
+                .signatures(List.of(signature));
     }
 
     // does not require authentication
@@ -98,9 +183,7 @@ public class Ledger {
         // user exists, but the expected party id was not given in the environment
         else if (partyId.isBlank()) {
             throw new IllegalArgumentException("The user " + partyHint + " exists for party " + partyId + ". Missing environment variable for user party?");
-        }
-
-        else {
+        } else {
             this.ledgerApi.getApiClient().setBearerToken(bearerToken);
             Optional<CanReadAs> canReadAsPartyId =
                     ledgerApi.getV2UsersUserIdRights(currentUser.get().getId()).getRights().stream()
@@ -117,44 +200,6 @@ public class Ledger {
             // user exists and can read as the given party
             return currentUser.get();
         }
-    }
-
-    public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
-
-        InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
-                .includeCreatedEventBlob(false)
-                .includeInterfaceView(true)
-                .interfaceId(interfaceId.getRaw());
-
-        InterfaceFilter interfaceFilter = new InterfaceFilter()
-                .value(interfaceFilter1);
-
-        IdentifierFilterOneOf1 identifierFilterOneOf1 = new IdentifierFilterOneOf1()
-                .interfaceFilter(interfaceFilter);
-
-        IdentifierFilter identifierFilter = new IdentifierFilter();
-        identifierFilter.setActualInstance(identifierFilterOneOf1);
-
-        return new CumulativeFilter()
-                .identifierFilter(identifierFilter);
-    }
-
-    public static CumulativeFilter createFilterByTemplate(TemplateId templateId) {
-        TemplateFilter1 templateFilter1 = new TemplateFilter1()
-                .templateId(templateId.getRaw())
-                .includeCreatedEventBlob(true);
-
-        TemplateFilter templateFilter = new TemplateFilter()
-                .value(templateFilter1);
-
-        IdentifierFilterOneOf2 identifierFilterOneOf2 = new IdentifierFilterOneOf2()
-                .templateFilter(templateFilter);
-
-        IdentifierFilter identifierFilter = new IdentifierFilter();
-        identifierFilter.setActualInstance(identifierFilterOneOf2);
-
-        return new CumulativeFilter()
-                .identifierFilter(identifierFilter);
     }
 
     public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String bearerToken, String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
@@ -177,39 +222,6 @@ public class Ledger {
 //        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
-    }
-
-    @NotNull
-    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String transferFactoryContractId, Object choicePayload) {
-        ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
-                .templateId(templateId.getRaw())
-                .contractId(transferFactoryContractId)
-                .choice(choiceName)
-                .choiceArgument(choicePayload);
-
-        CommandOneOf3 subtype = new CommandOneOf3()
-                .exerciseCommand(exerciseTransferCommand);
-
-        Command command = new Command();
-        command.setActualInstance(subtype);
-
-        return List.of(command);
-    }
-
-    @NotNull
-    public static List<Command> makeCreateCommand(TemplateId templateId, Object payload) {
-
-        CreateCommand createCommand = new CreateCommand()
-                .templateId(templateId.getRaw())
-                .createArguments(payload);
-
-        CommandOneOf1 subtype = new CommandOneOf1()
-                .createCommand(createCommand);
-
-        Command command = new Command();
-        command.setActualInstance(subtype);
-
-        return List.of(command);
     }
 
     public JsSubmitAndWaitForTransactionResponse submitAndWaitForCommands(
@@ -260,21 +272,6 @@ public class Ledger {
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
 //        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
         return response;
-    }
-
-    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-
-        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
-
-        Signature signature = new Signature()
-                .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.signBase64(keyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
-                .signedBy(fingerprint)
-                .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
-
-        return new SinglePartySignatures()
-                .party(partyId)
-                .signatures(List.of(signature));
     }
 
     public void executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {

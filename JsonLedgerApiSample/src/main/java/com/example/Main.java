@@ -21,7 +21,8 @@ import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.model.*;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
-import com.example.client.validator.model.*;
+import com.example.client.validator.model.SignedTopologyTx;
+import com.example.client.validator.model.TopologyTx;
 import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -30,13 +31,15 @@ import splice.api.token.metadatav1.ExtraArgs;
 import splice.api.token.metadatav1.Metadata;
 import splice.api.token.transferinstructionv1.Transfer;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
-import splice.wallet.transferpreapproval.TransferPreapprovalProposal;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.KeyPair;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.BiFunction;
 
 public class Main {
@@ -112,7 +115,7 @@ public class Main {
             // wait for the treasury party to receive the transfer
             BigDecimal updatedBalance = priorBalance;
             printStep("Waiting for holdings transfer to complete");
-            waitFor( 2 * 1000, 10, () -> {
+            waitFor(2 * 1000, 10, () -> {
                 return getTotalHoldings(operator, ledgerApi, treasury, cantonCoinInstrumentId).compareTo(priorBalance) > 0;
             });
 
@@ -122,10 +125,6 @@ public class Main {
         } catch (Exception ex) {
             handleException(ex);
         }
-    }
-
-    private interface WaitLoopCheck {
-        boolean getAsBoolean() throws Exception;
     }
 
     private static void waitFor(long sleepForMillis, int retries, WaitLoopCheck checkState) throws Exception {
@@ -151,7 +150,6 @@ public class Main {
         String raw = GsonSingleton.getInstance().toJson(recordPayload);
         return useValueParser(raw, valueParser);
     }
-
 
     private static <T> T useValueParser(
             String raw,
@@ -459,5 +457,9 @@ public class Main {
         System.err.println(ex.getMessage());
         ex.printStackTrace();
         System.exit(1);
+    }
+
+    private interface WaitLoopCheck {
+        boolean getAsBoolean() throws Exception;
     }
 }
