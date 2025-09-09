@@ -20,6 +20,7 @@ public record TemplateId(
         String moduleName,
         String typeName
 ) {
+    public static final TemplateId TRANSFER_PREAPPROVAL_ID = new TemplateId("#splice-wallet", "Splice.Wallet.TransferPreapproval", "TransferPreapprovalProposal");
     public static final TemplateId HOLDING_INTERFACE_ID = new TemplateId("#splice-api-token-holding-v1", "Splice.Api.Token.HoldingV1", "Holding");
     public static final TemplateId TRANSFER_FACTORY_INTERFACE_ID = new TemplateId("#splice-api-token-transfer-instruction-v1", "Splice.Api.Token.TransferInstructionV1", "TransferFactory");
 

@@ -175,6 +175,9 @@
                                 <argument>
                                     ${project.basedir}/src/main/resources/dars/splice-api-token-transfer-instruction-v1-1.0.0.dar
                                 </argument>
+                                <argument>
+                                    ${project.basedir}/src/main/resources/dars/splice-wallet-0.1.13.dar
+                                </argument>
                                 <argument>--output-directory</argument>
                                 <argument>target/generated-sources/dars</argument>
                             </arguments>
