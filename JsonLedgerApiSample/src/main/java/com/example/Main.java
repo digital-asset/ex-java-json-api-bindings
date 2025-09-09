@@ -38,7 +38,6 @@ import java.security.KeyPair;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.BooleanSupplier;
 
 public class Main {
 
@@ -63,10 +62,10 @@ public class Main {
             confirmAuthentication(operator, ledgerApi, validatorApi, scanProxyApi);
 
             SampleUser treasury = Env.TREASURY_PARTY.isBlank() ?
-                    new SampleUser(Env.TREASURY_PARTY_HINT, Env.TREASURY_TOKEN, onboardExternalParty(operator, validatorApi, ledgerApi)) :
+                    new SampleUser(Env.TREASURY_PARTY_HINT, Env.TREASURY_TOKEN, onboardExternalParty(operator, ledgerApi, validatorApi)) :
                     new SampleUser(Env.TREASURY_PARTY_HINT, Env.TREASURY_TOKEN, Env.TREASURY_PARTY);
             SampleUser sender = Env.SENDER_PARTY.isBlank() ?
-                    new SampleUser(Env.SENDER_PARTY_HINT, Env.SENDER_TOKEN, onboardExternalParty(operator, validatorApi, ledgerApi)) :
+                    new SampleUser(Env.SENDER_PARTY_HINT, Env.SENDER_TOKEN, onboardExternalParty(operator, ledgerApi, validatorApi)) :
                     new SampleUser(Env.SENDER_PARTY_HINT, Env.SENDER_TOKEN, Env.SENDER_PARTY, Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
             List<SampleUser> allUsers = List.of(operator, treasury, sender);
 
@@ -320,7 +319,7 @@ public class Main {
         System.out.println("Validator users: " + validatorApi.listUsers(user.bearerToken));
     }
 
-    private static BiFunction<String, KeyPair, String> onboardExternalParty(SampleUser operator, Validator validatorApi, Ledger ledgerApi) {
+    private static BiFunction<String, KeyPair, String> onboardExternalParty(SampleUser operator, Ledger ledgerApi, Validator validatorApi) {
         return (partyHint, externalPartyKeyPair) -> {
             printStep("Onboard " + partyHint);
 
@@ -332,6 +331,8 @@ public class Main {
                 Keys.printKeyPair(partyHint, externalPartyKeyPair);
                 preapproveTransfers(operator, validatorApi, ledgerApi, newParty, externalPartyKeyPair);
                 System.out.println("Created transfer preapproval for " + newParty);
+                User user = ledgerApi.getOrCreateUser(operator.bearerToken, partyHint, newParty);
+                System.out.println("User " + user.getId() + " can read from the ledger as " + newParty);
                 return newParty;
             } catch (Exception ex) {
                 handleException(ex);
