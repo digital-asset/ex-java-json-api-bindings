@@ -15,8 +15,6 @@
 
 package com.example.GsonTypeAdapters;
 
-import com.daml.ledger.javaapi.data.codegen.ContractId;
-import com.google.common.reflect.TypeParameter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -32,8 +30,22 @@ import java.util.Optional;
 
 public class OptionalTypeAdapterFactory implements TypeAdapterFactory {
 
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+        if (!Optional.class.isAssignableFrom(typeToken.getRawType())) {
+            return null; // Let Gson handle other types
+        }
+
+        ParameterizedType typeOfOptionalT = (ParameterizedType) typeToken.getType();
+        Type t = typeOfOptionalT.getActualTypeArguments()[0];
+        TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(t));
+
+        return new OptionalTypeAdapter(adapter);
+    }
+
     private static class OptionalTypeAdapter<X> extends TypeAdapter<Optional<X>> {
-        private TypeAdapter<X> adapter;
+        private final TypeAdapter<X> adapter;
+
         public OptionalTypeAdapter(TypeAdapter<X> adapter) {
             this.adapter = adapter;
         }
@@ -57,19 +69,6 @@ public class OptionalTypeAdapterFactory implements TypeAdapterFactory {
                 return Optional.of(value);
             }
         }
-    }
-
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-        if (!Optional.class.isAssignableFrom(typeToken.getRawType())) {
-            return null; // Let Gson handle other types
-        }
-
-        ParameterizedType typeOfOptionalT = (ParameterizedType) typeToken.getType();
-        Type t = typeOfOptionalT.getActualTypeArguments()[0];
-        TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(t));
-
-        return new OptionalTypeAdapter(adapter);
     }
 }
 
