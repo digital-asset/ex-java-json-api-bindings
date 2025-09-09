@@ -61,13 +61,11 @@ public class Ledger {
         return response.getUsers().stream().map(u -> u.getId()).toList();
     }
 
-    public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String bearerToken, String partyId, String interfaceId) throws Exception {
-        long offset = getLedgerEnd(bearerToken);
-
+    public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
         InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
                 .includeCreatedEventBlob(false)
                 .includeInterfaceView(true)
-                .interfaceId(interfaceId);
+                .interfaceId(interfaceId.getRaw());
 
         InterfaceFilter interfaceFilter = new InterfaceFilter()
                 .value(interfaceFilter1);
@@ -78,11 +76,15 @@ public class Ledger {
         IdentifierFilter identifierFilter = new IdentifierFilter();
         identifierFilter.setActualInstance(identifierFilterOneOf1);
 
-        CumulativeFilter cumulativeFilter = new CumulativeFilter()
+        return new CumulativeFilter()
                 .identifierFilter(identifierFilter);
+    }
+
+    public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String bearerToken, String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
+        long offset = getLedgerEnd(bearerToken);
 
         Filters filters = new Filters()
-                .addCumulativeItem(cumulativeFilter);
+                .cumulative(cumulativeFilters);
 
         TransactionFilter transactionFilter = new TransactionFilter()
                 .filtersByParty(Map.of(partyId, filters));

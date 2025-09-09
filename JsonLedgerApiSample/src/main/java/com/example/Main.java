@@ -183,7 +183,8 @@ public class Main {
     }
 
     private static List<ContractAndId<HoldingView>> queryForHoldings(SampleUser operator, Ledger ledgerApi, SampleUser user, InstrumentId instrumentId) throws Exception {
-        return ledgerApi.getActiveContractsForInterface(operator.bearerToken, user.partyId, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+        CumulativeFilter holdingInterfaceFilter = Ledger.createFilterByInterface(TemplateId.HOLDING_INTERFACE_ID);
+        return ledgerApi.getActiveContractsByFilter(operator.bearerToken, user.partyId, List.of(holdingInterfaceFilter)).stream()
                 .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                 .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                 .toList();
