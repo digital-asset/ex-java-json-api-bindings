@@ -15,6 +15,7 @@
 
 package com.example;
 
+import com.daml.ledger.javaapi.data.Template;
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -24,6 +25,7 @@ import com.example.client.ledger.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.List;
@@ -117,13 +119,12 @@ public class Ledger {
         }
     }
 
-    public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String bearerToken, String partyId, String interfaceId) throws Exception {
-        long offset = getLedgerEnd(bearerToken);
+    public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
 
         InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
                 .includeCreatedEventBlob(false)
                 .includeInterfaceView(true)
-                .interfaceId(interfaceId);
+                .interfaceId(interfaceId.getRaw());
 
         InterfaceFilter interfaceFilter = new InterfaceFilter()
                 .value(interfaceFilter1);
@@ -134,11 +135,33 @@ public class Ledger {
         IdentifierFilter identifierFilter = new IdentifierFilter();
         identifierFilter.setActualInstance(identifierFilterOneOf1);
 
-        CumulativeFilter cumulativeFilter = new CumulativeFilter()
+        return new CumulativeFilter()
                 .identifierFilter(identifierFilter);
+    }
+
+    public static CumulativeFilter createFilterByTemplate(TemplateId templateId) {
+        TemplateFilter1 templateFilter1 = new TemplateFilter1()
+                .templateId(templateId.getRaw())
+                .includeCreatedEventBlob(true);
+
+        TemplateFilter templateFilter = new TemplateFilter()
+                .value(templateFilter1);
+
+        IdentifierFilterOneOf2 identifierFilterOneOf2 = new IdentifierFilterOneOf2()
+                .templateFilter(templateFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf2);
+
+        return new CumulativeFilter()
+                .identifierFilter(identifierFilter);
+    }
+
+    public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String bearerToken, String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
+        long offset = getLedgerEnd(bearerToken);
 
         Filters filters = new Filters()
-                .addCumulativeItem(cumulativeFilter);
+                .cumulative(cumulativeFilters);
 
         TransactionFilter transactionFilter = new TransactionFilter()
                 .filtersByParty(Map.of(partyId, filters));
@@ -173,7 +196,23 @@ public class Ledger {
         return List.of(command);
     }
 
-    public void submitAndWaitForCommands(
+    @NotNull
+    public static List<Command> makeCreateCommand(TemplateId templateId, Object payload) {
+
+        CreateCommand createCommand = new CreateCommand()
+                .templateId(templateId.getRaw())
+                .createArguments(payload);
+
+        CommandOneOf1 subtype = new CommandOneOf1()
+                .createCommand(createCommand);
+
+        Command command = new Command();
+        command.setActualInstance(subtype);
+
+        return List.of(command);
+    }
+
+    public JsSubmitAndWaitForTransactionResponse submitAndWaitForCommands(
             String bearerToken,
             String actAs,
             List<Command> commandsList,
@@ -197,6 +236,7 @@ public class Ledger {
         this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
 //        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
+        return response;
     }
 
     public JsPrepareSubmissionResponse prepareSubmissionForSigning(
@@ -222,28 +262,22 @@ public class Ledger {
         return response;
     }
 
-    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, SampleUser user) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
-//        String format = partyKeyPair.getPublic().getFormat();
-        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(user.keyPair.orElseThrow().getPublic()));
-//        String signingAlgorithm = partyKeyPair.getPublic().getAlgorithm();
-
-//        System.out.println("Signature format: " + format);
-//        System.out.println("Signature fingerprint: " + fingerprint);
-//        System.out.println("Signature signing algorithm: " + signingAlgorithm);
+        String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
 
         Signature signature = new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.signBase64(user.keyPair.orElseThrow().getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
+                .signature(Keys.signBase64(keyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
 
         return new SinglePartySignatures()
-                .party(user.partyId)
+                .party(partyId)
                 .signatures(List.of(signature));
     }
 
-    public String executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
+    public void executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
         String submissionId = java.util.UUID.randomUUID().toString();
 
         DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
@@ -265,7 +299,5 @@ public class Ledger {
 //        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
 //        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
-
-        return GsonSingleton.getInstance().toJson(response);
     }
 }

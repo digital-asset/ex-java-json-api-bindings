@@ -30,14 +30,13 @@ import splice.api.token.metadatav1.ExtraArgs;
 import splice.api.token.metadatav1.Metadata;
 import splice.api.token.transferinstructionv1.Transfer;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
+import splice.wallet.transferpreapproval.TransferPreapprovalProposal;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.KeyPair;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class Main {
@@ -59,6 +58,9 @@ public class Main {
 
             // setup sample's parties, keys, etc.
             SampleUser operator = new SampleUser("operator", Env.VALIDATOR_TOKEN, Env.VALIDATOR_PARTY);
+
+            confirmAuthentication(operator, ledgerApi, validatorApi, scanProxyApi);
+
             SampleUser treasury = Env.TREASURY_PARTY.isBlank() ?
                     new SampleUser(Env.TREASURY_PARTY_HINT, Env.TREASURY_TOKEN, onboardExternalParty(operator, ledgerApi, validatorApi)) :
                     new SampleUser(Env.TREASURY_PARTY_HINT, Env.TREASURY_TOKEN, Env.TREASURY_PARTY);
@@ -66,8 +68,6 @@ public class Main {
                     new SampleUser(Env.SENDER_PARTY_HINT, Env.SENDER_TOKEN, onboardExternalParty(operator, ledgerApi, validatorApi)) :
                     new SampleUser(Env.SENDER_PARTY_HINT, Env.SENDER_TOKEN, Env.SENDER_PARTY, Env.SENDER_PUBLIC_KEY, Env.SENDER_PRIVATE_KEY);
             List<SampleUser> allUsers = List.of(operator, treasury, sender);
-
-            confirmAuthentication(operator, ledgerApi, validatorApi, scanProxyApi);
 
             // TODO: get this from the Canton Coin registry
             InstrumentId cantonCoinInstrumentId = new InstrumentId(Env.DSO_PARTY, "Amulet");
@@ -112,17 +112,27 @@ public class Main {
             // wait for the treasury party to receive the transfer
             BigDecimal updatedBalance = priorBalance;
             printStep("Waiting for holdings transfer to complete");
-            do {
-                System.out.println("Waiting...");
-                Thread.sleep(2 * 1000);
-                updatedBalance = getTotalHoldings(operator, ledgerApi, treasury, cantonCoinInstrumentId);
-            } while (updatedBalance.compareTo(priorBalance) == 0);
+            waitFor( 2 * 1000, 10, () -> {
+                return getTotalHoldings(operator, ledgerApi, treasury, cantonCoinInstrumentId).compareTo(priorBalance) > 0;
+            });
 
             printStep("Success!");
             printTotalHoldings(operator, ledgerApi, allUsers, cantonCoinInstrumentId);
             System.exit(0);
         } catch (Exception ex) {
             handleException(ex);
+        }
+    }
+
+    private interface WaitLoopCheck {
+        boolean getAsBoolean() throws Exception;
+    }
+
+    private static void waitFor(long sleepForMillis, int retries, WaitLoopCheck checkState) throws Exception {
+        while (!checkState.getAsBoolean() && retries > 0) {
+            System.out.println("Waiting...");
+            Thread.sleep(sleepForMillis);
+            retries--;
         }
     }
 
@@ -183,10 +193,8 @@ public class Main {
     }
 
     private static List<ContractAndId<HoldingView>> queryForHoldings(SampleUser operator, Ledger ledgerApi, SampleUser user, InstrumentId instrumentId) throws Exception {
-//        printStep("Querying for holdings");
-//        System.out.println("Querying for holdings of " + instrumentId.id + " by " + party);
-
-        return ledgerApi.getActiveContractsForInterface(operator.bearerToken, user.partyId, TemplateId.HOLDING_INTERFACE_ID.getRaw()).stream()
+        CumulativeFilter holdingInterfaceFilter = Ledger.createFilterByInterface(TemplateId.HOLDING_INTERFACE_ID);
+        return ledgerApi.getActiveContractsByFilter(operator.bearerToken, user.partyId, List.of(holdingInterfaceFilter)).stream()
                 .map(r -> fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                 .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                 .toList();
@@ -321,7 +329,7 @@ public class Main {
                 String newParty = validatorApi.submitOnboarding(operator.bearerToken, signedTxs, externalPartyKeyPair.getPublic());
                 System.out.println("New party: " + newParty);
                 Keys.printKeyPair(partyHint, externalPartyKeyPair);
-                preapproveTransfers(operator, validatorApi, newParty, externalPartyKeyPair);
+                preapproveTransfers(operator, validatorApi, ledgerApi, newParty, externalPartyKeyPair);
                 System.out.println("Created transfer preapproval for " + newParty);
                 User user = ledgerApi.getOrCreateUser(operator.bearerToken, partyHint, newParty);
                 System.out.println("User " + user.getId() + " can read from the ledger as " + newParty);
@@ -335,12 +343,20 @@ public class Main {
 
     // Note: the endpoints used here consume limited resources
     // (i.e., the 200 parties-per-node limitation).
-    // TODO: Switch to "bare creating a TransferPreapprovalRequest"
-    private static void preapproveTransfers(SampleUser operator, Validator validatorApi, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
-        CreateExternalPartySetupProposalResponse proposalContract = validatorApi.createExternalPartySetupProposal(operator.bearerToken, externalPartyId);
-        PrepareAcceptExternalPartySetupProposalResponse preparedAccept = validatorApi.prepareAcceptExternalPartySetupProposal(externalPartyId, proposalContract.getContractId());
-        ExternalPartySubmission acceptSubmission = ExternalSigning.signSubmission(externalPartyId, preparedAccept.getTransaction(), preparedAccept.getTxHash(), externalPartyKeyPair);
-        validatorApi.submitAcceptExternalPartySetupProposal(operator.bearerToken, acceptSubmission);
+    // https://docs.dev.sync.global/scalability/scalability.html#bypassing-the-limit
+    private static void preapproveTransfers(SampleUser operator, Validator validatorApi, Ledger ledgerApi, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
+        List<DisclosedContract> noDisclosures = new ArrayList<>();
+        var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalPartyId, operator.partyId, Env.DSO_PARTY);
+        List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_PROPOSAL_ID, transferPreapprovalProposal);
+        prepareAndSign(ledgerApi, operator.bearerToken, externalPartyId, externalPartyKeyPair, createTransferPreapprovalCommands, noDisclosures);
+
+        // the validator node will automatically accept any transfer preapproval proposal submitted to it.
+        CumulativeFilter transferPreapprovalFilter = Ledger.createFilterByTemplate(TemplateId.TRANSFER_PREAPPROVAL_ID);
+        System.out.println("Waiting for TransferPreapprovalProposal contract to be accepted for " + externalPartyId + "...");
+        waitFor(5 * 1000, 12, () -> {
+            List<JsGetActiveContractsResponse> activeContracts = ledgerApi.getActiveContractsByFilter(operator.bearerToken, externalPartyId, List.of(transferPreapprovalFilter));
+            return !activeContracts.isEmpty();
+        });
     }
 
     private static void transferAsset(
@@ -392,11 +408,15 @@ public class Main {
                     disclosures);
         } else {
             // transfer from external party
-            JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(operator.bearerToken, sender.partyId, transferCommands, disclosures);
-            SinglePartySignatures signature = Ledger.makeSingleSignature(preparedTransaction, sender);
-            ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
+            prepareAndSign(ledgerApi, operator.bearerToken, sender.partyId, sender.keyPair.get(), transferCommands, disclosures);
         }
         System.out.println("Transfer complete");
+    }
+
+    private static void prepareAndSign(Ledger ledgerApi, String bearerToken, String partyId, KeyPair keyPair, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
+        JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(bearerToken, partyId, commands, disclosures);
+        SinglePartySignatures signature = Ledger.makeSingleSignature(preparedTransaction, partyId, keyPair);
+        ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
     }
 
     private static TransferFactory_Transfer makeProposedTransfer(
@@ -429,37 +449,10 @@ public class Main {
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
         String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
-//        System.out.println("Intermediate choice context JSON: " + choiceJson);
         ChoiceContext choiceContextFromApi = useValueParser(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
-    }
-
-    private static JsPrepareSubmissionResponse prepareTransferForSigning(
-            SampleUser operator,
-            Ledger ledgerApi,
-            TransferFactoryWithChoiceContext factoryWithChoiceContext,
-            TransferFactory_Transfer choicePayload,
-            List<DisclosedContract> disclosedContracts) throws Exception {
-
-        ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
-                .templateId(TemplateId.TRANSFER_FACTORY_INTERFACE_ID.getRaw())
-                .contractId(factoryWithChoiceContext.getFactoryId())
-                .choice("TransferFactory_Transfer")
-                .choiceArgument(choicePayload);
-
-        CommandOneOf3 subtype = new CommandOneOf3()
-                .exerciseCommand(exerciseTransferCommand);
-
-        Command command = new Command();
-        command.setActualInstance(subtype);
-
-        return ledgerApi.prepareSubmissionForSigning(
-                operator.bearerToken,
-                choicePayload.transfer.sender,
-                List.of(command),
-                disclosedContracts);
     }
 
     private static void handleException(Exception ex) {
