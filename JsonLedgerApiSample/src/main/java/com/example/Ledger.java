@@ -15,6 +15,7 @@
 
 package com.example;
 
+import com.daml.ledger.javaapi.data.Template;
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -75,6 +76,24 @@ public class Ledger {
 
         IdentifierFilter identifierFilter = new IdentifierFilter();
         identifierFilter.setActualInstance(identifierFilterOneOf1);
+
+        return new CumulativeFilter()
+                .identifierFilter(identifierFilter);
+    }
+
+    public static CumulativeFilter createFilterByTemplate(TemplateId templateId) {
+        TemplateFilter1 templateFilter1 = new TemplateFilter1()
+                .templateId(templateId.getRaw())
+                .includeCreatedEventBlob(true);
+
+        TemplateFilter templateFilter = new TemplateFilter()
+                .value(templateFilter1);
+
+        IdentifierFilterOneOf2 identifierFilterOneOf2 = new IdentifierFilterOneOf2()
+                .templateFilter(templateFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf2);
 
         return new CumulativeFilter()
                 .identifierFilter(identifierFilter);

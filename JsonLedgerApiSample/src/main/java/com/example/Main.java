@@ -38,6 +38,7 @@ import java.security.KeyPair;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 
 public class Main {
 
@@ -112,17 +113,27 @@ public class Main {
             // wait for the treasury party to receive the transfer
             BigDecimal updatedBalance = priorBalance;
             printStep("Waiting for holdings transfer to complete");
-            do {
-                System.out.println("Waiting...");
-                Thread.sleep(2 * 1000);
-                updatedBalance = getTotalHoldings(operator, ledgerApi, treasury, cantonCoinInstrumentId);
-            } while (updatedBalance.compareTo(priorBalance) == 0);
+            waitFor( 2 * 1000, 10, () -> {
+                return getTotalHoldings(operator, ledgerApi, treasury, cantonCoinInstrumentId).compareTo(priorBalance) > 0;
+            });
 
             printStep("Success!");
             printTotalHoldings(operator, ledgerApi, allUsers, cantonCoinInstrumentId);
             System.exit(0);
         } catch (Exception ex) {
             handleException(ex);
+        }
+    }
+
+    private interface WaitLoopCheck {
+        boolean getAsBoolean() throws Exception;
+    }
+
+    private static void waitFor(long sleepForMillis, int retries, WaitLoopCheck checkState) throws Exception {
+        while (!checkState.getAsBoolean() && retries > 0) {
+            System.out.println("Waiting...");
+            Thread.sleep(sleepForMillis);
+            retries--;
         }
     }
 
@@ -335,9 +346,16 @@ public class Main {
     private static void preapproveTransfers(SampleUser operator, Validator validatorApi, Ledger ledgerApi, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
         List<DisclosedContract> noDisclosures = new ArrayList<>();
         var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalPartyId, operator.partyId, Env.DSO_PARTY);
-        List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_ID, transferPreapprovalProposal);
+        List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_PROPOSAL_ID, transferPreapprovalProposal);
         prepareAndSign(ledgerApi, operator.bearerToken, externalPartyId, externalPartyKeyPair, createTransferPreapprovalCommands, noDisclosures);
+
         // the validator node will automatically accept any transfer preapproval proposal submitted to it.
+        CumulativeFilter transferPreapprovalFilter = Ledger.createFilterByTemplate(TemplateId.TRANSFER_PREAPPROVAL_ID);
+        System.out.println("Waiting for TransferPreapprovalProposal contract to be accepted for " + externalPartyId + "...");
+        waitFor(5 * 1000, 12, () -> {
+            List<JsGetActiveContractsResponse> activeContracts = ledgerApi.getActiveContractsByFilter(operator.bearerToken, externalPartyId, List.of(transferPreapprovalFilter));
+            return !activeContracts.isEmpty();
+        });
     }
 
     private static void transferAsset(
