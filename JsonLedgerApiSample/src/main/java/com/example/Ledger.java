@@ -62,7 +62,9 @@ public class Ledger {
         this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
         return response.getUsers().stream().map(u -> u.getId()).toList();
-    }    public Optional<User> getUser(String bearerToken, String userId) throws ApiException {
+    }
+
+    public Optional<User> getUser(String bearerToken, String userId) throws ApiException {
         this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
         return response.getUsers().stream().filter(u -> u.getId().equals(userId)).findFirst();
