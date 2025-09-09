@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Ledger {
     private final DefaultApi ledgerApi;
@@ -54,10 +55,66 @@ public class Ledger {
         return response.getOffset();
     }
 
+    // TODO: support multiple pages of response
     public List<String> getUsers(String bearerToken) throws ApiException {
         this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
         return response.getUsers().stream().map(u -> u.getId()).toList();
+    }
+
+    public Optional<User> getUser(String bearerToken, String userId) throws ApiException {
+        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+        ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
+        return response.getUsers().stream().filter(u -> u.getId().equals(userId)).findFirst();
+    }
+
+    public User getOrCreateUser(String bearerToken, String partyHint, String partyId) throws ApiException {
+        Optional<User> currentUser = getUser(bearerToken, partyHint);
+
+        // user does not exist
+        if (currentUser.isEmpty()) {
+            User user = new User()
+                    .id(partyHint)
+                    .primaryParty("")
+                    .isDeactivated(false)
+                    .identityProviderId("")
+                    .metadata(new ObjectMeta()
+                            .annotations(Map.of())
+                            .resourceVersion(""));
+
+            Kind kind = new Kind();
+            KindOneOf1 canReadAsKind = new KindOneOf1().canReadAs(new CanReadAs().value(new CanReadAs1().party(partyId)));
+            kind.setActualInstance(canReadAsKind);
+            Right right = new Right().kind(kind);
+            CreateUserRequest request = new CreateUserRequest().user(user).addRightsItem(right);
+
+            this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+            this.ledgerApi.postV2Users(request);
+            return user;
+        }
+
+        // user exists, but the expected party id was not given in the environment
+        else if (partyId.isBlank()) {
+            throw new IllegalArgumentException("The user " + partyHint + " exists for party " + partyId + ". Missing environment variable for user party?");
+        }
+
+        else {
+            this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+            Optional<CanReadAs> canReadAsPartyId =
+                    ledgerApi.getV2UsersUserIdRights(currentUser.get().getId()).getRights().stream()
+                            .filter(r -> r.getKind().getActualInstance() instanceof CanReadAs)
+                            .map(r -> r.getKind().getKindOneOf1().getCanReadAs())
+                            .filter(r -> r.getValue().getParty().equals(partyId))
+                            .findFirst();
+
+            // user exists, but cannot read as the given party id
+            if (canReadAsPartyId.isEmpty()) {
+                throw new IllegalArgumentException("The user " + partyHint + " already exists but cannot read as party " + partyId);
+            }
+
+            // user exists and can read as the given party
+            return currentUser.get();
+        }
     }
 
     public List<JsGetActiveContractsResponse> getActiveContractsForInterface(String bearerToken, String partyId, String interfaceId) throws Exception {
