@@ -31,6 +31,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -300,5 +301,67 @@ public class Ledger {
 //        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
 //        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+    }
+
+    public class CompletionResult {
+
+        public Long continueAtOffset;
+        public List<Completion1> completions;
+
+        public CompletionResult() {
+            this.continueAtOffset = 0L;
+            this.completions = new ArrayList<>();
+        }
+
+        public void observeCompletionResponseItem(CompletionResponse item) {
+            Object subResponse = item.getActualInstance();
+            if (subResponse instanceof CompletionResponseOneOf) {
+                Completion1 completion = ((CompletionResponseOneOf)subResponse)
+                        .getCompletion()
+                        .getValue();
+                this.completions.add(completion);
+            } else if (subResponse instanceof CompletionResponseOneOf1) {
+                // ignore
+            } else if (subResponse instanceof CompletionResponseOneOf2) {
+                this.continueAtOffset = ((CompletionResponseOneOf2)subResponse)
+                        .getOffsetCheckpoint()
+                        .getValue()
+                        .getOffset();
+            } else {
+                throw new UnsupportedOperationException("Did not know how to handle completion response item " + subResponse);
+            }
+        }
+
+        public Optional<Status> resultCodeFor(String commandId) {
+            Optional<Status> result = Optional.empty();
+            for (Completion1 completion : completions) {
+                if (completion.getCommandId().equals(commandId)) {
+                    result = Optional.of(completion.getStatus());
+                }
+            }
+            return result;
+        }
+    }
+
+    public CompletionResult getCompletions(String userId, List<String> parties, Long beginExclusive) throws ApiException {
+        CompletionStreamRequest request = new CompletionStreamRequest()
+                .userId(userId)
+                .parties(parties)
+                .beginExclusive(beginExclusive);
+
+        System.out.println("\nget completions request: " + request.toJson() + "\n");
+        List<CompletionStreamResponse> response = this.ledgerApi.postV2CommandsCompletions(request, null, null);
+        System.out.println("\nget completions response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+
+        CompletionResult result = new CompletionResult();
+        for (CompletionStreamResponse item : response) {
+            result.observeCompletionResponseItem(item.getCompletionResponse());
+        }
+
+        return result;
+    }
+
+    public CompletionResult getCompletions(String userId, List<String> parties) throws ApiException {
+        return getCompletions(userId, parties, 0L);
     }
 }

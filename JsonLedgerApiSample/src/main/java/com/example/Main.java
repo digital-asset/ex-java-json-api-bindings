@@ -179,7 +179,9 @@ public class Main {
             TemplateId interfaceId,
             JsonDecoder<T> interfaceValueParser
     ) {
-        JsActiveContract activeContract = contractEntry.getJsContractEntryOneOf().getJsActiveContract();
+        Object entryInstance = contractEntry.getActualInstance();
+        if (!(entryInstance instanceof JsContractEntryOneOf)) { return null; }
+        JsActiveContract activeContract = ((JsContractEntryOneOf)entryInstance).getJsActiveContract();
         String instanceContractId = activeContract.getCreatedEvent().getContractId();
 
         List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();
