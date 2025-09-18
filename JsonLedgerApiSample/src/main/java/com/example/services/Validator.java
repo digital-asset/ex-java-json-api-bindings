@@ -13,13 +13,15 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
 import com.example.client.validator.api.ValidatorApi;
 import com.example.client.validator.api.ValidatorPublicApi;
 import com.example.client.validator.invoker.ApiClient;
 import com.example.client.validator.invoker.ApiException;
 import com.example.client.validator.model.*;
+import com.example.signing.Encode;
+import com.example.signing.Keys;
 
 import java.security.PublicKey;
 import java.util.List;
@@ -74,34 +76,5 @@ public class Validator {
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
 //        System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
         return response.getPartyId();
-    }
-
-    public CreateExternalPartySetupProposalResponse createExternalPartySetupProposal(String bearerToken, String partyId) throws ApiException {
-        CreateExternalPartySetupProposalRequest request = new CreateExternalPartySetupProposalRequest();
-        request.setUserPartyId(partyId);
-
-//        System.out.println("\ncreate external party setup proposal request: " + request.toJson() + "\n");
-        this.validatorApi.getApiClient().setBearerToken(bearerToken);
-        CreateExternalPartySetupProposalResponse response = this.validatorApi.createExternalPartySetupProposal(request);
-//        System.out.println("\ncreate external party setup proposal response: " + response.toJson() + "\n");
-        return response;
-    }
-
-    public PrepareAcceptExternalPartySetupProposalResponse prepareAcceptExternalPartySetupProposal(String partyId, String contractId) throws ApiException {
-        PrepareAcceptExternalPartySetupProposalRequest request = new PrepareAcceptExternalPartySetupProposalRequest();
-        request.setUserPartyId(partyId);
-        request.setContractId(contractId);
-        return this.validatorApi.prepareAcceptExternalPartySetupProposal(request);
-    }
-
-    public SubmitAcceptExternalPartySetupProposalResponse submitAcceptExternalPartySetupProposal(String bearerToken, ExternalPartySubmission acceptSubmission) throws ApiException {
-        SubmitAcceptExternalPartySetupProposalRequest request = new SubmitAcceptExternalPartySetupProposalRequest();
-        request.setSubmission(acceptSubmission);
-
-//        System.out.println("\nsubmit acceptance of external party setup proposal request: " + request.toJson() + "\n");
-        this.validatorApi.getApiClient().setBearerToken(bearerToken);
-        SubmitAcceptExternalPartySetupProposalResponse response = this.validatorApi.submitAcceptExternalPartySetupProposal(request);
-//        System.out.println("\nsubmit acceptance of external party setup proposal response: " + request.toJson() + "\n");
-        return response;
     }
 }

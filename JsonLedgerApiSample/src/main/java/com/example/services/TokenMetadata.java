@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
 import com.example.client.tokenMetadata.api.DefaultApi;
 import com.example.client.tokenMetadata.invoker.ApiClient;

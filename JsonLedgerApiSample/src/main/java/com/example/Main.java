@@ -23,6 +23,12 @@ import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.client.validator.model.SignedTopologyTx;
 import com.example.client.validator.model.TopologyTx;
+import com.example.models.ContractAndId;
+import com.example.models.Splice;
+import com.example.models.TemplateId;
+import com.example.services.*;
+import com.example.signing.Encode;
+import com.example.signing.Keys;
 import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -132,6 +138,10 @@ public class Main {
             System.out.println("Waiting...");
             Thread.sleep(sleepForMillis);
             retries--;
+        }
+        if (retries == 0) {
+            System.out.println("Check failed, aborting...");
+            System.exit(3);
         }
     }
 
@@ -328,9 +338,6 @@ public class Main {
                 System.out.println("New party: " + newParty);
                 Keys.printKeyPair(partyHint, externalPartyKeyPair);
                 preapproveTransfers(operator, validatorApi, ledgerApi, newParty, externalPartyKeyPair);
-                System.out.println("Created transfer preapproval for " + newParty);
-                User user = ledgerApi.getOrCreateUser(operator.bearerToken, partyHint, newParty);
-                System.out.println("User " + user.getId() + " can read from the ledger as " + newParty);
                 return newParty;
             } catch (Exception ex) {
                 handleException(ex);
@@ -343,14 +350,16 @@ public class Main {
     // (i.e., the 200 parties-per-node limitation).
     // https://docs.dev.sync.global/scalability/scalability.html#bypassing-the-limit
     private static void preapproveTransfers(SampleUser operator, Validator validatorApi, Ledger ledgerApi, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
+        String commandId = java.util.UUID.randomUUID().toString();
+        printStep("Creating transfer preapproval for " + externalPartyId + " using command ID " + commandId);
         List<DisclosedContract> noDisclosures = new ArrayList<>();
         var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalPartyId, operator.partyId, Env.DSO_PARTY);
         List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_PROPOSAL_ID, transferPreapprovalProposal);
-        prepareAndSign(ledgerApi, operator.bearerToken, externalPartyId, externalPartyKeyPair, createTransferPreapprovalCommands, noDisclosures);
+
+        prepareAndSign(ledgerApi, operator.bearerToken, externalPartyId, externalPartyKeyPair, commandId, createTransferPreapprovalCommands, noDisclosures);
 
         // the validator node will automatically accept any transfer preapproval proposal submitted to it.
         CumulativeFilter transferPreapprovalFilter = Ledger.createFilterByTemplate(TemplateId.TRANSFER_PREAPPROVAL_ID);
-        System.out.println("Waiting for TransferPreapprovalProposal contract to be accepted for " + externalPartyId + "...");
         waitFor(5 * 1000, 12, () -> {
             List<JsGetActiveContractsResponse> activeContracts = ledgerApi.getActiveContractsByFilter(operator.bearerToken, externalPartyId, List.of(transferPreapprovalFilter));
             return !activeContracts.isEmpty();
@@ -388,7 +397,9 @@ public class Main {
                 .toList();
         printToken("Transfer factory: ", transferFactoryWithChoiceContext.getFactoryId());
 
-        printStep("Transfer from " + sender.partyId + " to " + receiver.partyId);
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        printStep("Transfer from " + sender.partyId + " to " + receiver.partyId + " with command ID " + commandId);
 
         List<Command> transferCommands = Ledger.makeExerciseCommand(
                 TemplateId.TRANSFER_FACTORY_INTERFACE_ID,
@@ -402,17 +413,18 @@ public class Main {
             ledgerApi.submitAndWaitForCommands(
                     operator.bearerToken,
                     sender.partyId,
+                    commandId,
                     transferCommands,
                     disclosures);
         } else {
             // transfer from external party
-            prepareAndSign(ledgerApi, operator.bearerToken, sender.partyId, sender.keyPair.get(), transferCommands, disclosures);
+            prepareAndSign(ledgerApi, operator.bearerToken, sender.partyId, sender.keyPair.get(), commandId, transferCommands, disclosures);
         }
         System.out.println("Transfer complete");
     }
 
-    private static void prepareAndSign(Ledger ledgerApi, String bearerToken, String partyId, KeyPair keyPair, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
-        JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(bearerToken, partyId, commands, disclosures);
+    private static void prepareAndSign(Ledger ledgerApi, String bearerToken, String partyId, KeyPair keyPair, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
+        JsPrepareSubmissionResponse preparedTransaction = ledgerApi.prepareSubmissionForSigning(bearerToken, partyId, commandId, commands, disclosures);
         SinglePartySignatures signature = Ledger.makeSingleSignature(preparedTransaction, partyId, keyPair);
         ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
     }
@@ -461,5 +473,9 @@ public class Main {
 
     private interface WaitLoopCheck {
         boolean getAsBoolean() throws Exception;
+    }
+
+    private interface JsonDecoder<T> {
+        T decode(String input) throws IOException;
     }
 }

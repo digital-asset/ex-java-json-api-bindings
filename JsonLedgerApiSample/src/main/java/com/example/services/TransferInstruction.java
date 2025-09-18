@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.client.transferInstruction.api.DefaultApi;

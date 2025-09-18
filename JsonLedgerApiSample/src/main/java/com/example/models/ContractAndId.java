@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.models;
 
 public record ContractAndId<T>(
         String contractId,

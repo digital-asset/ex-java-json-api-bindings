@@ -13,14 +13,18 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
+import com.example.Env;
 import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.models.TemplateId;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
+import com.example.signing.Encode;
+import com.example.signing.Keys;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.InvalidKeyException;
@@ -227,10 +231,10 @@ public class Ledger {
     public JsSubmitAndWaitForTransactionResponse submitAndWaitForCommands(
             String bearerToken,
             String actAs,
+            String commandId,
             List<Command> commandsList,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
 
         List<String> parties = List.of(actAs);
 
@@ -254,10 +258,10 @@ public class Ledger {
     public JsPrepareSubmissionResponse prepareSubmissionForSigning(
             String bearerToken,
             String partyId,
+            String commandId,
             List<Command> commands,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
         JsPrepareSubmissionRequest request = new JsPrepareSubmissionRequest()
                 .synchronizerId(Env.SYNCHRONIZER_ID)
                 .userId(Env.LEDGER_USER_ID) // TODO: replace this

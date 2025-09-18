@@ -1,4 +1,4 @@
-package com.example;
+package com.example.models;
 
 import splice.wallet.transferpreapproval.TransferPreapprovalProposal;
 

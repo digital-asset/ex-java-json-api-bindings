@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
 import com.example.client.scan.api.ScanApi;
 import com.example.client.scan.invoker.ApiClient;

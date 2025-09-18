@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.signing;
 
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
