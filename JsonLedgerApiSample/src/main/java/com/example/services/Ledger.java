@@ -175,7 +175,7 @@ public class Ledger {
                             .resourceVersion(""));
 
             Kind kind = new Kind();
-            KindOneOf1 canReadAsKind = new KindOneOf1().canReadAs(new CanReadAs().value(new CanReadAs1().party(partyId)));
+            KindOneOf3 canReadAsKind = new KindOneOf3().canReadAs(new CanReadAs().value(new CanReadAs1().party(partyId)));
             kind.setActualInstance(canReadAsKind);
             Right right = new Right().kind(kind);
             CreateUserRequest request = new CreateUserRequest().user(user).addRightsItem(right);
@@ -193,7 +193,7 @@ public class Ledger {
             Optional<CanReadAs> canReadAsPartyId =
                     ledgerApi.getV2UsersUserIdRights(currentUser.get().getId()).getRights().stream()
                             .filter(r -> r.getKind().getActualInstance() instanceof CanReadAs)
-                            .map(r -> r.getKind().getKindOneOf1().getCanReadAs())
+                            .map(r -> r.getKind().getKindOneOf3().getCanReadAs())
                             .filter(r -> r.getValue().getParty().equals(partyId))
                             .findFirst();
 
