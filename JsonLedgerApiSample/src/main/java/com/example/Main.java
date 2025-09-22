@@ -133,7 +133,6 @@ public class Main {
                     cantonCoinInstrumentId);
 
             // wait for the treasury party to receive the transfer
-            BigDecimal updatedBalance = priorBalance;
             printStep("Waiting for holdings transfer to complete");
             waitFor(2 * 1000, 10, () -> {
                 return wallet.getTotalHoldings(treasuryParty.partyId(), cantonCoinInstrumentId).compareTo(priorBalance) > 0;
