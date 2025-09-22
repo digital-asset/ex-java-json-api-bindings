@@ -64,10 +64,10 @@ public class Main {
             wallet.confirmConnectivity();
 
             String resolvedSynchronizerId = env.synchronizerId()
-                    .orElse(findTransferSynchronizerId(wallet));
+                    .orElseGet(() -> findTransferSynchronizerId(wallet));
 
             String resolvedExchangePartyId = env.exchangePartyId()
-                    .orElse(defaultToValidatorParty(wallet));
+                    .orElseGet(() -> defaultToValidatorParty(wallet));
 
             // setup sample's parties, keys, etc.
             printStep("Confirm authentication");
@@ -76,7 +76,7 @@ public class Main {
             String dsoParty = wallet.getDsoPartyId();
 
             ExternalParty treasuryParty = env.existingTreasuryParty()
-                    .orElse(allocateNewExternalParty(
+                    .orElseGet(() -> allocateNewExternalParty(
                             wallet,
                             resolvedSynchronizerId,
                             dsoParty,
@@ -85,7 +85,7 @@ public class Main {
                     ));
 
             ExternalParty testParty = env.existingTestParty()
-                    .orElse(allocateNewExternalParty(
+                    .orElseGet(() -> allocateNewExternalParty(
                             wallet,
                             resolvedSynchronizerId,
                             dsoParty,
@@ -165,46 +165,62 @@ public class Main {
         System.out.println();
     }
 
-    private static String defaultToValidatorParty(Wallet wallet) throws Exception {
-        String validatorPartyId = wallet.validatorApi.getValidatorParty();
-        System.out.printf("Exchange party not specified, defaulting to validator node party: %s%n", validatorPartyId);
-        return validatorPartyId;
+    private static String defaultToValidatorParty(Wallet wallet) {
+        try {
+            String validatorPartyId = wallet.validatorApi.getValidatorParty();
+            System.out.printf("Exchange party not specified, defaulting to validator node party: %s%n", validatorPartyId);
+            return validatorPartyId;
+        } catch (com.example.client.validator.invoker.ApiException ex) {
+            System.err.println("Could not get the validator party.");
+            handleException(ex);
+            return null;
+        }
     }
 
-    private static String findTransferSynchronizerId(Wallet wallet) throws Exception {
-        String synchronizerId = wallet.scanApi.getSynchronizerId();
-        System.out.println("Selecting synchronizer id: " + synchronizerId);
-        return synchronizerId;
+    private static String findTransferSynchronizerId(Wallet wallet) {
+        try {
+            String synchronizerId = wallet.scanApi.getSynchronizerId();
+            System.out.println("Selecting synchronizer id: " + synchronizerId);
+            return synchronizerId;
+        } catch (com.example.client.scan.invoker.ApiException ex) {
+            System.err.println("Could not get the synchronizer id.");
+            handleException(ex);
+            return null;
+        }
     }
 
-    private static ExternalParty allocateNewExternalParty(Wallet wallet, String synchronizerId, String dso, String exchangePartyId, String partyHint) throws Exception {
+    private static ExternalParty allocateNewExternalParty(Wallet wallet, String synchronizerId, String dso, String exchangePartyId, String partyHint) {
+        try {
+            printStep("Generating keypair and wallet for %s".formatted(partyHint));
+            KeyPair externalPartyKeyPair = Keys.generate();
 
-        printStep("Generating keypair and wallet for %s".formatted(partyHint));
-        KeyPair externalPartyKeyPair = Keys.generate();
+            System.out.println("Allocating new external party with hint: %s".formatted(partyHint));
+            ExternalParty externalParty = wallet.allocateExternalPartyNew(synchronizerId, partyHint, externalPartyKeyPair);
 
-        System.out.println("Allocating new external party with hint: %s".formatted(partyHint));
-        ExternalParty externalParty = wallet.allocateExternalPartyNew(synchronizerId, partyHint, externalPartyKeyPair);
+            System.out.println("Allocated party: " + externalParty.partyId());
+            Keys.printKeyPairSummary(partyHint, externalPartyKeyPair);
 
-        System.out.println("Allocated party: " + externalParty.partyId());
-        Keys.printKeyPairSummary(partyHint, externalPartyKeyPair);
+            // the validator node will automatically accept any transfer preapproval proposal submitted to it.
+            printStep("Pre-approving " + externalParty.partyId() + " for CC transfers");
+            Long offsetBeforeProposal = wallet.getLedgerEnd();
+            System.out.println("Marking offset: " + offsetBeforeProposal);
 
-        // the validator node will automatically accept any transfer preapproval proposal submitted to it.
-        printStep("Pre-approving " + externalParty.partyId() + " for CC transfers");
-        Long offsetBeforeProposal = wallet.getLedgerEnd();
-        System.out.println("Marking offset: " + offsetBeforeProposal);
+            String commandId = java.util.UUID.randomUUID().toString();
+            wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty);
 
-        String commandId = java.util.UUID.randomUUID().toString();
-        wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty);
+            System.out.println("Awaiting completion of transfer preapproval proposal (Command ID %s".formatted(commandId));
+            expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
 
-        System.out.println("Awaiting completion of transfer preapproval proposal (Command ID %s".formatted(commandId));
-        expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
+            System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
+            waitFor(5 * 1000, 12, () -> {
+                return wallet.hasEstablishedTransferPreapproval(externalParty.partyId());
+            });
 
-        System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
-        waitFor(5 * 1000, 12, () -> {
-            return wallet.hasEstablishedTransferPreapproval(externalParty.partyId());
-        });
-
-        return externalParty;
+            return externalParty;
+        } catch (Exception ex) {
+            handleException(ex);
+            return null;
+        }
     }
 
     private static void validateHoldings(BigDecimal amount, List<ContractAndId<HoldingView>> holdings) {
