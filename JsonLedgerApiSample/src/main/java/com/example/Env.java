@@ -43,7 +43,7 @@ public record Env(
     public static Env validate() throws Exception {
         LedgerUser managingUser = readManagingUser();
         Optional<ExternalParty> existingTreasuryParty = readExternalParty("TREASURY");
-        Optional<ExternalParty> existingTestParty = readExternalParty("SENDER");
+        Optional<ExternalParty> existingTestParty = readExternalParty("TEST");
 
         String ledgerApiUrl = readApiUrl("LEDGER_API_URL", "http://wallet.localhost/api/participant");
         String validatorApiUrl = readApiUrl("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
