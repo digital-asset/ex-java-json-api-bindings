@@ -194,7 +194,7 @@ public class Main {
             printStep("Generating keypair and wallet for %s".formatted(partyHint));
             KeyPair externalPartyKeyPair = Keys.generate();
 
-            System.out.println("Allocating new external party with hint: %s".formatted(partyHint));
+            System.out.printf("Allocating new external party with hint: %s%n", partyHint);
             ExternalParty externalParty = wallet.allocateExternalPartyNew(synchronizerId, partyHint, externalPartyKeyPair);
 
             System.out.println("Allocated party: " + externalParty.partyId());
@@ -208,7 +208,7 @@ public class Main {
             String commandId = java.util.UUID.randomUUID().toString();
             wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty);
 
-            System.out.println("Awaiting completion of transfer preapproval proposal (Command ID %s".formatted(commandId));
+            System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s%n", commandId);
             expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
 
             System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
@@ -253,8 +253,7 @@ public class Main {
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
         wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, amount, holdings);
 
-        System.out.println("Awaiting completion of transfer from %s to %s (Command ID %s)%n"
-                .formatted(senderPartyId, receiverPartyId, commandId));
+        System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
