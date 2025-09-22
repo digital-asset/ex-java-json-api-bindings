@@ -40,29 +40,6 @@ public record Env(
 ) {
     public final static String MANAGING_USER_TOKEN_KEY = "VALIDATOR_TOKEN";
 
-    /*
-    public final static String LEDGER_API_URL = getenv("LEDGER_API_URL", "http://wallet.localhost/api/participant");
-    public final static String VALIDATOR_API_URL = getenv("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
-    public final static String SCAN_PROXY_API_URL = getenv("SCAN_PROXY_API_URL", Env.VALIDATOR_API_URL);
-    public final static String SCAN_API_URL = getenv("SCAN_API_URL", "");
-
-    public final static String VALIDATOR_TOKEN = getenv(MANAGING_USER_TOKEN_KEY, "");
-
-    public final static String TREASURY_PARTY_HINT = getenv("TREASURY_PARTY_HINT", "treasury");
-    public final static String TREASURY_TOKEN = getenv("TREASURY_TOKEN", "");
-    public final static String SENDER_PARTY_HINT = getenv("SENDER_PARTY_HINT", "alice");
-    public final static String SENDER_TOKEN = getenv("SENDER_TOKEN", "");
-    public final static String LEDGER_USER_ID = getenv("LEDGER_USER_ID", "");
-    public final static String TRANSFER_AMOUNT = getenv("TRANSFER_AMOUNT", "100");
-    public static String TREASURY_PARTY = getenv("TREASURY_PARTY", "");
-    public static String SENDER_PARTY = getenv("SENDER_PARTY", "");
-    public static String SENDER_PUBLIC_KEY = getenv("SENDER_PUBLIC_KEY", "");
-    public static String SENDER_PRIVATE_KEY = getenv("SENDER_PRIVATE_KEY", "");
-    public static String SYNCHRONIZER_ID = "";
-    public static String DSO_PARTY = "";
-    public static String VALIDATOR_PARTY = getenv("VALIDATOR_PARTY", "");
-     */
-
     public static Env validate() throws Exception {
         LedgerUser managingUser = readManagingUser();
         Optional<ExternalParty> existingTreasuryParty = readExternalParty("TREASURY");
