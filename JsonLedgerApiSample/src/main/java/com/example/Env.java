@@ -109,7 +109,7 @@ public record Env(
     }
 
     private static Optional<String> readExchangeParty() {
-        String exchangeParty = System.getenv("EXCAHNGE_PARTY");
+        String exchangeParty = System.getenv("EXCHANGE_PARTY");
         if (exchangeParty == null || exchangeParty.isBlank()) {
             return Optional.empty();
         }
