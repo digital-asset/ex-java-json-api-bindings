@@ -125,73 +125,73 @@ This sample was last tested with Canton Network APIs `0.4.13`.
 ```
 > mvn exec:java
 
-=== Print environment variables ===
-LEDGER_API_URL: http://wallet.localhost/api/participant
-VALIDATOR_API_URL: http://wallet.localhost/api/validator
-SCAN_PROXY_API_URL: http://wallet.localhost/api/validator
-
-LEDGER_USER_ID: ledger-api-user
-VALIDATOR_TOKEN: eyJraWQiOi..._gvb4rgebD
-
-TREASURY_PARTY_HINT: treasury
-TREASURY_PARTY: treasury::1220c384522ff5434e5f9107b0c39a7198f8522ba69bc510fe27f3f8b62af2bb2558
-TREASURY_TOKEN: eyJraWQiOi...JvBPOg0Orn
-
-SENDER_PARTY_HINT: alice
-SENDER_PARTY: alice::122087d28d81c050f15a2270c4fa16f3de7a516338829319931663d385da993b1c0c
-SENDER_TOKEN: eyJraWQiOi...Or66kgN9l0
-SENDER_PUBLIC_KEY: h8hnZ+2d9kWz5G8RsHe+6JGIyhzGp1guYwNLvL+g//M=
-SENDER_PRIVATE_KEY: Dk+Ncdk7PfzUJ3gj6Ch42V/QloS/eiHOJqen6v2p7/qHyGdn7Z32RbPkbxGwd77okYjKHManWC5jA0u8v6D/8w==
-
 === Confirm API connectivity ===
 Version: 3.3.0-SNAPSHOT
-Validator Party: da-wallace-1::122055a866a25d4829b64f629f37dbde2abecc8832cad66ee85e11e5e268e25e539d
 Synchronizer id: global-domain::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
-DSO Party: DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
 Registry Party: DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
+Selecting synchronizer id: global-domain::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
+Exchange party not specified, defaulting to validator node party: da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3
 
 === Confirm authentication ===
-Ledger end: 56278
-Participant users: [administrator, alice, da-wallace-1, da-wallace-2, ledger-api-user, participant_admin, test-wallet-1]
-Validator users: [administrator, test-wallet-1, da-wallace-1, da-wallace-2]
-ledger-api-user has 1999954850.3266628858 Amulet
-alice has 11.3000000000 Amulet
-treasury has 880.0000000000 Amulet
+DSO Party: DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
+Ledger end: 37503
 
-=== Selecting holdings ===
-Selecting holdings for a 9900.0000000000000499600361081320443190634250640869140625000 unit transfer from da-wallace-1::122055a866a25d4829b64f629f37dbde2abecc8832cad66ee85e11e5e268e25e539d
-Found sufficient holdings for transfer: 
-- 1999953605.1525355098 Amulet
+=== Generating keypair and wallet for treasury ===
+Allocating new external party with hint: treasury
+Allocated party: treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb
+treasury public key:  t0e+twb9uAxJN1Xe5Aif+Td/a9ZjuXX0qBOmac+MxaI=
+treasury private key: xbIIHe2Zh8e4CQa6XRtdnKzdxeeO0XMLy9RU1Wx/3s23R763Bv24DEk3Vd7kCJ/5N39r1mO5dfSoE6Zpz4zFog==
 
-=== Get transfer factory for da-wallace-1::122055a866a25d4829b64f629f37dbde2abecc8832cad66ee85e11e5e268e25e539d ===
-Transfer factory: : 009f00e5bf...2418207238
 
-=== Transfer from da-wallace-1::122055a866a25d4829b64f629f37dbde2abecc8832cad66ee85e11e5e268e25e539d to alice::122087d28d81c050f15a2270c4fa16f3de7a516338829319931663d385da993b1c0c ===
-Transferring from local party
-Transfer complete
-ledger-api-user has 1999944921.2266628858 Amulet
-alice has 9911.3000000000 Amulet
-treasury has 880.0000000000 Amulet
-
-=== Selecting holdings ===
-Selecting holdings for a 9000 unit transfer from alice::122087d28d81c050f15a2270c4fa16f3de7a516338829319931663d385da993b1c0c
-Found sufficient holdings for transfer: 
-- 11.3000000000 Amulet
-- 9900.0000000000 Amulet
-
-=== Get transfer factory for alice::122087d28d81c050f15a2270c4fa16f3de7a516338829319931663d385da993b1c0c ===
-Transfer factory: : 009f00e5bf...2418207238
-
-=== Transfer from alice::122087d28d81c050f15a2270c4fa16f3de7a516338829319931663d385da993b1c0c to treasury::1220c384522ff5434e5f9107b0c39a7198f8522ba69bc510fe27f3f8b62af2bb2558 ===
-Transferring from external party
-Transfer complete
-
-=== Waiting for holdings transfer to complete ===
+=== Pre-approving treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb for CC transfers ===
+Marking offset: 37514
+Awaiting completion of transfer preapproval proposal (Command ID c96b385f-5141-4e97-9ca9-cc86c5f2b7ba
 Waiting...
+Awaiting auto-acceptance of transfer preapproval proposal
 Waiting...
+
+=== Generating keypair and wallet for alice ===
+Allocating new external party with hint: alice
+Allocated party: alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca
+alice public key:  wmaaLpmV6wlmFoUVEGdFtlEbfN9JSRSI+r8LYXehZAw=
+alice private key: jlpYidK7gtvDESjv6iU1ODdbLXDi2ALsbAi58ROMkBjCZpoumZXrCWYWhRUQZ0W2URt830lJFIj6vwthd6FkDA==
+
+
+=== Pre-approving alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca for CC transfers ===
+Marking offset: 37531
+Awaiting completion of transfer preapproval proposal (Command ID ddd82cbe-bde3-41f3-83a4-79a1930ae72e
+Waiting...
+Awaiting auto-acceptance of transfer preapproval proposal
+Waiting...
+
+=== Print total holdings ===
+treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 0 Amulet
+alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 0 Amulet
+
+
+=== Transfer 105.00 from da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3 to alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca ===
+Found sufficient holdings for transfer: 
+- 1352135.0771429757 Amulet
+Awaiting completion of transfer from da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3 to alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca (Command ID 17852475-66a5-4580-b4f1-328b0e65a70f)
+
+Transfer complete
+
+=== Print total holdings ===
+treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 0 Amulet
+alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 105.0000000000 Amulet
+
+
+=== Transfer 100 from alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca to treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb ===
+Found sufficient holdings for transfer: 
+- 105.0000000000 Amulet
+Awaiting completion of transfer from alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca to treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb (Command ID ae426779-0ef3-454f-8590-2123a682510c)
+
+Waiting...
+Transfer complete
 
 === Success! ===
-ledger-api-user has 1999944921.2266628858 Amulet
-alice has 883.1000000000 Amulet
-treasury has 9880.0000000000 Amulet
+
+=== Print total holdings ===
+treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 100.0000000000 Amulet
+alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 3.3333333334 Amulet
 ```
