@@ -16,7 +16,7 @@
 package com.example.models;
 
 import com.example.ConversionHelpers;
-import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.client.transferInstruction.invoker.JSON;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import splice.api.token.holdingv1.Holding;
 import splice.api.token.holdingv1.HoldingView;
@@ -72,7 +72,7 @@ public class TokenStandard {
         Metadata emptyMetadata = new Metadata(new HashMap<>());
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
-        String choiceJson = GsonSingleton.getInstance().toJson(fromApi.getChoiceContext().getChoiceContextData());
+        String choiceJson = JSON.getGson().toJson(fromApi.getChoiceContext().getChoiceContextData());
         ChoiceContext choiceContextFromApi = ConversionHelpers.useValueParser(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
