@@ -64,8 +64,16 @@ public class Wallet {
 
     public void confirmAuthentication() throws Exception {
         // these require a valid Validator token
-        System.out.println("DSO Party: " + this.scanProxyApi.getDsoPartyId());
-        System.out.println("Ledger end: " + this.ledgerApi.getLedgerEnd());
+        try {
+            System.out.println("DSO Party: " + this.scanProxyApi.getDsoPartyId());
+            System.out.println("Ledger end: " + this.ledgerApi.getLedgerEnd());
+        } catch (com.example.client.scanProxy.invoker.ApiException ex) {
+            System.err.println(ex.getCode() + " response when accessing the Scan Proxy API. Check the validator token.");
+            throw ex;
+        } catch (com.example.client.ledger.invoker.ApiException ex) {
+            System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the validator token.");
+            throw ex;
+        }
     }
 
     public String getDsoPartyId() throws Exception {
