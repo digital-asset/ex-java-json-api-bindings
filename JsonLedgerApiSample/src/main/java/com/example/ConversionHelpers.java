@@ -39,8 +39,10 @@ public class ConversionHelpers {
             JsonDecoder<T> interfaceValueParser
     ) {
         Object entryInstance = contractEntry.getActualInstance();
-        if (!(entryInstance instanceof JsContractEntryOneOf)) { return null; }
-        JsActiveContract activeContract = ((JsContractEntryOneOf)entryInstance).getJsActiveContract();
+        if (!(entryInstance instanceof JsContractEntryOneOf)) {
+            return null;
+        }
+        JsActiveContract activeContract = ((JsContractEntryOneOf) entryInstance).getJsActiveContract();
         String instanceContractId = activeContract.getCreatedEvent().getContractId();
 
         List<JsInterfaceView> interfaceViews = activeContract.getCreatedEvent().getInterfaceViews();

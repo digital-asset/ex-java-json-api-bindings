@@ -2,7 +2,10 @@ package com.example.services;
 
 import com.example.client.ledger.model.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class CommandCompletionTracker {
 

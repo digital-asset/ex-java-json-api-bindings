@@ -1,9 +1,9 @@
 package com.example.access;
 
 public record LedgerUser(
-    String userId,
-    String identityProviderId,
-    String bearerToken
+        String userId,
+        String identityProviderId,
+        String bearerToken
 ) {
     public static LedgerUser validateUserToken(String bearerToken, String identityProviderId) throws IllegalArgumentException {
 

@@ -50,7 +50,7 @@ public record Env(
         String scanProxyApiUrl = readApiUrl("SCAN_PROXY_API_URL", validatorApiUrl);
         String scanApiUrl = readApiUrl("SCAN_API_URL", null);
 
-        if (scanApiUrl == null /* add other URL validations here as required*/ ) {
+        if (scanApiUrl == null /* add other URL validations here as required*/) {
             // validation messages already printed by readApiUrl
             System.exit(1);
         }
@@ -64,19 +64,19 @@ public record Env(
         String testPartyHint = getenv("TEST_PARTY_HINT", "alice");
 
         return new Env(
-            managingUser,
-            existingTreasuryParty,
-            existingTestParty,
-            ledgerApiUrl,
-            validatorApiUrl,
-            scanProxyApiUrl,
-            scanApiUrl,
-            tokenStandardUrl,
-            synchronizerId,
-            preferredTransferAmount,
-            exchangePartyId,
-            treasuryPartyHint,
-            testPartyHint
+                managingUser,
+                existingTreasuryParty,
+                existingTestParty,
+                ledgerApiUrl,
+                validatorApiUrl,
+                scanProxyApiUrl,
+                scanApiUrl,
+                tokenStandardUrl,
+                synchronizerId,
+                preferredTransferAmount,
+                exchangePartyId,
+                treasuryPartyHint,
+                testPartyHint
         );
     }
 
@@ -168,10 +168,10 @@ public record Env(
             return defaultValue;
         } else {
             System.out.printf("""
-                Environment variable %s was not set, and no default was available.
-                
-                Please set the %s environment variable and try again.
-                %n""", environmentKey, environmentKey);
+                    Environment variable %s was not set, and no default was available.
+                    
+                    Please set the %s environment variable and try again.
+                    %n""", environmentKey, environmentKey);
             return null;
         }
 

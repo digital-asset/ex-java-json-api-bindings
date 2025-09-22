@@ -19,14 +19,16 @@ import com.example.access.ExternalParty;
 import com.example.client.ledger.model.CompletionStreamResponse;
 import com.example.client.ledger.model.Status;
 import com.example.models.ContractAndId;
-import com.example.services.*;
+import com.example.services.CommandCompletionTracker;
+import com.example.services.Wallet;
 import com.example.signing.Keys;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public class Main {
 
@@ -62,10 +64,10 @@ public class Main {
             wallet.confirmConnectivity();
 
             String resolvedSynchronizerId = env.synchronizerId()
-                .orElse(findTransferSynchronizerId(wallet));
+                    .orElse(findTransferSynchronizerId(wallet));
 
             String resolvedExchangePartyId = env.exchangePartyId()
-                .orElse(defaultToValidatorParty(wallet));
+                    .orElse(defaultToValidatorParty(wallet));
 
             // setup sample's parties, keys, etc.
             printStep("Confirm authentication");
@@ -255,9 +257,9 @@ public class Main {
     private static void expectSuccessfulCompletion(Wallet wallet, String partyId, String commandId, Long startOffset) throws Exception {
         CommandCompletionTracker completionTracker = new CommandCompletionTracker(startOffset);
         waitFor(2000, 10, () -> {
-                List<CompletionStreamResponse> completions = wallet.checkForCommandCompletion(List.of(partyId), completionTracker.nextOffset);
-                completionTracker.observeCompletions(completions);
-                return completionTracker.resultCodeFor(commandId).isPresent();
+            List<CompletionStreamResponse> completions = wallet.checkForCommandCompletion(List.of(partyId), completionTracker.nextOffset);
+            completionTracker.observeCompletions(completions);
+            return completionTracker.resultCodeFor(commandId).isPresent();
         });
 
         Optional<Status> completionStatus = completionTracker.resultCodeFor(commandId);

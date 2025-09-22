@@ -1,13 +1,11 @@
 package com.example.services;
 
-import com.example.*;
+import com.example.ConversionHelpers;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.model.*;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
-import com.example.client.validator.model.SignedTopologyTx;
-import com.example.client.validator.model.TopologyTx;
 import com.example.models.ContractAndId;
 import com.example.models.Splice;
 import com.example.models.TemplateId;
@@ -87,8 +85,8 @@ public class Wallet {
         this.ledgerApi.allocateExternalParty(externalPartyKeyPair, synchronizerId, transactionsToSign, generateStepResponse.getMultiHash());
 
         this.ledgerApi.grantUserRights(this.managingUser.userId(), List.of(
-            Ledger.makeCanReadAsRight(partyId),
-            Ledger.makeCanExecuteAsRight(partyId)
+                Ledger.makeCanReadAsRight(partyId),
+                Ledger.makeCanExecuteAsRight(partyId)
         ));
 
         return new ExternalParty(partyId, externalPartyKeyPair);
@@ -127,14 +125,14 @@ public class Wallet {
         final BigDecimal[] remainingReference = {transferAmount};
 
         return queryForHoldings(partyId, instrumentId).stream()
-            .filter(h -> h.record().lock.isEmpty())
-            .sorted(Comparator.comparing(c -> c.record().amount))
-            .takeWhile(c -> {
-                BigDecimal previousTotal = remainingReference[0];
-                remainingReference[0] = previousTotal.subtract(c.record().amount);
-                return previousTotal.compareTo(BigDecimal.ZERO) > 0;
-            })
-            .toList();
+                .filter(h -> h.record().lock.isEmpty())
+                .sorted(Comparator.comparing(c -> c.record().amount))
+                .takeWhile(c -> {
+                    BigDecimal previousTotal = remainingReference[0];
+                    remainingReference[0] = previousTotal.subtract(c.record().amount);
+                    return previousTotal.compareTo(BigDecimal.ZERO) > 0;
+                })
+                .toList();
     }
 
     public void transferHoldings(

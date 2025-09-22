@@ -17,13 +17,13 @@ package com.example.services;
 
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.access.LedgerUser;
-import com.example.client.ledger.model.Signature;
-import com.example.models.TemplateId;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
+import com.example.client.ledger.model.Signature;
+import com.example.models.TemplateId;
 import com.example.signing.Encode;
 import com.example.signing.Keys;
 import org.jetbrains.annotations.NotNull;
@@ -165,17 +165,17 @@ public class Ledger {
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
 
         return new Signature()
-            .format("SIGNATURE_FORMAT_CONCAT")
-            .signature(Keys.signBase64(keyPair.getPrivate(), payload))
-            .signedBy(fingerprint)
-            .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+                .format("SIGNATURE_FORMAT_CONCAT")
+                .signature(Keys.signBase64(keyPair.getPrivate(), payload))
+                .signedBy(fingerprint)
+                .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
     }
 
     public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         return new SinglePartySignatures()
-            .party(partyId)
-            .signatures(List.of(sign(keyPair, prepareSubmissionResponse.getPreparedTransactionHash())));
+                .party(partyId)
+                .signatures(List.of(sign(keyPair, prepareSubmissionResponse.getPreparedTransactionHash())));
     }
 
     public static SignedTransaction makeSignedTransaction(KeyPair keyPair, String transaction) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
@@ -276,7 +276,7 @@ public class Ledger {
         }
     }
 
-    public GenerateExternalPartyTopologyResponse generateExternalPartyTopology(String synchronizerId, String partyHint, PublicKey publicKey) throws ApiException,  NoSuchAlgorithmException, SignatureException, InvalidKeyException  {
+    public GenerateExternalPartyTopologyResponse generateExternalPartyTopology(String synchronizerId, String partyHint, PublicKey publicKey) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         String publicKeyHex = Encode.toBase64String(publicKey.getEncoded());
 
         SigningPublicKey signingPublicKey = new SigningPublicKey()
@@ -301,7 +301,7 @@ public class Ledger {
     public void allocateExternalParty(KeyPair keyPair, String synchronizerId, List<String> transactions, String transactionMultiHash) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         List<SignedTransaction> signedTransactions = transactions.stream()
                 .map((t) -> new SignedTransaction()
-                .transaction(t))
+                        .transaction(t))
                 .toList();
 
         AllocateExternalPartyRequest request = new AllocateExternalPartyRequest()
@@ -318,9 +318,9 @@ public class Ledger {
     public void grantUserRights(String userId, List<Right> rights) throws ApiException {
 
         GrantUserRightsRequest request = new GrantUserRightsRequest()
-            .userId(userId)
-            .identityProviderId(user.identityProviderId())
-            .rights(rights);
+                .userId(userId)
+                .identityProviderId(user.identityProviderId())
+                .rights(rights);
 
         // System.out.println("\ngrant user rights request: " + request.toJson() + "\n");
         GrantUserRightsResponse response = this.ledgerApi.postV2UsersUserIdRights(userId, request);
