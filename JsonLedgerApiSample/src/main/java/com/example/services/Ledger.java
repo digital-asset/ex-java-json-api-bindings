@@ -50,6 +50,20 @@ public class Ledger {
 
     public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
 
+        /* Sample JSON
+         {
+           "identifierFilter": {
+             "InterfaceFilter": {
+               "value": {
+                 "interfaceId": "#splice-api-token-holding-v1:Splice.Api.Token.HoldingV1:Holding",
+                 "includeInterfaceView": true,
+                 "includeCreatedEventBlob": false
+               }
+             }
+           }
+         }
+         */
+
         InterfaceFilter1 interfaceFilter1 = new InterfaceFilter1()
                 .includeCreatedEventBlob(false)
                 .includeInterfaceView(true)
@@ -69,6 +83,20 @@ public class Ledger {
     }
 
     public static CumulativeFilter createFilterByTemplate(TemplateId templateId) {
+
+        /* Sample JSON
+         {
+           "identifierFilter": {
+             "TemplateFilter": {
+               "value": {
+                 "templateId": "#splice-amulet:Splice.AmuletRules:TransferPreapproval",
+                 "includeCreatedEventBlob": true
+               }
+             }
+           }
+         }
+         */
+
         TemplateFilter1 templateFilter1 = new TemplateFilter1()
                 .templateId(templateId.getRaw())
                 .includeCreatedEventBlob(true);
@@ -105,6 +133,19 @@ public class Ledger {
 
     @NotNull
     public static List<Command> makeCreateCommand(TemplateId templateId, Object payload) {
+
+        /* Sample JSON
+         [{
+           "CreateCommand": {
+             "templateId": "#splice-wallet:Splice.Wallet.TransferPreapproval:TransferPreapprovalProposal",
+             "createArguments": {
+               "receiver": "bob::1220e2b2f76b762df6b9e085f6601f51ad4561c1217cd79372cc78e5a634df753699",
+               "provider": "da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3",
+               "expectedDso": "DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a"
+             }
+           }
+         }]
+         */
 
         CreateCommand createCommand = new CreateCommand()
                 .templateId(templateId.getRaw())
