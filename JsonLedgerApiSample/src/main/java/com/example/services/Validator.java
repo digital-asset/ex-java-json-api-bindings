@@ -15,6 +15,7 @@
 
 package com.example.services;
 
+import com.example.access.LedgerUser;
 import com.example.client.validator.api.ValidatorApi;
 import com.example.client.validator.api.ValidatorPublicApi;
 import com.example.client.validator.invoker.ApiClient;
@@ -31,11 +32,12 @@ public class Validator {
     private final ValidatorApi validatorApi;
     private final ValidatorPublicApi validatorPublicApi;
 
-    public Validator(String baseUrl) {
+    public Validator(String baseUrl, LedgerUser user) {
 
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
+        client.setBearerToken(user.bearerToken());
 
         this.validatorApi = new ValidatorApi(client);
         this.validatorPublicApi = new ValidatorPublicApi(client);
@@ -48,31 +50,28 @@ public class Validator {
     }
 
     // requires authentication
-    public List<String> listUsers(String bearerToken) throws ApiException {
-        this.validatorApi.getApiClient().setBearerToken(bearerToken);
+    public List<String> listUsers() throws ApiException {
         ListUsersResponse response = this.validatorApi.listUsers();
         return response.getUsernames();
     }
 
-    public List<TopologyTx> prepareOnboarding(String bearerToken, String partyHint, PublicKey publicKey) throws ApiException {
+    public List<TopologyTx> prepareOnboarding(String partyHint, PublicKey publicKey) throws ApiException {
         String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest();
         request.setPartyHint(partyHint);
         request.setPublicKey(publicKeyHex);
-        this.validatorApi.getApiClient().setBearerToken(bearerToken);
         GenerateExternalPartyTopologyResponse response = this.validatorApi.generateExternalPartyTopology(request);
 //        System.out.println("\nNew party: " + response.getPartyId());
 //        System.out.println("\ngenerate response: " + response.toJson());
         return response.getTopologyTxs();
     }
 
-    public String submitOnboarding(String bearerToken, List<SignedTopologyTx> signedTxs, PublicKey publicKey) throws ApiException {
+    public String submitOnboarding(List<SignedTopologyTx> signedTxs, PublicKey publicKey) throws ApiException {
         String publicKeyHex = Encode.toHexString(Keys.toRawBytes(publicKey));
         SubmitExternalPartyTopologyRequest request = new SubmitExternalPartyTopologyRequest();
         request.setSignedTopologyTxs(signedTxs);
         request.setPublicKey(publicKeyHex);
 //        System.out.println("\nsubmit onboarding request: " + request.toJson() + "\n");
-        this.validatorApi.getApiClient().setBearerToken(bearerToken);
         SubmitExternalPartyTopologyResponse response = this.validatorApi.submitExternalPartyTopology(request);
 //        System.out.println("\nsubmit onboarding response: " + response.toJson() + "\n");
         return response.getPartyId();

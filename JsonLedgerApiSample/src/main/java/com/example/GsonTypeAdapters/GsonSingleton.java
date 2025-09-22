@@ -41,6 +41,9 @@ public class GsonSingleton {
                     .registerTypeAdapterFactory(new DeduplicationPeriod2.CustomTypeAdapterFactory())
                     .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
                     .registerTypeAdapterFactory(new Kind.CustomTypeAdapterFactory())
+                    .registerTypeAdapterFactory(new CompletionResponse.CustomTypeAdapterFactory())
+                    .registerTypeAdapterFactory(new CanReadAsAnyParty.CustomTypeAdapterFactory())
+                    .registerTypeAdapterFactory(new CanExecuteAsAnyParty.CustomTypeAdapterFactory())
                     .create();
         }
 

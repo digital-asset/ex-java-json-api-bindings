@@ -15,6 +15,7 @@
 
 package com.example.services;
 
+import com.example.access.LedgerUser;
 import com.example.client.scanProxy.api.ScanProxyApi;
 import com.example.client.scanProxy.invoker.ApiClient;
 import com.example.client.scanProxy.invoker.ApiException;
@@ -24,16 +25,15 @@ public class ScanProxy {
 
     private final ScanProxyApi scanProxyApi;
 
-    public ScanProxy(String scanProxyBaseUrl) {
-
+    public ScanProxy(String scanProxyBaseUrl, LedgerUser user) {
         ApiClient client = new ApiClient();
         client.setBasePath(scanProxyBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
+        client.setBearerToken(user.bearerToken());
         this.scanProxyApi = new ScanProxyApi(client);
     }
 
-    public String getDsoPartyId(String bearerToken) throws ApiException {
-        this.scanProxyApi.getApiClient().setBearerToken(bearerToken);
+    public String getDsoPartyId() throws ApiException {
         GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
         return response.getDsoPartyId();
     }
