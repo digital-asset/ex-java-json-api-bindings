@@ -169,6 +169,7 @@ public class Main {
             BigDecimal totalHoldings = wallet.getTotalHoldings(partyId, instrumentId);
             System.out.println(partyId + " has " + totalHoldings + " " + instrumentId.id);
         }
+        System.out.println();
     }
 
     private static String defaultToValidatorParty(Wallet wallet) throws Exception {
@@ -185,30 +186,27 @@ public class Main {
 
     private static ExternalParty allocateNewExternalParty(Wallet wallet, String synchronizerId, String dso, String exchangePartyId, String partyHint) throws Exception {
 
-        printStep("Generating keypair for external party with hint: %s".formatted(partyHint));
+        printStep("Generating keypair and wallet for %s".formatted(partyHint));
         KeyPair externalPartyKeyPair = Keys.generate();
-        // KeyPair externalPartyKeyPair = Keys.createAndValidateKeyPair("MCowBQYDK2VwAyEAm2s4Mg+2rkEX3u/WfvnNrQokl6akCVaPIL/izEIL9E0=", "MC4CAQAwBQYDK2VwBCIEIIh+C52FZPH17lXssrMDWo0r+jCr7eQHABpVxnwOmi6v");
-        Keys.printKeyPair(partyHint, externalPartyKeyPair);
 
-        printStep("Allocating new external party with hint: %s".formatted(partyHint));
-
-        // ExternalParty externalParty = wallet.allocateExternalParty(externalPartyKeyPair, partyHint);
+        System.out.println("Allocating new external party with hint: %s".formatted(partyHint));
         ExternalParty externalParty = wallet.allocateExternalPartyNew(synchronizerId, partyHint, externalPartyKeyPair);
 
         System.out.println("Allocated party: " + externalParty.partyId());
-        String commandId = java.util.UUID.randomUUID().toString();
+        Keys.printKeyPairSummary(partyHint, externalPartyKeyPair);
 
+        // the validator node will automatically accept any transfer preapproval proposal submitted to it.
         printStep("Pre-approving " + externalParty.partyId() + " for CC transfers");
         Long offsetBeforeProposal = wallet.getLedgerEnd();
         System.out.println("Marking offset: " + offsetBeforeProposal);
 
+        String commandId = java.util.UUID.randomUUID().toString();
         wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty);
 
-        printStep("Awaiting completion of transfer preapproval proposal (Command ID %s".formatted(commandId));
+        System.out.println("Awaiting completion of transfer preapproval proposal (Command ID %s".formatted(commandId));
         expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
 
-        printStep("Awaiting auto-acceptance of transfer preapproval proposal");
-        // the validator node will automatically accept any transfer preapproval proposal submitted to it.
+        System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
         waitFor(5 * 1000, 12, () -> {
             return wallet.hasEstablishedTransferPreapproval(externalParty.partyId());
         });
@@ -236,17 +234,17 @@ public class Main {
             String receiverPartyId,
             BigDecimal amount,
             InstrumentId instrumentId) throws Exception {
+        printStep("Transfer " + amount + " from " + senderPartyId + " to " + receiverPartyId);
 
         List<ContractAndId<HoldingView>> holdings = wallet.selectHoldingsForTransfer(senderPartyId, instrumentId, amount);
         validateHoldings(amount, holdings);
 
         String commandId = java.util.UUID.randomUUID().toString();
 
-        printStep("Transfer from " + senderPartyId + " to " + receiverPartyId);
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
         wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, amount, holdings);
 
-        printStep("Awaiting completion of transfer from %s to %s (Command ID %s)%n"
+        System.out.println("Awaiting completion of transfer from %s to %s (Command ID %s)%n"
                 .formatted(senderPartyId, receiverPartyId, commandId));
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
 
