@@ -13,28 +13,34 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
-import com.example.client.scanProxy.api.ScanProxyApi;
-import com.example.client.scanProxy.invoker.ApiClient;
-import com.example.client.scanProxy.invoker.ApiException;
-import com.example.client.scanProxy.model.GetDsoPartyIdResponse;
+import com.example.client.scan.api.ScanApi;
+import com.example.client.scan.invoker.ApiClient;
+import com.example.client.scan.invoker.ApiException;
+import com.example.client.scan.model.DomainScans;
 
-public class ScanProxy {
+import java.net.URI;
+import java.net.URISyntaxException;
 
-    private final ScanProxyApi scanProxyApi;
+public class Scan {
 
-    public ScanProxy(String scanProxyBaseUrl) {
+    private final ScanApi scanApi;
+
+    public Scan(String scanHostUrl) throws URISyntaxException {
 
         ApiClient client = new ApiClient();
-        client.setBasePath(scanProxyBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
-        this.scanProxyApi = new ScanProxyApi(client);
+
+        URI scanBaseUrl = (new URI(scanHostUrl)).resolve("/api/scan");
+        client.setBasePath(scanBaseUrl.toString());
+
+        this.scanApi = new ScanApi(client);
     }
 
-    public String getDsoPartyId(String bearerToken) throws ApiException {
-        this.scanProxyApi.getApiClient().setBearerToken(bearerToken);
-        GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
-        return response.getDsoPartyId();
+    public String getSynchronizerId() throws ApiException {
+        DomainScans domainScans = this.scanApi.listDsoScans()
+                .getScans().stream().findFirst().orElseThrow();
+        return domainScans.getDomainId();
     }
 }

@@ -13,10 +13,22 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.access;
 
-import java.io.IOException;
+public record LedgerUser(
+        String userId,
+        String identityProviderId,
+        String bearerToken
+) {
+    public static LedgerUser validateUserToken(String bearerToken, String identityProviderId) throws IllegalArgumentException {
 
-public interface JsonDecoder<T> {
-    T decode(String input) throws IOException;
+        Jwt bearerJwt = Jwt.fromString(bearerToken);
+
+        String userId = bearerJwt.readSubject();
+        if (userId == null) {
+            throw new IllegalArgumentException("Provided bearer token did not specify a ledger user ID");
+        }
+
+        return new LedgerUser(userId, identityProviderId, bearerToken);
+    }
 }

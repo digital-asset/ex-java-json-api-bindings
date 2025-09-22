@@ -13,34 +13,28 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
-import com.example.client.scan.api.ScanApi;
-import com.example.client.scan.invoker.ApiClient;
-import com.example.client.scan.invoker.ApiException;
-import com.example.client.scan.model.DomainScans;
+import com.example.access.LedgerUser;
+import com.example.client.scanProxy.api.ScanProxyApi;
+import com.example.client.scanProxy.invoker.ApiClient;
+import com.example.client.scanProxy.invoker.ApiException;
+import com.example.client.scanProxy.model.GetDsoPartyIdResponse;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+public class ScanProxy {
 
-public class Scan {
+    private final ScanProxyApi scanProxyApi;
 
-    private final ScanApi scanApi;
-
-    public Scan(String scanHostUrl) throws URISyntaxException {
-
+    public ScanProxy(String scanProxyBaseUrl, LedgerUser user) {
         ApiClient client = new ApiClient();
+        client.setBasePath(scanProxyBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
-
-        URI scanBaseUrl = (new URI(scanHostUrl)).resolve("/api/scan");
-        client.setBasePath(scanBaseUrl.toString());
-
-        this.scanApi = new ScanApi(client);
+        client.setBearerToken(user.bearerToken());
+        this.scanProxyApi = new ScanProxyApi(client);
     }
 
-    public String getSynchronizerId() throws ApiException {
-        DomainScans domainScans = this.scanApi.listDsoScans()
-                .getScans().stream().findFirst().orElseThrow();
-        return domainScans.getDomainId();
+    public String getDsoPartyId() throws ApiException {
+        GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
+        return response.getDsoPartyId();
     }
 }

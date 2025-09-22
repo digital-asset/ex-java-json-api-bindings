@@ -13,10 +13,12 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.access;
 
-public record ContractAndId<T>(
-        String contractId,
-        T record
+import java.security.KeyPair;
+
+public record ExternalParty(
+        String partyId,
+        KeyPair keyPair
 ) {
 }

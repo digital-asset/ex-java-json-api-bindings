@@ -13,34 +13,39 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.services;
 
 import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
 import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
+import com.example.client.ledger.model.Signature;
+import com.example.models.TemplateId;
+import com.example.signing.Encode;
+import com.example.signing.Keys;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
+import java.security.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class Ledger {
     private final DefaultApi ledgerApi;
+    private final LedgerUser user;
 
-    public Ledger(String baseUrl) {
+    public Ledger(String baseUrl, LedgerUser user) {
         ApiClient client = new ApiClient();
         client.setBasePath(baseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
+        client.setBearerToken(user.bearerToken());
 
         JSON.setGson(GsonSingleton.getInstance());
         this.ledgerApi = new DefaultApi(client);
+        this.user = user;
     }
 
     public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
@@ -155,19 +160,57 @@ public class Ledger {
         return List.of(command);
     }
 
-    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static Signature sign(KeyPair keyPair, String payload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
 
-        Signature signature = new Signature()
+        return new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.signBase64(keyPair.getPrivate(), prepareSubmissionResponse.getPreparedTransactionHash()))
+                .signature(Keys.signBase64(keyPair.getPrivate(), payload))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+    }
+
+    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         return new SinglePartySignatures()
                 .party(partyId)
-                .signatures(List.of(signature));
+                .signatures(List.of(sign(keyPair, prepareSubmissionResponse.getPreparedTransactionHash())));
+    }
+
+    public static SignedTransaction makeSignedTransaction(KeyPair keyPair, String transaction) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+
+        return new SignedTransaction()
+                .transaction(transaction)
+                .signatures(List.of(sign(keyPair, transaction)));
+    }
+
+    public static Right makeCanReadAsAnyRight() {
+        Kind kind = new Kind();
+        KindOneOf4 canReadAsAnyKind = new KindOneOf4().canReadAsAnyParty(new CanReadAsAnyParty());
+        kind.setActualInstance(canReadAsAnyKind);
+        return new Right().kind(kind);
+    }
+
+    public static Right makeCanExecuteAsAnyRight() {
+        Kind kind = new Kind();
+        KindOneOf2 canExecuteAsAnyKind = new KindOneOf2().canExecuteAsAnyParty(new CanExecuteAsAnyParty());
+        kind.setActualInstance(canExecuteAsAnyKind);
+        return new Right().kind(kind);
+    }
+
+    public static Right makeCanReadAsRight(String partyId) {
+        Kind kind = new Kind();
+        KindOneOf3 canReadAsKind = new KindOneOf3().canReadAs(new CanReadAs().value(new CanReadAs1().party(partyId)));
+        kind.setActualInstance(canReadAsKind);
+        return new Right().kind(kind);
+    }
+
+    public static Right makeCanExecuteAsRight(String partyId) {
+        Kind kind = new Kind();
+        KindOneOf1 canExecuteAsKind = new KindOneOf1().canExecuteAs(new CanExecuteAs().value(new CanExecuteAs1().party(partyId)));
+        kind.setActualInstance(canExecuteAsKind);
+        return new Right().kind(kind);
     }
 
     // does not require authentication
@@ -176,28 +219,24 @@ public class Ledger {
         return response.getVersion();
     }
 
-    // requires authentication
-    public Long getLedgerEnd(String bearerToken) throws ApiException {
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+    public Long getLedgerEnd() throws ApiException {
         GetLedgerEndResponse response = this.ledgerApi.getV2StateLedgerEnd();
         return response.getOffset();
     }
 
     // TODO: support multiple pages of response
-    public List<String> getUsers(String bearerToken) throws ApiException {
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+    public List<String> getUsers() throws ApiException {
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
-        return response.getUsers().stream().map(u -> u.getId()).toList();
+        return response.getUsers().stream().map(User::getId).toList();
     }
 
-    public Optional<User> getUser(String bearerToken, String userId) throws ApiException {
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
+    public Optional<User> getUser(String userId) throws ApiException {
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);
         return response.getUsers().stream().filter(u -> u.getId().equals(userId)).findFirst();
     }
 
-    public User getOrCreateUser(String bearerToken, String partyHint, String partyId) throws ApiException {
-        Optional<User> currentUser = getUser(bearerToken, partyHint);
+    public User getOrCreateUser(String partyHint, String partyId) throws ApiException {
+        Optional<User> currentUser = getUser(partyHint);
 
         // user does not exist
         if (currentUser.isEmpty()) {
@@ -210,13 +249,8 @@ public class Ledger {
                             .annotations(Map.of())
                             .resourceVersion(""));
 
-            Kind kind = new Kind();
-            KindOneOf1 canReadAsKind = new KindOneOf1().canReadAs(new CanReadAs().value(new CanReadAs1().party(partyId)));
-            kind.setActualInstance(canReadAsKind);
-            Right right = new Right().kind(kind);
-            CreateUserRequest request = new CreateUserRequest().user(user).addRightsItem(right);
+            CreateUserRequest request = new CreateUserRequest().user(user).addRightsItem(makeCanReadAsRight(partyId));
 
-            this.ledgerApi.getApiClient().setBearerToken(bearerToken);
             this.ledgerApi.postV2Users(request);
             return user;
         }
@@ -225,11 +259,10 @@ public class Ledger {
         else if (partyId.isBlank()) {
             throw new IllegalArgumentException("The user " + partyHint + " exists for party " + partyId + ". Missing environment variable for user party?");
         } else {
-            this.ledgerApi.getApiClient().setBearerToken(bearerToken);
             Optional<CanReadAs> canReadAsPartyId =
                     ledgerApi.getV2UsersUserIdRights(currentUser.get().getId()).getRights().stream()
                             .filter(r -> r.getKind().getActualInstance() instanceof CanReadAs)
-                            .map(r -> r.getKind().getKindOneOf1().getCanReadAs())
+                            .map(r -> r.getKind().getKindOneOf3().getCanReadAs())
                             .filter(r -> r.getValue().getParty().equals(partyId))
                             .findFirst();
 
@@ -243,8 +276,59 @@ public class Ledger {
         }
     }
 
-    public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String bearerToken, String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
-        long offset = getLedgerEnd(bearerToken);
+    public GenerateExternalPartyTopologyResponse generateExternalPartyTopology(String synchronizerId, String partyHint, PublicKey publicKey) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        String publicKeyHex = Encode.toBase64String(publicKey.getEncoded());
+
+        SigningPublicKey signingPublicKey = new SigningPublicKey()
+                .format("CRYPTO_KEY_FORMAT_DER_X509_SUBJECT_PUBLIC_KEY_INFO")
+                .keyData(publicKeyHex)
+                .keySpec("SIGNING_KEY_SPEC_EC_CURVE25519");
+
+        GenerateExternalPartyTopologyRequest request = new GenerateExternalPartyTopologyRequest()
+                .synchronizer(synchronizerId)
+                .partyHint(partyHint)
+                .publicKey(signingPublicKey)
+                .localParticipantObservationOnly(false)
+                .confirmationThreshold(0);
+
+        // System.out.println("\ngenerate external party topology request: " + request.toJson() + "\n");
+        GenerateExternalPartyTopologyResponse response = this.ledgerApi.postV2PartiesExternalGenerateTopology(request);
+        // System.out.println("\ngenerate external party topology response: " + response.toJson() + "\n");
+
+        return response;
+    }
+
+    public void allocateExternalParty(KeyPair keyPair, String synchronizerId, List<String> transactions, String transactionMultiHash) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        List<SignedTransaction> signedTransactions = transactions.stream()
+                .map((t) -> new SignedTransaction()
+                        .transaction(t))
+                .toList();
+
+        AllocateExternalPartyRequest request = new AllocateExternalPartyRequest()
+                .synchronizer(synchronizerId)
+                .onboardingTransactions(signedTransactions)
+                .multiHashSignatures(List.of(sign(keyPair, transactionMultiHash)))
+                .identityProviderId(user.identityProviderId());
+
+        // System.out.println("\ngenerate external party topology request: " + request.toJson() + "\n");
+        AllocateExternalPartyResponse response = this.ledgerApi.postV2PartiesExternalAllocate(request);
+        // System.out.println("\ngenerate external party topology response: " + response.toJson() + "\n");
+    }
+
+    public void grantUserRights(String userId, List<Right> rights) throws ApiException {
+
+        GrantUserRightsRequest request = new GrantUserRightsRequest()
+                .userId(userId)
+                .identityProviderId(user.identityProviderId())
+                .rights(rights);
+
+        // System.out.println("\ngrant user rights request: " + request.toJson() + "\n");
+        GrantUserRightsResponse response = this.ledgerApi.postV2UsersUserIdRights(userId, request);
+        // System.out.println("\ngrant user rights response: " + response.toJson() + "\n");
+    }
+
+    public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
+        long offset = getLedgerEnd();
 
         Filters filters = new Filters()
                 .cumulative(cumulativeFilters);
@@ -258,7 +342,6 @@ public class Ledger {
                 .filter(transactionFilter);
 
 //        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         List<JsGetActiveContractsResponse> response = this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
 //        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
 
@@ -266,12 +349,11 @@ public class Ledger {
     }
 
     public JsSubmitAndWaitForTransactionResponse submitAndWaitForCommands(
-            String bearerToken,
             String actAs,
+            String commandId,
             List<Command> commandsList,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
 
         List<String> parties = List.of(actAs);
 
@@ -286,22 +368,21 @@ public class Ledger {
         request.setCommands(commands);
 
 //        System.out.println("\nsubmit and wait for commands request: " + request.toJson() + "\n");
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         JsSubmitAndWaitForTransactionResponse response = this.ledgerApi.postV2CommandsSubmitAndWaitForTransaction(request);
 //        System.out.println("\nsubmit and wait for commands response: " + response.toJson() + "\n");
         return response;
     }
 
     public JsPrepareSubmissionResponse prepareSubmissionForSigning(
-            String bearerToken,
+            String synchronizerId,
             String partyId,
+            String commandId,
             List<Command> commands,
             List<DisclosedContract> disclosedContracts
     ) throws ApiException {
-        String commandId = java.util.UUID.randomUUID().toString();
         JsPrepareSubmissionRequest request = new JsPrepareSubmissionRequest()
-                .synchronizerId(Env.SYNCHRONIZER_ID)
-                .userId(Env.LEDGER_USER_ID) // TODO: replace this
+                .synchronizerId(synchronizerId)
+                .userId(user.userId())
                 .actAs(List.of(partyId))
                 .commandId(commandId)
                 .commands(commands)
@@ -309,7 +390,6 @@ public class Ledger {
                 .verboseHashing(false);
 
 //        System.out.println("\nprepare submission request: " + request.toJson() + "\n");
-        this.ledgerApi.getApiClient().setBearerToken(bearerToken);
         JsPrepareSubmissionResponse response = this.ledgerApi.postV2InteractiveSubmissionPrepare(request);
 //        System.out.println("\nprepare submission response: " + response.toJson() + "\n");
         return response;
@@ -327,7 +407,7 @@ public class Ledger {
                 .signatures(singlePartySignatures);
 
         JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
-                .userId(Env.LEDGER_USER_ID)
+                .userId(user.userId())
                 .submissionId(submissionId)
                 .preparedTransaction(preparedSubmission.getPreparedTransaction())
                 .hashingSchemeVersion(preparedSubmission.getHashingSchemeVersion())
@@ -337,5 +417,18 @@ public class Ledger {
 //        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
 //        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+    }
+
+    public List<CompletionStreamResponse> getCompletions(List<String> parties, Long beginExclusive) throws ApiException {
+        CompletionStreamRequest request = new CompletionStreamRequest()
+                .userId(user.userId())
+                .parties(parties)
+                .beginExclusive(beginExclusive);
+
+        // System.out.println("\nget completions request: " + request.toJson() + "\n");
+        List<CompletionStreamResponse> response = this.ledgerApi.postV2CommandsCompletions(request, null, null);
+        // System.out.println("\nget completions response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+
+        return response;
     }
 }

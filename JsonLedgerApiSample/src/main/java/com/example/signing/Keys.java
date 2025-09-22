@@ -13,7 +13,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.example;
+package com.example.signing;
 
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -51,20 +51,27 @@ public class Keys {
         return new KeyPair(publicKey, privateKey);
     }
 
-    public static void printKeyPair(String relatedPartyHint, KeyPair keyPair) {
+    public static void printKeyPairDetails(String relatedPartyHint, KeyPair keyPair) {
 
         System.out.println("\n==================== KEY FOR " + relatedPartyHint + " ============");
-        System.out.println("Public key algorithm: " + keyPair.getPublic().getAlgorithm());
-        System.out.println("              format: " + keyPair.getPublic().getFormat());
-        System.out.println("      (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
-        System.out.println("       (raw, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
-        System.out.println("          (raw, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
-
-        System.out.println(" Private key algorithm: " + keyPair.getPrivate().getAlgorithm());
+        System.out.println("Public key");
+        System.out.println("             algorithm: " + keyPair.getPublic().getAlgorithm());
+        System.out.println("                format: " + keyPair.getPublic().getFormat());
+        System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPublic().getEncoded()));
+        System.out.println("         (raw, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
+        System.out.println("            (raw, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPublic())));
+        System.out.println("Private key");
+        System.out.println("             algorithm: " + keyPair.getPrivate().getAlgorithm());
         System.out.println("                format: " + keyPair.getPrivate().getFormat());
         System.out.println("        (Java, base64): " + Encode.toBase64String(keyPair.getPrivate().getEncoded()));
         System.out.println("(raw + public, base64): " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
         System.out.println("   (raw + public, hex): " + Encode.toHexString(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
+        System.out.println();
+    }
+
+    public static void printKeyPairSummary(String relatedPartyHint, KeyPair keyPair) {
+        System.out.println(relatedPartyHint + " public key:  " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPublic())));
+        System.out.println(relatedPartyHint + " private key: " + Encode.toBase64String(Keys.toRawBytes(keyPair.getPrivate(), keyPair.getPublic())));
         System.out.println();
     }
 
