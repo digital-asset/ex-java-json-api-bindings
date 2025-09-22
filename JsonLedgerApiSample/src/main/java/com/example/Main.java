@@ -122,7 +122,6 @@ public class Main {
             BigDecimal transferAmount2 = env.preferredTransferAmount();
 
             // perform a transfer from the external party sender
-            BigDecimal priorBalance = wallet.getTotalHoldings(treasuryParty.partyId(), cantonCoinInstrumentId);
             transferAsset(
                     wallet,
                     resolvedSynchronizerId,
@@ -131,12 +130,6 @@ public class Main {
                     treasuryParty.partyId(),
                     transferAmount2,
                     cantonCoinInstrumentId);
-
-            // wait for the treasury party to receive the transfer
-            printStep("Waiting for holdings transfer to complete");
-            waitFor(2 * 1000, 10, () -> {
-                return wallet.getTotalHoldings(treasuryParty.partyId(), cantonCoinInstrumentId).compareTo(priorBalance) > 0;
-            });
 
             printStep("Success!");
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
