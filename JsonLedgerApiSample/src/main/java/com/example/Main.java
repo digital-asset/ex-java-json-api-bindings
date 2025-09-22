@@ -242,7 +242,12 @@ public class Main {
         String commandId = java.util.UUID.randomUUID().toString();
 
         printStep("Transfer from " + senderPartyId + " to " + receiverPartyId);
+        Long offsetBeforeTransfer = wallet.getLedgerEnd();
         wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, amount, holdings);
+
+        printStep("Awaiting completion of transfer from %s to %s (Command ID %s)%n"
+                .formatted(senderPartyId, receiverPartyId, commandId));
+        expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
     }
