@@ -61,7 +61,6 @@ public class TokenStandard {
         memoTag.ifPresent(s -> otherTransferMetadata.put(MEMO_KEY, s));
         Metadata transferMetadata = new Metadata(otherTransferMetadata);
 
-
         Transfer transfer = new Transfer(senderPartyId, receiverPartyId, amount, instrumentId, requestedAt, executeBefore, holdingCids, transferMetadata);
         return new TransferFactory_Transfer(instrumentId.admin, transfer, blankExtraArgs);
     }
