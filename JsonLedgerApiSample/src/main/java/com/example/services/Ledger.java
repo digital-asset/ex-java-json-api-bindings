@@ -15,6 +15,7 @@
 
 package com.example.services;
 
+import com.daml.ledger.javaapi.data.TransactionShape;
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
@@ -46,6 +47,27 @@ public class Ledger {
         JSON.setGson(GsonSingleton.getInstance());
         this.ledgerApi = new DefaultApi(client);
         this.user = user;
+    }
+
+    public static CumulativeFilter wildcardFilter() {
+
+        /* Sample JSON
+          {"identifierFilter": {"WildcardFilter": {"value": {"includeCreatedEventBlob": false}}}},
+         */
+
+        WildcardFilter wildcardFilter = new WildcardFilter()
+                .value(new WildcardFilter1()
+                        .includeCreatedEventBlob(false)
+                );
+
+        IdentifierFilterOneOf3 identifierFilterOneOf3 = new IdentifierFilterOneOf3()
+                .wildcardFilter(wildcardFilter);
+
+        IdentifierFilter identifierFilter = new IdentifierFilter();
+        identifierFilter.setActualInstance(identifierFilterOneOf3);
+
+        return new CumulativeFilter()
+                .identifierFilter(identifierFilter);
     }
 
     public static CumulativeFilter createFilterByInterface(TemplateId interfaceId) {
@@ -344,6 +366,35 @@ public class Ledger {
 //        System.out.println("\nget active contracts by interface request: " + request.toJson() + "\n");
         List<JsGetActiveContractsResponse> response = this.ledgerApi.postV2StateActiveContracts(request, 100L, null);
 //        System.out.println("\nget active contracts by interface response: " + JSON.getGson().toJson(response) + "\n");
+
+        return response;
+    }
+
+    public List<JsGetUpdatesResponse> getUpdatesWithFilter(String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
+        long offset = 0;
+
+        Filters filters = new Filters()
+                .cumulative(cumulativeFilters);
+
+        TransactionFormat transactionFormat = new TransactionFormat()
+                .transactionShape("TRANSACTION_SHAPE_LEDGER_EFFECTS")
+                .eventFormat(
+                        new EventFormat()
+                                .verbose(true)
+                                .filtersByParty(Map.of(partyId, filters))
+                );
+
+        UpdateFormat updateFormat = new UpdateFormat()
+                .includeTransactions(transactionFormat);
+
+        GetUpdatesRequest request = new GetUpdatesRequest()
+                .verbose(false)
+                .beginExclusive(offset)
+                .updateFormat(updateFormat);
+
+        System.out.println("\nget updates by interface request: " + request.toJson() + "\n");
+        List<JsGetUpdatesResponse> response = this.ledgerApi.postV2Updates(request, 100L, null);
+        System.out.println("\nget updates by interface response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
     }

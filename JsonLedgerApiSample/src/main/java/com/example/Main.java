@@ -105,6 +105,7 @@ public class Main {
             transferAmount1 = transferAmount1.add(estimatedFees);
 
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printHoldingTransactions(wallet, treasuryParty);
 
             // perform a transfer from the local party operator
             transferAsset(
@@ -117,6 +118,7 @@ public class Main {
                     cantonCoinInstrumentId);
 
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printHoldingTransactions(wallet, treasuryParty);
 
             // calculate transfer amount
             BigDecimal transferAmount2 = env.preferredTransferAmount();
@@ -133,6 +135,7 @@ public class Main {
 
             printStep("Success!");
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printHoldingTransactions(wallet, treasuryParty);
             System.exit(0);
         } catch (Exception ex) {
             handleException(ex);
@@ -162,6 +165,12 @@ public class Main {
             BigDecimal totalHoldings = wallet.getTotalHoldings(partyId, instrumentId);
             System.out.println(partyId + " has " + totalHoldings + " " + instrumentId.id);
         }
+        System.out.println();
+    }
+
+    private static void printHoldingTransactions(Wallet wallet, ExternalParty party) throws Exception {
+        printStep("Print holding transactions for " + party.partyId());
+        wallet.queryForHoldingTransactions(party.partyId());
         System.out.println();
     }
 
