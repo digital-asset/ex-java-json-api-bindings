@@ -45,17 +45,18 @@ public record Env(
         Optional<ExternalParty> existingTreasuryParty = readExternalParty("TREASURY");
         Optional<ExternalParty> existingTestParty = readExternalParty("TEST");
 
-        String ledgerApiUrl = readApiUrl("LEDGER_API_URL", "http://wallet.localhost/api/participant");
-        String validatorApiUrl = readApiUrl("VALIDATOR_API_URL", "http://wallet.localhost/api/validator");
+        // localnet defaults
+        String ledgerApiUrl = readApiUrl("LEDGER_API_URL", "http://canton.localhost:2975");
+        String validatorApiUrl = readApiUrl("VALIDATOR_API_URL", "http://wallet.localhost:2903/api/validator");
         String scanProxyApiUrl = readApiUrl("SCAN_PROXY_API_URL", validatorApiUrl);
-        String scanApiUrl = readApiUrl("SCAN_API_URL", null);
+        String scanApiUrl = readApiUrl("SCAN_API_URL", "http://scan.localhost:4000/api/scan");
 
         if (scanApiUrl == null /* add other URL validations here as required*/) {
             // validation messages already printed by readApiUrl
             System.exit(1);
         }
 
-        String tokenStandardUrl = readApiUrl("TOKEN_STANDARD_URL", scanApiUrl);
+        String tokenStandardUrl = readApiUrl("TOKEN_STANDARD_URL", "http://scan.localhost:4000");
         Optional<String> synchronizerId = readSynchronizerId();
         BigDecimal preferredTransferAmount = readTransferAmount();
 
@@ -119,11 +120,14 @@ public record Env(
                     
                     For most use cases, this means a current JWT for the validator's ledger-api-user user ID.
                     
-                    Populate the environment variable '%s' with the JWT to proceed.
+                    Once you have configured validator authorization, populate the environment variable '%s' with the JWT to proceed.
                     
                     Please refer to the exchange integration guide for more information: https://docs.digitalasset.com/integrate/devnet/exchange-integration/node-operations.html#setup-ledger-api-users
+                    
+                    In the meantime, this application will try to 'guess' a valid token based on LocalNet default auth configuration.
                     %n""", rawManagingUserToken);
-            System.exit(1);
+
+            rawManagingUserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc";
         }
 
         String identityProviderId = getenv("IDENTITY_PROVIDER_ID", "");
