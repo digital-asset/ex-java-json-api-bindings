@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class Main {
 
-    private static final BigDecimal estimatedFeesMultiplier = new BigDecimal("0.05");
+    private static final BigDecimal estimatedFeesMultiplier = new BigDecimal("0.1");
 
     public static void main(String[] args) {
         try {
