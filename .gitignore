@@ -26,3 +26,5 @@ replay_pid*
 # macOS
 .DS_STore
 
+# IntelliJ
+.idea/
