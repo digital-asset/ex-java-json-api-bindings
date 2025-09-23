@@ -127,6 +127,7 @@ public record Env(
                     In the meantime, this application will try to 'guess' a valid token based on LocalNet default auth configuration.
                     %n""", rawManagingUserToken);
 
+            // this is a dummy auth token for LocalNet
             rawManagingUserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc";
         }
 
