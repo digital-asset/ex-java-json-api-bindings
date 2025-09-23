@@ -27,6 +27,7 @@ import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.security.KeyPair;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,12 +115,15 @@ public class Main {
                     Optional.empty(),
                     testParty.partyId(),
                     transferAmount1,
-                    cantonCoinInstrumentId);
+                    cantonCoinInstrumentId,
+                    Optional.empty());
 
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
 
             // calculate transfer amount
             BigDecimal transferAmount2 = env.preferredTransferAmount();
+
+            String memoTag = env.memoTag();
 
             // perform a transfer from the external party sender
             transferAsset(
@@ -129,7 +133,8 @@ public class Main {
                     Optional.of(testParty.keyPair()),
                     treasuryParty.partyId(),
                     transferAmount2,
-                    cantonCoinInstrumentId);
+                    cantonCoinInstrumentId,
+                    Optional.of(memoTag));
 
             printStep("Success!");
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
@@ -242,7 +247,8 @@ public class Main {
             Optional<KeyPair> senderKeyPair,
             String receiverPartyId,
             BigDecimal amount,
-            InstrumentId instrumentId) throws Exception {
+            InstrumentId instrumentId,
+            Optional<String> memoTag) throws Exception {
         printStep("Transfer " + amount + " from " + senderPartyId + " to " + receiverPartyId);
 
         List<ContractAndId<HoldingView>> holdings = wallet.selectHoldingsForTransfer(senderPartyId, instrumentId, amount);
@@ -251,7 +257,7 @@ public class Main {
         String commandId = java.util.UUID.randomUUID().toString();
 
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
-        wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, amount, holdings);
+        wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdings);
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
