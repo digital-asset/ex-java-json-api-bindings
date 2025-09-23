@@ -33,10 +33,7 @@ import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Wallet {
     public Scan scanApi;
@@ -165,13 +162,15 @@ public class Wallet {
             Optional<KeyPair> senderKeyPair,
             String receiverPartyId,
             InstrumentId instrumentId,
+            Optional<String> memoTag,
+            Map<String, String> otherTransferMetadata,
             BigDecimal amount,
             List<ContractAndId<HoldingView>> holdings
     ) throws Exception {
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
-        TransferFactory_Transfer proposedTransfer = TokenStandard.makeProposedTransfer(senderPartyId, receiverPartyId, amount, instrumentId, requestDate, requestExpiresDate, holdings);
+        TransferFactory_Transfer proposedTransfer = TokenStandard.makeProposedTransfer(senderPartyId, receiverPartyId, amount, instrumentId, memoTag, otherTransferMetadata, requestDate, requestExpiresDate, holdings);
         TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = this.transferInstructionApi.getTransferFactory(proposedTransfer);
         TransferFactory_Transfer sentTransfer = TokenStandard.resolveProposedTransfer(proposedTransfer, transferFactoryWithChoiceContext);
 

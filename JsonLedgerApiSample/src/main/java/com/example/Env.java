@@ -34,6 +34,7 @@ public record Env(
         String tokenStandardUrl,
         Optional<String> synchronizerId,
         BigDecimal preferredTransferAmount,
+        String memoTag,
         Optional<String> exchangePartyId,
         String treasuryPartyHint,
         String testPartyHint
@@ -60,6 +61,7 @@ public record Env(
         Optional<String> synchronizerId = readSynchronizerId();
         BigDecimal preferredTransferAmount = readTransferAmount();
 
+        String memoTag = readMemoTag();
         Optional<String> exchangePartyId = readExchangeParty();
         String treasuryPartyHint = getenv("TREASURY_PARTY_HINT", "treasury");
         String testPartyHint = getenv("TEST_PARTY_HINT", "alice");
@@ -75,6 +77,7 @@ public record Env(
                 tokenStandardUrl,
                 synchronizerId,
                 preferredTransferAmount,
+                memoTag,
                 exchangePartyId,
                 treasuryPartyHint,
                 testPartyHint
@@ -84,6 +87,15 @@ public record Env(
     private static String getenv(String name, String defaultValue) {
         String envValue = System.getenv(name);
         return envValue != null ? envValue : defaultValue;
+    }
+
+    private static String readMemoTag() {
+        String memoTag = System.getenv("MEMO_TAG");
+        if (memoTag == null || memoTag.isBlank()) {
+            memoTag = java.util.UUID.randomUUID().toString();
+            System.out.println("MEMO_TAG was not set, assigning: " + memoTag);
+        }
+        return memoTag;
     }
 
     private static Optional<String> readExchangeParty() {

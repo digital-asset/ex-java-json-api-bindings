@@ -31,14 +31,20 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class TokenStandard {
+
+    public final static String MEMO_KEY = "splice.lfdecentralizedtrust.org/reason";
 
     public static TransferFactory_Transfer makeProposedTransfer(
             String senderPartyId,
             String receiverPartyId,
             BigDecimal amount,
             InstrumentId instrumentId,
+            Optional<String> memoTag,
+            Map<String, String> otherTransferMetadata,
             Instant requestedAt,
             Instant executeBefore,
             List<ContractAndId<HoldingView>> holdings) {
@@ -52,7 +58,10 @@ public class TokenStandard {
         ChoiceContext noContext = new ChoiceContext(new HashMap<>());
         ExtraArgs blankExtraArgs = new ExtraArgs(noContext, emptyMetadata);
 
-        Transfer transfer = new Transfer(senderPartyId, receiverPartyId, amount, instrumentId, requestedAt, executeBefore, holdingCids, emptyMetadata);
+        memoTag.ifPresent(s -> otherTransferMetadata.put(MEMO_KEY, s));
+        Metadata transferMetadata = new Metadata(otherTransferMetadata);
+
+        Transfer transfer = new Transfer(senderPartyId, receiverPartyId, amount, instrumentId, requestedAt, executeBefore, holdingCids, transferMetadata);
         return new TransferFactory_Transfer(instrumentId.admin, transfer, blankExtraArgs);
     }
 
