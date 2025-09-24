@@ -73,7 +73,7 @@ public class TokenStandard {
 
         // ChoiceContext from the transfer OpenAPI != ChoiceContext generated from the transfer DAR
         String choiceJson = JSON.getGson().toJson(fromApi.getChoiceContext().getChoiceContextData());
-        ChoiceContext choiceContextFromApi = ConversionHelpers.useValueParser(choiceJson, ChoiceContext::fromJson);
+        ChoiceContext choiceContextFromApi = ConversionHelpers.convertFromJson(choiceJson, ChoiceContext::fromJson);
 
         ExtraArgs populatedExtraArgs = new ExtraArgs(choiceContextFromApi, emptyMetadata);
         return new TransferFactory_Transfer(proposed.expectedAdmin, proposed.transfer, populatedExtraArgs);
