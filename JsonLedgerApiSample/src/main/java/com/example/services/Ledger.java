@@ -16,7 +16,10 @@
 package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
-import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.GsonTypeAdapters.AvContractIdTypeAdapter;
+import com.example.GsonTypeAdapters.ContractIdTypeAdapterFactory;
+import com.example.GsonTypeAdapters.InstantTypeAdapter;
+import com.example.GsonTypeAdapters.OptionalTypeAdapterFactory;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -29,13 +32,26 @@ import com.example.signing.Encode;
 import com.example.signing.Keys;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
+import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 import java.security.*;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class Ledger {
+
+    static {
+        JSON.setGson(
+                JSON.getGson().newBuilder()
+                        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                        .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+                        .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
+                        .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
+                        .create());
+    }
+
     private final DefaultApi ledgerApi;
     private final LedgerUser user;
 
@@ -45,7 +61,6 @@ public class Ledger {
         client.setReadTimeout(60 * 1000); // 60 seconds
         client.setBearerToken(user.bearerToken());
 
-        JSON.setGson(GsonSingleton.getInstance());
         this.ledgerApi = new DefaultApi(client);
         this.user = user;
     }
@@ -429,9 +444,9 @@ public class Ledger {
                 .partySignatures(partySignatures)
                 .deduplicationPeriod(useMaximum);
 
-//        System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
+        // System.out.println("\nexecute prepared submission request: " + request.toJson() + "\n");
         Object response = this.ledgerApi.postV2InteractiveSubmissionExecute(request);
-//        System.out.println("\nexecute prepared submission response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+        // System.out.println("\nexecute prepared submission response: " + JSON.getGson().toJson(response) + "\n");
     }
 
     public List<CompletionStreamResponse> getCompletions(List<String> parties, Long beginExclusive) throws ApiException {
@@ -442,7 +457,7 @@ public class Ledger {
 
         // System.out.println("\nget completions request: " + request.toJson() + "\n");
         List<CompletionStreamResponse> response = this.ledgerApi.postV2CommandsCompletions(request, null, null);
-        // System.out.println("\nget completions response: " + GsonSingleton.getInstance().toJson(response) + "\n");
+        // System.out.println("\nget completions response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
     }

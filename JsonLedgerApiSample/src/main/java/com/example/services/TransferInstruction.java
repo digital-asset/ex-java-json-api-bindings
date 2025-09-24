@@ -15,7 +15,8 @@
 
 package com.example.services;
 
-import com.example.GsonTypeAdapters.GsonSingleton;
+import com.example.GsonTypeAdapters.ContractIdTypeAdapterFactory;
+import com.example.GsonTypeAdapters.InstantTypeAdapter;
 import com.example.client.transferInstruction.api.DefaultApi;
 import com.example.client.transferInstruction.invoker.ApiClient;
 import com.example.client.transferInstruction.invoker.ApiException;
@@ -24,8 +25,18 @@ import com.example.client.transferInstruction.model.GetFactoryRequest;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
 
+import java.time.Instant;
+
 
 public class TransferInstruction {
+
+    static {
+        JSON.setGson(
+                JSON.getGson().newBuilder()
+                        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                        .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
+                        .create());
+    }
 
     private final DefaultApi transferInstructionApi;
 
@@ -35,7 +46,6 @@ public class TransferInstruction {
         client.setBasePath(transferInstructionBaseUrl);
         client.setReadTimeout(60 * 1000); // 60 seconds
 
-        JSON.setGson(GsonSingleton.getInstance());
         this.transferInstructionApi = new DefaultApi(client);
     }
 

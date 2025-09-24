@@ -15,8 +15,8 @@
 
 package com.example.access;
 
-import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.signing.Encode;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -31,6 +31,7 @@ public class Jwt {
     }
 
     public static Jwt fromString(String raw) {
+        Gson gson = new Gson();
 
         String[] parts = raw.split("\\.");
         if (parts.length < 2) {
@@ -40,7 +41,7 @@ public class Jwt {
         JsonObject header;
         try {
             String decodedJsonHeader = new String(Encode.fromBase64String(parts[0]));
-            header = GsonSingleton.getInstance().fromJson(decodedJsonHeader, JsonObject.class);
+            header = gson.fromJson(decodedJsonHeader, JsonObject.class);
         } catch (JsonSyntaxException ex) {
             throw new IllegalArgumentException("Failed to parse JWT header as JSON", ex);
         }
@@ -48,7 +49,7 @@ public class Jwt {
         JsonObject payload;
         try {
             String decodedJsonPayload = new String(Encode.fromBase64String(parts[1]));
-            payload = GsonSingleton.getInstance().fromJson(decodedJsonPayload, JsonObject.class);
+            payload = gson.fromJson(decodedJsonPayload, JsonObject.class);
         } catch (JsonSyntaxException ex) {
             throw new IllegalArgumentException("Failed to parse JWT payload as JSON", ex);
         }
