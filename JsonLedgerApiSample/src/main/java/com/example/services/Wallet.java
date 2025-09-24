@@ -178,7 +178,7 @@ public class Wallet {
                 .getChoiceContext()
                 .getDisclosedContracts()
                 .stream()
-                .map((d) -> ConversionHelpers.convertRecordViaJson(d, DisclosedContract::fromJson))
+                .map((d) -> ConversionHelpers.convertFromJson(d.toJson(), DisclosedContract::fromJson))
                 .toList();
 
         List<Command> transferCommands = Ledger.makeExerciseCommand(
