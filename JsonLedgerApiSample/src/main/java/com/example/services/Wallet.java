@@ -99,7 +99,7 @@ public class Wallet {
     }
 
     // This API endpoint is specific to Canton Coin; the method's output is irrelevant when considering other token standard implementations.
-    public boolean hasTransferPreapproval(String partyId) throws Exception {
+    public boolean hasCantonCoinTransferPreapproval(String partyId) throws Exception {
         return this.scanProxyApi.getTransferPreapproval(partyId).isPresent();
     }
 
