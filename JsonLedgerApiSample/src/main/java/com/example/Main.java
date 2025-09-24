@@ -20,8 +20,10 @@ import com.example.client.ledger.model.CompletionStreamResponse;
 import com.example.client.ledger.model.Status;
 import com.example.models.ContractAndId;
 import com.example.services.CommandCompletionTracker;
+import com.example.services.Ledger;
 import com.example.services.Wallet;
 import com.example.signing.Keys;
+import com.example.signing.SignatureProvider;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
@@ -52,13 +54,19 @@ public class Main {
 
             Env env = Env.validate();
 
+            SignatureProvider signatureProvider = Ledger::sign;
+
+            // using this SignatureProvider visualises transactions during transaction signing
+            // SignatureProvider signatureProvider = Ledger::printAndSign;
+
             Wallet wallet = new Wallet(
                     env.managingUser(),
                     env.scanApiUrl(),
                     env.tokenStandardUrl(),
                     env.ledgerApiUrl(),
                     env.validatorApiUrl(),
-                    env.scanProxyApiUrl()
+                    env.scanProxyApiUrl(),
+                    signatureProvider
             );
 
             printStep("Confirm API connectivity");
@@ -211,7 +219,7 @@ public class Main {
             System.out.println("Marking offset: " + offsetBeforeProposal);
 
             String commandId = java.util.UUID.randomUUID().toString();
-            wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty);
+            wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty.partyId(), externalParty.keyPair());
 
             System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s%n", commandId);
             expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);

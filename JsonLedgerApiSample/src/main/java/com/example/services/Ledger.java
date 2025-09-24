@@ -15,6 +15,7 @@
 
 package com.example.services;
 
+import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.example.GsonTypeAdapters.GsonSingleton;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
@@ -26,6 +27,7 @@ import com.example.client.ledger.model.Signature;
 import com.example.models.TemplateId;
 import com.example.signing.Encode;
 import com.example.signing.Keys;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.*;
@@ -160,13 +162,29 @@ public class Ledger {
         return List.of(command);
     }
 
-    public static Signature sign(KeyPair keyPair, String payload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static InteractiveSubmissionServiceOuterClass.PreparedTransaction parseTransaction(String base64EncodedPayload) throws InvalidProtocolBufferException {
+
+        byte[] transactionBytes = Encode.fromBase64String(base64EncodedPayload);
+
+        return InteractiveSubmissionServiceOuterClass.PreparedTransaction.parseFrom(transactionBytes);
+    }
+
+    public static Signature printAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
+
+        InteractiveSubmissionServiceOuterClass.PreparedTransaction preparedTransaction = parseTransaction(base64EncodedPayload);
+        String transactionSubmitted = preparedTransaction.toString();
+        System.out.println("Raw transaction: " + transactionSubmitted);
+
+        return sign(keyPair, base64EncodedPayload, hashedPayload);
+    }
+
+    public static Signature sign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
 
         return new Signature()
                 .format("SIGNATURE_FORMAT_CONCAT")
-                .signature(Keys.signBase64(keyPair.getPrivate(), payload))
+                .signature(Keys.signBase64(keyPair.getPrivate(), hashedPayload))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
     }
@@ -175,14 +193,7 @@ public class Ledger {
 
         return new SinglePartySignatures()
                 .party(partyId)
-                .signatures(List.of(sign(keyPair, prepareSubmissionResponse.getPreparedTransactionHash())));
-    }
-
-    public static SignedTransaction makeSignedTransaction(KeyPair keyPair, String transaction) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-
-        return new SignedTransaction()
-                .transaction(transaction)
-                .signatures(List.of(sign(keyPair, transaction)));
+                .signatures(List.of());
     }
 
     public static Right makeCanReadAsAnyRight() {
@@ -298,7 +309,7 @@ public class Ledger {
         return response;
     }
 
-    public void allocateExternalParty(KeyPair keyPair, String synchronizerId, List<String> transactions, String transactionMultiHash) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public void allocateExternalParty(String synchronizerId, List<String> transactions, Signature multiHashSignature) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         List<SignedTransaction> signedTransactions = transactions.stream()
                 .map((t) -> new SignedTransaction()
                         .transaction(t))
@@ -307,7 +318,7 @@ public class Ledger {
         AllocateExternalPartyRequest request = new AllocateExternalPartyRequest()
                 .synchronizer(synchronizerId)
                 .onboardingTransactions(signedTransactions)
-                .multiHashSignatures(List.of(sign(keyPair, transactionMultiHash)))
+                .multiHashSignatures(List.of(multiHashSignature))
                 .identityProviderId(user.identityProviderId());
 
         // System.out.println("\ngenerate external party topology request: " + request.toJson() + "\n");
@@ -395,7 +406,7 @@ public class Ledger {
         return response;
     }
 
-    public void executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, List<SinglePartySignatures> singlePartySignatures) throws ApiException {
+    public void executeSignedSubmission(JsPrepareSubmissionResponse preparedSubmission, String partyId, Signature signature) throws ApiException {
         String submissionId = java.util.UUID.randomUUID().toString();
 
         DeduplicationPeriod2OneOf2 deduplicationPeriodSelection = new DeduplicationPeriod2OneOf2().empty(new Object());
@@ -403,8 +414,12 @@ public class Ledger {
         DeduplicationPeriod2 useMaximum = new DeduplicationPeriod2();
         useMaximum.setActualInstance(deduplicationPeriodSelection);
 
+        SinglePartySignatures singlePartySignatures = new SinglePartySignatures()
+                .party(partyId)
+                .signatures(List.of(signature));
+
         PartySignatures partySignatures = new PartySignatures()
-                .signatures(singlePartySignatures);
+                .signatures(List.of(singlePartySignatures));
 
         JsExecuteSubmissionRequest request = new JsExecuteSubmissionRequest()
                 .userId(user.userId())

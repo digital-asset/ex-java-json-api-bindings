@@ -15,6 +15,7 @@
 
 package com.example.services;
 
+import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.example.ConversionHelpers;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
@@ -25,6 +26,9 @@ import com.example.models.ContractAndId;
 import com.example.models.Splice;
 import com.example.models.TemplateId;
 import com.example.models.TokenStandard;
+import com.example.signing.Encode;
+import com.example.signing.SignatureProvider;
+import com.google.protobuf.InvalidProtocolBufferException;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
@@ -46,13 +50,17 @@ public class Wallet {
     public Ledger ledgerApi;
     public ScanProxy scanProxyApi;
 
+    // callbacks
+    public SignatureProvider signatureProvider;
+
     public Wallet(
             LedgerUser managingUser,
             String scanApiUrl,
             String tokenStandardUrl,
             String ledgerApiUrl,
             String validatorApiUrl,
-            String scanProxyApiUrl
+            String scanProxyApiUrl,
+            SignatureProvider signatureProvider
     ) throws URISyntaxException {
 
         // public APIs
@@ -65,6 +73,8 @@ public class Wallet {
         this.ledgerApi = new Ledger(ledgerApiUrl, managingUser);
         this.validatorApi = new Validator(validatorApiUrl, managingUser);
         this.scanProxyApi = new ScanProxy(scanProxyApiUrl, managingUser);
+
+        this.signatureProvider = signatureProvider;
     }
 
     public void confirmConnectivity() throws Exception {
@@ -102,7 +112,8 @@ public class Wallet {
             transactionsToSign = new ArrayList<>();
         }
 
-        this.ledgerApi.allocateExternalParty(externalPartyKeyPair, synchronizerId, transactionsToSign, generateStepResponse.getMultiHash());
+        Signature multiHashSignature = Ledger.sign(externalPartyKeyPair, generateStepResponse.getMultiHash(), generateStepResponse.getMultiHash());
+        this.ledgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
 
         this.ledgerApi.grantUserRights(this.managingUser.userId(), List.of(
                 Ledger.makeCanReadAsRight(partyId),
@@ -112,11 +123,11 @@ public class Wallet {
         return new ExternalParty(partyId, externalPartyKeyPair);
     }
 
-    public void issueTransferPreapprovalProposal(String synchronizerId, String commandId, String dso, String exchangePartyId, ExternalParty externalParty) throws Exception {
+    public void issueTransferPreapprovalProposal(String synchronizerId, String commandId, String dso, String exchangePartyId, String externalPartyId, KeyPair externalPartyKeyPair) throws Exception {
         List<DisclosedContract> noDisclosures = new ArrayList<>();
-        var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalParty.partyId(), exchangePartyId, dso);
+        var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalPartyId, exchangePartyId, dso);
         List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_PROPOSAL_ID, transferPreapprovalProposal);
-        this.prepareAndSign(externalParty, synchronizerId, commandId, createTransferPreapprovalCommands, noDisclosures);
+        this.prepareAndSign(externalPartyId, externalPartyKeyPair, synchronizerId, commandId, createTransferPreapprovalCommands, noDisclosures);
     }
 
     public boolean hasEstablishedTransferPreapproval(String partyId) throws Exception {
@@ -196,20 +207,29 @@ public class Wallet {
                     disclosures);
 
         } else {
-            prepareAndSign(new ExternalParty(senderPartyId, senderKeyPair.get()), synchronizerId, commandId, transferCommands, disclosures);
+            prepareAndSign(senderPartyId, senderKeyPair.get(), synchronizerId, commandId, transferCommands, disclosures);
         }
     }
 
-    public void prepareAndSign(ExternalParty externalParty, String synchronizerId, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
+    public static InteractiveSubmissionServiceOuterClass.PreparedTransaction parseTransaction(String base64OfTransactionProto) throws InvalidProtocolBufferException {
+        byte[] transactionBytes = Encode.fromBase64String(base64OfTransactionProto);
+        return InteractiveSubmissionServiceOuterClass.PreparedTransaction.parseFrom(transactionBytes);
+    }
+
+    public void prepareAndSign(String externalPartyId, KeyPair externalPartyKeyPair, String synchronizerId, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
         JsPrepareSubmissionResponse preparedTransaction = this.ledgerApi.prepareSubmissionForSigning(
                 synchronizerId,
-                externalParty.partyId(),
+                externalPartyId,
                 commandId,
                 commands,
                 disclosures);
 
-        SinglePartySignatures signature = Ledger.makeSingleSignature(preparedTransaction, externalParty.partyId(), externalParty.keyPair());
-        this.ledgerApi.executeSignedSubmission(preparedTransaction, List.of(signature));
+        Signature signature = signatureProvider.sign(
+                externalPartyKeyPair,
+                preparedTransaction.getPreparedTransaction(),
+                preparedTransaction.getPreparedTransactionHash());
+
+        this.ledgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
     }
 
     public List<CompletionStreamResponse> checkForCommandCompletion(List<String> parties, Long beginExclusive) throws Exception {
