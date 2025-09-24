@@ -222,7 +222,7 @@ public class Main {
             });
 
             assert wallet.getPartyDetails(externalParty.partyId()).isPresent();
-            assert wallet.getTransferPreapproval(externalParty.partyId()).isPresent();
+            assert wallet.hasTransferPreapproval(externalParty.partyId());
 
             return externalParty;
         } catch (Exception ex) {
@@ -260,7 +260,10 @@ public class Main {
         String commandId = java.util.UUID.randomUUID().toString();
 
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
-        wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdings);
+        boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdings, true);
+        if (!transferWasSubmitted) {
+            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
+        }
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);

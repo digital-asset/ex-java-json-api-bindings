@@ -98,8 +98,9 @@ public class Wallet {
         return this.ledgerApi.getPartyDetails(partyId);
     }
 
-    public Optional<ContractWithState> getTransferPreapproval(String partyId) throws Exception {
-        return this.scanProxyApi.getTransferPreapproval(partyId);
+    // This API endpoint is specific to Canton Coin; the method's output is irrelevant when considering other token standard implementations.
+    public boolean hasTransferPreapproval(String partyId) throws Exception {
+        return this.scanProxyApi.getTransferPreapproval(partyId).isPresent();
     }
 
     public ExternalParty allocateExternalPartyNew(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
@@ -165,7 +166,27 @@ public class Wallet {
                 .toList();
     }
 
-    public void transferHoldings(
+    /**
+     * Perform a token standards-compliant transfer.
+     *
+     * @param synchronizerId
+     * @param commandId
+     * @param senderPartyId
+     * @param senderKeyPair
+     * @param receiverPartyId
+     * @param instrumentId
+     * @param memoTag
+     * @param otherTransferMetadata
+     * @param amount
+     * @param holdings
+     * @param preventMultiStep
+     * @return whether or not the transfer was submitted.
+     *
+     *         A transfer will not be submitted if preventMultiStep is set to 'true' and the token standards factory
+     *         responds with a transfer kind of "offer" (i.e. multi-step transfer).
+     * @throws Exception
+     */
+    public boolean transferHoldings(
             String synchronizerId,
             String commandId,
             String senderPartyId,
@@ -175,13 +196,22 @@ public class Wallet {
             Optional<String> memoTag,
             Map<String, String> otherTransferMetadata,
             BigDecimal amount,
-            List<ContractAndId<HoldingView>> holdings
+            List<ContractAndId<HoldingView>> holdings,
+            boolean preventMultiStep
     ) throws Exception {
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
         TransferFactory_Transfer proposedTransfer = TokenStandard.makeProposedTransfer(senderPartyId, receiverPartyId, amount, instrumentId, memoTag, otherTransferMetadata, requestDate, requestExpiresDate, holdings);
         TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = this.transferInstructionApi.getTransferFactory(proposedTransfer);
+
+        TransferFactoryWithChoiceContext.TransferKindEnum kind = transferFactoryWithChoiceContext.getTransferKind();
+
+        if (preventMultiStep
+                && kind.equals(TransferFactoryWithChoiceContext.TransferKindEnum.OFFER) ) {
+            return false;
+        }
+
         TransferFactory_Transfer sentTransfer = TokenStandard.resolveProposedTransfer(proposedTransfer, transferFactoryWithChoiceContext);
 
         List<DisclosedContract> disclosures = transferFactoryWithChoiceContext
@@ -208,6 +238,8 @@ public class Wallet {
         } else {
             prepareAndSign(new ExternalParty(senderPartyId, senderKeyPair.get()), synchronizerId, commandId, transferCommands, disclosures);
         }
+
+        return true;
     }
 
     public void prepareAndSign(ExternalParty externalParty, String synchronizerId, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
