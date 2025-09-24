@@ -241,7 +241,7 @@ public class Ledger {
             return Optional.empty();
         }
 
-        return Optional.of(partyDetailsList.getFirst());
+        return partyDetailsList.stream().findFirst();
     }
 
     // TODO: support multiple pages of response
