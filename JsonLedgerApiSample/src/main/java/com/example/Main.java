@@ -221,6 +221,9 @@ public class Main {
                 return wallet.hasEstablishedTransferPreapproval(externalParty.partyId());
             });
 
+            assert wallet.getPartyDetails(externalParty.partyId()).isPresent();
+            assert wallet.getTransferPreapproval(externalParty.partyId()).isPresent();
+
             return externalParty;
         } catch (Exception ex) {
             handleException(ex);

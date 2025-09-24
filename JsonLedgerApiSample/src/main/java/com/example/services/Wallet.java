@@ -18,7 +18,9 @@ package com.example.services;
 import com.example.ConversionHelpers;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
+import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.model.*;
+import com.example.client.scanProxy.model.ContractWithState;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.models.ContractAndId;
@@ -90,6 +92,14 @@ public class Wallet {
 
     public String getDsoPartyId() throws Exception {
         return this.scanProxyApi.getDsoPartyId();
+    }
+
+    public Optional<PartyDetails> getPartyDetails(String partyId) throws Exception {
+        return this.ledgerApi.getPartyDetails(partyId);
+    }
+
+    public Optional<ContractWithState> getTransferPreapproval(String partyId) throws Exception {
+        return this.scanProxyApi.getTransferPreapproval(partyId);
     }
 
     public ExternalParty allocateExternalPartyNew(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
