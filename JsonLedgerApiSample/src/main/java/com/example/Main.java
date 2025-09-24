@@ -222,7 +222,7 @@ public class Main {
             });
 
             assert wallet.getPartyDetails(externalParty.partyId()).isPresent();
-            assert wallet.hasTransferPreapproval(externalParty.partyId());
+            assert wallet.hasCantonCoinTransferPreapproval(externalParty.partyId());
 
             return externalParty;
         } catch (Exception ex) {
