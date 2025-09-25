@@ -239,6 +239,26 @@ public class Ledger {
         return response.getOffset();
     }
 
+    public Optional<PartyDetails> getPartyDetails(String partyId) throws ApiException {
+
+        GetPartiesResponse response;
+        try {
+            response = this.ledgerApi.getV2PartiesParty(partyId, null, null);
+        } catch (ApiException ex) {
+            if (ex.getCode() == 404) {
+                return Optional.empty();
+            }
+            throw ex;
+        }
+
+        List<PartyDetails> partyDetailsList = response.getPartyDetails();
+        if (partyDetailsList == null || partyDetailsList.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return partyDetailsList.stream().findFirst();
+    }
+
     // TODO: support multiple pages of response
     public List<String> getUsers() throws ApiException {
         ListUsersResponse response = this.ledgerApi.getV2Users(100, null);

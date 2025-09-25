@@ -19,7 +19,11 @@ import com.example.access.LedgerUser;
 import com.example.client.scanProxy.api.ScanProxyApi;
 import com.example.client.scanProxy.invoker.ApiClient;
 import com.example.client.scanProxy.invoker.ApiException;
+import com.example.client.scanProxy.model.ContractWithState;
 import com.example.client.scanProxy.model.GetDsoPartyIdResponse;
+import com.example.client.scanProxy.model.LookupTransferPreapprovalByPartyResponse;
+
+import java.util.Optional;
 
 public class ScanProxy {
 
@@ -36,5 +40,19 @@ public class ScanProxy {
     public String getDsoPartyId() throws ApiException {
         GetDsoPartyIdResponse response = this.scanProxyApi.getDsoPartyId();
         return response.getDsoPartyId();
+    }
+
+    public Optional<ContractWithState> getTransferPreapproval(String partyId) throws ApiException {
+        LookupTransferPreapprovalByPartyResponse response;
+        try {
+            response = this.scanProxyApi.lookupTransferPreapprovalByParty(partyId);
+        } catch (ApiException ex) {
+            if (ex.getCode() == 404) {
+                return Optional.empty();
+            }
+            throw ex;
+        }
+
+        return Optional.of(response.getTransferPreapproval());
     }
 }
