@@ -36,7 +36,11 @@ import java.util.Optional;
 
 public class TokenStandard {
 
-    public final static String MEMO_KEY = "splice.lfdecentralizedtrust.org/reason";
+    // Prefix for metadata keys used in the token standard
+    public static final String META_KEY_PREFIX = "splice.lfdecentralizedtrust.org/";
+    public static final String MEMO_KEY = META_KEY_PREFIX + "reason";
+    public static final String SENDER_KEY = META_KEY_PREFIX + "sender";
+    public static final String TRANSFER_KIND_KEY = META_KEY_PREFIX + "tx-kind";
 
     public static TransferFactory_Transfer makeProposedTransfer(
             String senderPartyId,
