@@ -2,21 +2,15 @@ package com.example.store;
 
 import com.example.ConversionHelpers;
 import com.example.client.ledger.model.*;
-import com.example.client.scan.model.UpdateHistoryItem;
 import com.example.models.ContractAndId;
 import com.example.models.TemplateId;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import splice.api.token.holdingv1.HoldingView;
 
-import java.io.IOException;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * In-memory store mocking the Canton Integration DB from the exchange integration docs
@@ -28,7 +22,6 @@ public class IntegrationStore {
     private final HashMap<String, HoldingView> activeHoldings = new HashMap<>();
     private long lastIngestedOffset = -1;
     private String sourceSynchronizerId = null;
-    // TODO: convert to Instant
     private String lastIngestedRecordTime = null;
     private final String treasuryParty;
 
@@ -36,21 +29,22 @@ public class IntegrationStore {
         this.treasuryParty = treasuryParty;
     }
 
-    /** Serialize this store to JSON */
-    public String toJson() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
-    }
-
     @Override
     public String toString() {
-        return "IntegrationStore{" +
-                "treasuryParty='" + treasuryParty + '\'' +
-                "\nlastIngestedOffset=" + lastIngestedOffset +
-                "\nsourceSynchronizerId='" + sourceSynchronizerId + '\'' +
-                "\nlastIngestedRecordTime='" + lastIngestedRecordTime + '\'' +
-                "\nactiveHoldings=" + activeHoldings +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("IntegrationStore{")
+                .append("\ntreasuryParty='").append(treasuryParty).append('\'')
+                .append("\nlastIngestedOffset=").append(lastIngestedOffset)
+                .append("\nsourceSynchronizerId='").append(sourceSynchronizerId).append('\'')
+                .append("\nlastIngestedRecordTime='").append(lastIngestedRecordTime).append('\'')
+                .append("\nactiveHoldings={\n");
+
+        activeHoldings.forEach((key, value) ->
+                sb.append("  ").append(key).append(": ").append(value).append("\n")
+        );
+
+        sb.append("}}");
+        return sb.toString();
     }
 
     public HashMap<String, HoldingView> getActiveHoldings() {
@@ -131,8 +125,9 @@ public class IntegrationStore {
         if (interfaceViews != null) {
             for (JsInterfaceView view : interfaceViews) {
                 if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
-                    HoldingView holding = ConversionHelpers.convertFromJson(view.toJson(), HoldingView::fromJson);
-                    activeHoldings.put(createdEvent.getContractId(), holding);
+                    String viewJson = com.example.client.ledger.invoker.JSON.getGson().toJson(view.getViewValue());
+                    HoldingView holding = ConversionHelpers.convertFromJson(viewJson, HoldingView::fromJson);
+                    ingestCreateHoldingEvent(createdEvent.getContractId(), holding);
                     return;
                 }
             }
