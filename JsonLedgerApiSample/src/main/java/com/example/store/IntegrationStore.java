@@ -5,6 +5,8 @@ import com.example.client.ledger.model.*;
 import com.example.client.scan.model.UpdateHistoryItem;
 import com.example.models.ContractAndId;
 import com.example.models.TemplateId;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import splice.api.token.holdingv1.HoldingView;
 
@@ -28,12 +30,49 @@ public class IntegrationStore {
     private String sourceSynchronizerId = null;
     // TODO: convert to Instant
     private String lastIngestedRecordTime = null;
-
     private final String treasuryParty;
 
     public IntegrationStore(String treasuryParty) {
         this.treasuryParty = treasuryParty;
     }
+
+    /** Serialize this store to JSON */
+    public String toJson() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return "IntegrationStore{" +
+                "treasuryParty='" + treasuryParty + '\'' +
+                "\nlastIngestedOffset=" + lastIngestedOffset +
+                "\nsourceSynchronizerId='" + sourceSynchronizerId + '\'' +
+                "\nlastIngestedRecordTime='" + lastIngestedRecordTime + '\'' +
+                "\nactiveHoldings=" + activeHoldings +
+                '}';
+    }
+
+    public HashMap<String, HoldingView> getActiveHoldings() {
+        return activeHoldings;
+    }
+
+    public long getLastIngestedOffset() {
+        return lastIngestedOffset;
+    }
+
+    public String getSourceSynchronizerId() {
+        return sourceSynchronizerId;
+    }
+
+    public String getLastIngestedRecordTime() {
+        return lastIngestedRecordTime;
+    }
+
+    public String getTreasuryParty() {
+        return treasuryParty;
+    }
+
 
     public void ingestAcs(List<JsContractEntry> contracts, long offset) {
         for (JsContractEntry contract : contracts) {
@@ -119,7 +158,7 @@ public class IntegrationStore {
     private void ingestOffsetCheckpoint(OffsetCheckpoint1 checkpoint) {
         List<SynchronizerTime> times = checkpoint.getSynchronizerTimes();
         if (times != null && times.size() == 1) {
-            SynchronizerTime time = times.getFirst();
+            SynchronizerTime time = times.get(0);
             updateLastIngested(checkpoint.getOffset(), time.getSynchronizerId(), time.getRecordTime());
         } else {
             throw new UnsupportedOperationException("Multiple synchronizers are not yet supported, failed to handle checkpoint: " + checkpoint.toJson());
