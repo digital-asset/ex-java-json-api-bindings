@@ -7,7 +7,6 @@ dependency-reduced-pom.xml
 
 ### IntelliJ IDEA ###
 .idea/
-!/.idea/misc.xml
 !/.idea/vcs.xml
 !/.idea/codeStyles/
 !/.idea/runConfigurations/
