@@ -416,9 +416,7 @@ public class Ledger {
         return response;
     }
 
-    public List<JsGetUpdatesResponse> getUpdatesWithFilter(String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
-        long offset = 0;
-
+    public List<JsGetUpdatesResponse> getUpdatesWithFilter(String partyId, List<CumulativeFilter> cumulativeFilters, long beginAfterOffset ) throws Exception {
         Filters filters = new Filters()
                 .cumulative(cumulativeFilters);
 
@@ -435,12 +433,12 @@ public class Ledger {
 
         GetUpdatesRequest request = new GetUpdatesRequest()
                 .verbose(false)
-                .beginExclusive(offset)
+                .beginExclusive(beginAfterOffset)
                 .updateFormat(updateFormat);
 
-        System.out.println("\nget updates by interface request: " + request.toJson() + "\n");
+        // System.out.println("\nget updates by interface request: " + request.toJson() + "\n");
         List<JsGetUpdatesResponse> response = this.ledgerApi.postV2Updates(request, 100L, null);
-        System.out.println("\nget updates by interface response: " + JSON.getGson().toJson(response) + "\n");
+        // System.out.println("\nget updates by interface response: " + JSON.getGson().toJson(response) + "\n");
 
         return response;
     }
