@@ -109,13 +109,6 @@ public class Keys {
         return signer.sign();
     }
 
-    private static byte[] concatByteArrays(byte[] lhs, byte[] rhs) {
-        byte[] result = new byte[lhs.length + rhs.length];
-        System.arraycopy(lhs, 0, result, 0, lhs.length);
-        System.arraycopy(rhs, 0, result, lhs.length, rhs.length);
-        return result;
-    }
-
     private static byte[] uint32ToByteArray(long value) {
         byte[] buf = new byte[4];
         buf[0] = (byte) (value >>> 24);
@@ -128,12 +121,11 @@ public class Keys {
     public static byte[] fingerPrintOf(PublicKey key) throws NoSuchAlgorithmException {
 
         byte[] purposeBytes = uint32ToByteArray(12L);
-        byte[] digestInput = concatByteArrays(purposeBytes, toRawBytes(key));
+        byte[] digestInput = ByteArrayBuilder.concat(purposeBytes, toRawBytes(key));
 
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] digestOutput = digest.digest(digestInput);
+        byte[] digestOutput = Sha256.hash(digestInput);
         byte[] hashPrefix = new byte[]{0x12, 0x20};
-        return concatByteArrays(hashPrefix, digestOutput);
+        return ByteArrayBuilder.concat(hashPrefix, digestOutput);
     }
 
     public static byte[] toRawBytes(PrivateKey key) {
@@ -159,38 +151,31 @@ public class Keys {
     public static byte[] toRawBytes(PrivateKey privateKey, PublicKey publicKey) {
         byte[] keyBytesPrivate = toRawBytes(privateKey);
         byte[] keyBytesPublic = toRawBytes(publicKey);
-        byte[] keyBytesRaw = new byte[64];
-        System.arraycopy(keyBytesPrivate, 0, keyBytesRaw, 0, 32);
-        System.arraycopy(keyBytesPublic, 0, keyBytesRaw, 32, 32);
-        return keyBytesRaw;
+        return ByteArrayBuilder.concat(keyBytesPrivate, keyBytesPublic);
     }
 
     static String stripPublicKey(String privateKeyBase64) {
-        byte[] keyBytes = Base64.getDecoder().decode(privateKeyBase64);
+        byte[] keyBytes = Encode.fromBase64String(privateKeyBase64);
         if (keyBytes.length == 32) {
             return privateKeyBase64; // Already raw format
         } else if (keyBytes.length == 64) {
             byte[] rawKeyBytes = new byte[32];
             System.arraycopy(keyBytes, 0, rawKeyBytes, 0, 32);
-            return Base64.getEncoder().encodeToString(rawKeyBytes);
+            return Encode.toBase64String(rawKeyBytes);
         } else {
             throw new IllegalArgumentException("Invalid key length of " + keyBytes.length);
         }
     }
 
     static String addPublicKeyDerHeader(String base64String) {
-        byte[] keyBytes = Base64.getDecoder().decode(base64String);
-        byte[] derKeyBytes = new byte[derPublicKeyHeader.length + keyBytes.length];
-        System.arraycopy(derPublicKeyHeader, 0, derKeyBytes, 0, derPublicKeyHeader.length);
-        System.arraycopy(keyBytes, 0, derKeyBytes, derPublicKeyHeader.length, keyBytes.length);
-        return Base64.getEncoder().encodeToString(derKeyBytes);
+        byte[] keyBytes = Encode.fromBase64String(base64String);
+        byte[] withHeader = ByteArrayBuilder.concat(derPublicKeyHeader, keyBytes);
+        return Encode.toBase64String(withHeader);
     }
 
     static String addPrivateKeyDerHeader(String base64String) {
-        byte[] keyBytes = Base64.getDecoder().decode(base64String);
-        byte[] derKeyBytes = new byte[derPrivateKeyHeader.length + keyBytes.length];
-        System.arraycopy(derPrivateKeyHeader, 0, derKeyBytes, 0, derPrivateKeyHeader.length);
-        System.arraycopy(keyBytes, 0, derKeyBytes, derPrivateKeyHeader.length, keyBytes.length);
-        return Base64.getEncoder().encodeToString(derKeyBytes);
+        byte[] keyBytes = Encode.fromBase64String(base64String);
+        byte[] withHeader = ByteArrayBuilder.concat(derPrivateKeyHeader, keyBytes);
+        return Encode.toBase64String(withHeader);
     }
 }
