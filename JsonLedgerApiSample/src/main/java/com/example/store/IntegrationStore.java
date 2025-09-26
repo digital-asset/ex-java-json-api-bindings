@@ -1,6 +1,7 @@
 package com.example.store;
 
 import com.example.ConversionHelpers;
+import com.example.GsonTypeAdapters.ExtendedJson;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 import com.example.models.ContractAndId;
@@ -14,6 +15,7 @@ import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
+import javax.xml.crypto.dsig.TransformService;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Level;
@@ -44,10 +46,23 @@ public class IntegrationStore {
         return userBalances.getOrDefault(depositId, new Balances()).getBalance(instrumentId);
     }
 
-    private record TransferInfo(
-            @Nonnull String sender,
-            String receiver,
-            @Nonnull String depositId) {
+    private static class TransferInfo {
+        @Nonnull
+        public String sender;
+        public String receiver;
+        @Nonnull
+        public String depositId;
+        public final ArrayList<TransferLog.HoldingChange> holdingChanges = new ArrayList<>();
+
+        public TransferInfo(@Nonnull String sender, String receiver, @Nonnull String depositId) {
+            this.sender = sender;
+            this.receiver = receiver;
+            this.depositId = depositId;
+        }
+
+        public void appendHoldingChange(String contractId, HoldingView holding, boolean archived) {
+            holdingChanges.add(new TransferLog.HoldingChange(contractId, holding, archived));
+        }
     }
 
     private class TransactionParser {
@@ -62,7 +77,7 @@ public class IntegrationStore {
         private final Integer lastDescendantNodeId;
         private final Iterator<Event> events;
         private final int rootNodeId;
-        private TransferInfo transferInfo;
+        private final TransferInfo transferInfo;
 
         /**
          * Parse the events in the iterator up to and including the event with the given node ID.
@@ -153,20 +168,44 @@ public class IntegrationStore {
                         // Most registries will only create one holding for the receiver per transfer, but some might use multiple intermediate steps,
                         log.warning("Unexpected archival of tracked holding within an incoming transfer: debiting " + oldView.amount + " of " + oldView.instrumentId + " sent by " + transferInfo.sender + " from deposit " + transferInfo.depositId);
                     }
+                    // FIXME: remove the above code once it's no longer required
+                    if (transferInfo != null) {
+                        transferInfo.appendHoldingChange(cid, oldView, true);
+                    }
                 }
             }
 
             // If there is no transfer info yet, try to extract it from the exercise event
             if (transferInfo == null) {
-                transferInfo = parseTransferInfoFromExerciseEvent(exercisedEvent);
-            }
+                TransferInfo newTransferInfo = parseTransferInfoFromExerciseEvent(exercisedEvent);
 
-            // Parse child nodes, which are a transaction by themselves,
-            // see https://docs.digitalasset.com/overview/3.3/explanations/ledger-model/ledger-structure.html#transactions
-            log.finer("Starting parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
-            TransactionParser subtransactionParser = new TransactionParser(exercisedEvent.getNodeId(), events, exercisedEvent.getLastDescendantNodeId(), transferInfo);
-            log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
-            return subtransactionParser.parse();
+                if (newTransferInfo != null) {
+                    // Parse child nodes, which are a transaction by themselves,
+                    // see https://docs.digitalasset.com/overview/3.3/explanations/ledger-model/ledger-structure.html#transactions
+                    log.finer("Starting parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
+                    TransactionParser subtransactionParser = new TransactionParser(exercisedEvent.getNodeId(), events, exercisedEvent.getLastDescendantNodeId(), newTransferInfo);
+                    log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
+                    int lastNodeId = subtransactionParser.parse();
+
+                    // record the transfer
+                    TransferLog.Transfer t = new TransferLog.Transfer(
+                            lastIngestedUpdateId,
+                            lastIngestedRecordTime,
+                            lastIngestedOffset,
+                            exercisedEvent.getNodeId(),
+                            newTransferInfo.sender,
+                            // TODO: validate this with the holding changes
+                            newTransferInfo.receiver != null ? newTransferInfo.receiver : treasuryParty,
+                            newTransferInfo.depositId,
+                            newTransferInfo.holdingChanges,
+                            null // TODO: parse the transfer spec from the exercise event if it was a token standard transfer
+                    );
+                    transferLog.addTransfer(t);
+                    return lastNodeId;
+                }
+            }
+            // Default case: just flatten the parsing of the child nodes into the parent
+            return exercisedEvent.getNodeId();
         }
 
         TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
@@ -213,28 +252,9 @@ public class IntegrationStore {
         transferLog = new TransferLog(treasuryParty);
     }
 
-    // FIXME: go via json
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("IntegrationStore{")
-                .append("\ntreasuryParty='").append(treasuryParty).append('\'')
-                .append("\nlastIngestedOffset=").append(lastIngestedOffset)
-                .append("\nsourceSynchronizerId='").append(sourceSynchronizerId).append('\'')
-                .append("\nlastIngestedRecordTime='").append(lastIngestedRecordTime).append('\'')
-                .append("\nlastIngestedUpdateId='").append(lastIngestedUpdateId).append('\'')
-                .append("\nactiveHoldings={\n");
-
-        activeHoldings.forEach((key, value) ->
-                sb.append("  ").append(key).append(": ").append(value).append("\n")
-        );
-        sb.append("}\nuserBalances={\n");
-        userBalances.forEach((key, value) ->
-                sb.append("  ").append(key).append(": ").append(value).append("\n")
-        );
-
-        sb.append("}}");
-        return sb.toString();
+        return ExtendedJson.gsonPretty.toJson(this);
     }
 
     public HashMap<String, HoldingView> getActiveHoldings() {
@@ -347,6 +367,10 @@ public class IntegrationStore {
                 userBalances.putIfAbsent(transferInfo.depositId, new Balances());
                 userBalances.get(transferInfo.depositId).credit(holding.instrumentId, holding.amount);
                 log.info("Credited " + holding.amount + " of " + holding.instrumentId + " sent by " + transferInfo.sender + " into deposit " + transferInfo.depositId);
+            }
+            // FIXME: remove the above code once it's no longer required
+            if (transferInfo != null) {
+                transferInfo.appendHoldingChange(cid, holding, false);
             }
         } else {
             log.finer(() -> "Ignoring creation of holding not owned by treasury party: " + cid + " -> " + holding.toJson());

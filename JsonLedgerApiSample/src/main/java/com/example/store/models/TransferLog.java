@@ -18,7 +18,7 @@ public class TransferLog {
             // transaction metadata
             @Nonnull String updateId,
             @Nonnull String recordTime,
-            @Nonnull String offset,
+            long offset,
             int exerciseNodeId,
 
             // transfer data
