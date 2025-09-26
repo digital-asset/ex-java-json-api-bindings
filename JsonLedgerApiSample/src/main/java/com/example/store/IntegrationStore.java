@@ -19,7 +19,6 @@ import splice.api.token.transferinstructionv1.transferinstructionresult_output.T
 import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Failed;
 import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Pending;
 
-import javax.xml.crypto.dsig.TransformService;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.logging.Level;
@@ -56,7 +55,7 @@ public class IntegrationStore {
         @Nonnull
         final public String depositId;
         final public Transfer transferSpec;
-        final public ArrayList<TransferLog.HoldingChange> holdingChanges = new ArrayList<>();
+        final public ArrayList<TransferLog.HoldingChange> treasuryHoldingChanges = new ArrayList<>();
 
         public TransferInfo(@Nonnull String sender, String receiver, @Nonnull String depositId, Transfer transferSpec) {
             this.sender = sender;
@@ -65,9 +64,23 @@ public class IntegrationStore {
             this.transferSpec = transferSpec;
         }
 
-
         public void appendHoldingChange(String contractId, HoldingView holding, boolean archived) {
-            holdingChanges.add(new TransferLog.HoldingChange(contractId, holding, archived));
+            treasuryHoldingChanges.add(new TransferLog.HoldingChange(contractId, holding, archived));
+        }
+
+        public Set<InstrumentId> affectedInstrumentIds() {
+            HashSet<InstrumentId> instrumentIds = new HashSet<>();
+            for (var hc : treasuryHoldingChanges) {
+                instrumentIds.add(hc.holding().instrumentId);
+            }
+            return instrumentIds;
+        }
+
+        public BigDecimal treasuryHoldingChangeAmount(InstrumentId instrumentId) {
+            return treasuryHoldingChanges.stream()
+                    .filter(hc -> hc.holding().instrumentId.equals(instrumentId))
+                    .map(hc -> hc.archived() ? hc.holding().amount.negate() : hc.holding().amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
     }
 
@@ -177,21 +190,35 @@ public class IntegrationStore {
                     log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
                     int lastNodeId = subtransactionParser.parse();
 
-                    // record the transfer
-                    TransferLog.Transfer t = new TransferLog.Transfer(
-                            lastIngestedUpdateId,
-                            lastIngestedRecordTime,
-                            lastIngestedOffset,
-                            exercisedEvent.getNodeId(),
-                            newTransferInfo.sender,
-                            // TODO: validate this with the holding changes
-                            newTransferInfo.receiver != null ? newTransferInfo.receiver : treasuryParty,
-                            newTransferInfo.depositId,
-                            newTransferInfo.holdingChanges,
-                            newTransferInfo.transferSpec
-                    );
-                    transferLog.addTransfer(t);
-                    return lastNodeId;
+                    // Determine total amount transferred based on holding changes.
+                    // We use the holding changes rather than the transfer spec, as they are the ground truth of what actually happened.
+                    Set<InstrumentId> instrumentIds = newTransferInfo.affectedInstrumentIds();
+                    if (instrumentIds.size() != 1) {
+                        log.warning("Ignoring transfer affecting multiple instrument IDs " + instrumentIds + " in exercise event" + exercisedEvent.toJson());
+                        // TODO: report this parse error on the transfer log (make it into a tx history log)
+                        return lastNodeId;
+                    } else {
+                        InstrumentId instrumentId = instrumentIds.iterator().next();
+                        BigDecimal rawAmount = newTransferInfo.treasuryHoldingChangeAmount(instrumentId);
+                        BigDecimal amount = newTransferInfo.sender.equals(treasuryParty) ? rawAmount.negate() : rawAmount;
+                        // record the transfer
+                        TransferLog.Transfer t = new TransferLog.Transfer(
+                                lastIngestedUpdateId,
+                                lastIngestedRecordTime,
+                                lastIngestedOffset,
+                                exercisedEvent.getNodeId(),
+                                newTransferInfo.sender,
+                                // TODO: validate this with the holding changes
+                                newTransferInfo.receiver != null ? newTransferInfo.receiver : treasuryParty,
+                                newTransferInfo.depositId,
+                                instrumentId,
+                                amount,
+                                newTransferInfo.treasuryHoldingChanges,
+                                newTransferInfo.transferSpec
+                        );
+                        transferLog.addTransfer(t);
+                        return lastNodeId;
+                    }
                 }
             }
             // Default case: just flatten the parsing of the child nodes into the parent
