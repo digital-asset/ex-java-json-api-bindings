@@ -1,10 +1,9 @@
 package com.example.store.models;
 
 import jakarta.annotation.Nonnull;
-import splice.api.token.holdingv1.Holding;
+import org.checkerframework.checker.nullness.qual.AssertNonNullIfNonNull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
-import splice.api.token.transferinstructionv1.Transfer;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,16 +24,18 @@ public class TransferLog {
             @Nonnull String senderPartyId,
             @Nonnull String receiverPartyId,
             @Nonnull String memoTag,
+            @Nonnull InstrumentId instrumentId,
+            @Nonnull BigDecimal amount,
 
             // changes to the treasury holdings that happened as part of this transfer
-            @Nonnull List<HoldingChange> holdingChanges,
+            @Nonnull List<HoldingChange> treasuryHoldingChanges,
 
             // only available if it was a token standard transfer
             splice.api.token.transferinstructionv1.Transfer transferSpec
     ) {
         public Balances getBalanceChanges() {
             Balances balances = new Balances();
-            for (HoldingChange hc : holdingChanges) {
+            for (HoldingChange hc : treasuryHoldingChanges) {
                 InstrumentId instrumentId = hc.holding.instrumentId;
                 BigDecimal amount = hc.holding.amount;
                 if (hc.archived) {
