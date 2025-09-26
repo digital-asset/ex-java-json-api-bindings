@@ -14,6 +14,10 @@ import com.google.gson.JsonParser;
 import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
+import splice.api.token.transferinstructionv1.*;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Completed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Failed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Pending;
 
 import javax.xml.crypto.dsig.TransformService;
 import java.math.BigDecimal;
@@ -47,17 +51,20 @@ public class IntegrationStore {
 
     private static class TransferInfo {
         @Nonnull
-        public String sender;
-        public String receiver;
+        final public String sender;
+        final public String receiver;
         @Nonnull
-        public String depositId;
-        public final ArrayList<TransferLog.HoldingChange> holdingChanges = new ArrayList<>();
+        final public String depositId;
+        final public Transfer transferSpec;
+        final public ArrayList<TransferLog.HoldingChange> holdingChanges = new ArrayList<>();
 
-        public TransferInfo(@Nonnull String sender, String receiver, @Nonnull String depositId) {
+        public TransferInfo(@Nonnull String sender, String receiver, @Nonnull String depositId, Transfer transferSpec) {
             this.sender = sender;
             this.receiver = receiver;
             this.depositId = depositId;
+            this.transferSpec = transferSpec;
         }
+
 
         public void appendHoldingChange(String contractId, HoldingView holding, boolean archived) {
             holdingChanges.add(new TransferLog.HoldingChange(contractId, holding, archived));
@@ -181,7 +188,7 @@ public class IntegrationStore {
                             newTransferInfo.receiver != null ? newTransferInfo.receiver : treasuryParty,
                             newTransferInfo.depositId,
                             newTransferInfo.holdingChanges,
-                            null // TODO: parse the transfer spec from the exercise event if it was a token standard transfer
+                            newTransferInfo.transferSpec
                     );
                     transferLog.addTransfer(t);
                     return lastNodeId;
@@ -192,10 +199,41 @@ public class IntegrationStore {
         }
 
         TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
-            // TODO: parse the info from TransferInstruction choices as well
-
-            // The below is a fallback to parse the info from arbitrary "meta" fields in an exerciseResult
-            if (packagesWithGenericMetadataParsing.contains(exercisedEvent.getPackageName())) {
+            if (exercisedEvent.getChoice().equals(TransferFactory.CHOICE_TransferFactory_Transfer.name)
+                    && TemplateId.TRANSFER_FACTORY_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
+                // Parse information from the token standard choice argument
+                TransferFactory_Transfer transferChoiceArg = ConversionHelpers.convertViaJson(
+                        exercisedEvent.getChoiceArgument(),
+                        JSON.getGson()::toJson,
+                        TransferFactory_Transfer::fromJson);
+                Transfer t = transferChoiceArg.transfer;
+                String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
+                TransferInstructionResult transferResult =
+                        ConversionHelpers.convertViaJson(
+                                exercisedEvent.getExerciseResult(),
+                                JSON.getGson()::toJson,
+                                TransferInstructionResult::fromJson);
+                if (transferResult.output instanceof TransferInstructionResult_Completed) {
+                    return new TransferInfo(
+                            t.sender,
+                            t.receiver,
+                            memoTag,
+                            t
+                    );
+                } else if (transferResult.output instanceof TransferInstructionResult_Pending) {
+                    // TODO: implement multi-step transfer support
+                    log.warning("Encountered pending multi-step transfers -- not yet supported:" + exercisedEvent.toJson());
+                    return null;
+                } else if (transferResult.output instanceof TransferInstructionResult_Failed) {
+                    // TODO: implement multi-step transfer support
+                    log.warning("Encountered aborted multi-step transfer -- not yet supported: " + exercisedEvent.toJson());
+                    return null;
+                } else {
+                    log.severe("Encountered unknown transfer result: " + exercisedEvent.toJson());
+                    return null;
+                }
+            } else if (packagesWithGenericMetadataParsing.contains(exercisedEvent.getPackageName())) {
+                // This a fallback to parse the info from arbitrary "meta" fields in an exerciseResult
                 Object result0 = exercisedEvent.getExerciseResult();
                 // convert to JSON and parse as generic JSON to see whether there is a .meta field
                 String resultJson = JSON.getGson().toJson(result0);
@@ -213,7 +251,7 @@ public class IntegrationStore {
                             String sender = metadata.get(SENDER_KEY).getAsString();
                             String depositId = metadata.get(MEMO_KEY).getAsString();
                             // Here we don't know the receiver. We'll have to infer it from the Holding changes.
-                            TransferInfo transferInfo = new TransferInfo(sender, null, depositId);
+                            TransferInfo transferInfo = new TransferInfo(sender, null, depositId, null);
                             log.info(() -> "Detected transfer info " + transferInfo + " in exercise result: " + resultJson);
                             return transferInfo;
                         } else {
