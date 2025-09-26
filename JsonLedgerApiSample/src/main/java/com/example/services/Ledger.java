@@ -41,14 +41,7 @@ import java.util.Optional;
 public class Ledger {
 
     static {
-        JSON.setGson(
-                JSON.getGson().newBuilder()
-                        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
-                        .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
-                        .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
-                        .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
-                        .registerTypeAdapter(KeyPair.class, new KeyPairTypeAdapter())
-                        .create());
+        JSON.setGson(ExtendedJson.gson);
     }
 
     private final DefaultApi ledgerApi;
