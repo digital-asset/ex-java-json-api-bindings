@@ -39,11 +39,10 @@ public class IntegrationStore {
     private String lastIngestedUpdateId = null;
 
     private final String treasuryParty;
-    private final HashMap<String, Balances> userBalances = new HashMap<>();
     private final TransferLog transferLog;
 
     public BigDecimal getBalance(InstrumentId instrumentId, String depositId) {
-        return userBalances.getOrDefault(depositId, new Balances()).getBalance(instrumentId);
+        return transferLog.getDepositBalances().getOrDefault(depositId, new Balances()).getBalance(instrumentId);
     }
 
     private static class TransferInfo {
@@ -153,22 +152,6 @@ public class IntegrationStore {
                     log.info(() -> "Ignoring consuming exercise event for untracked contract: " + exercisedEvent.toJson());
                 } else {
                     log.info("Processing consuming choice " + exercisedEvent.getChoice() + " on tracked holding " + cid);
-                    if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
-                        // TODO: consider just forbidding this case, and ignoring a deposit that triggers it
-                        //
-                        // Seeing a consuming exercise on a tracked holding (i.e., one owned by the treasury party)
-                        // for an incoming transfer is surprising. Most token admins will not use such a pattern,
-                        // but some might have workflows where the holding is both
-                        // created and archived within the same transfer.
-                        //
-                        // The safe option is to process it as a debit so that create + archive pairs net to zero.
-                        userBalances.putIfAbsent(transferInfo.depositId, new Balances());
-                        userBalances.get(transferInfo.depositId).debit(oldView.instrumentId, oldView.amount);
-                        // Note: we attribute *all* holding changes below an exercise node representing a transfer to the same transfer info.
-                        // Most registries will only create one holding for the receiver per transfer, but some might use multiple intermediate steps,
-                        log.warning("Unexpected archival of tracked holding within an incoming transfer: debiting " + oldView.amount + " of " + oldView.instrumentId + " sent by " + transferInfo.sender + " from deposit " + transferInfo.depositId);
-                    }
-                    // FIXME: remove the above code once it's no longer required
                     if (transferInfo != null) {
                         transferInfo.appendHoldingChange(cid, oldView, true);
                     }
@@ -359,16 +342,11 @@ public class IntegrationStore {
     }
 
     private void ingestCreateHoldingEvent(String cid, HoldingView holding, TransferInfo transferInfo) {
+        // TODO: consider tracking non-treasury owned holdings -- may be useful for dealing with support requests
         if (treasuryParty.equals(holding.owner)) {
             assert !activeHoldings.containsKey(cid);
             log.info("New active holding for treasury party: " + cid + " -> " + holding.toJson());
             activeHoldings.put(cid, holding);
-            if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
-                userBalances.putIfAbsent(transferInfo.depositId, new Balances());
-                userBalances.get(transferInfo.depositId).credit(holding.instrumentId, holding.amount);
-                log.info("Credited " + holding.amount + " of " + holding.instrumentId + " sent by " + transferInfo.sender + " into deposit " + transferInfo.depositId);
-            }
-            // FIXME: remove the above code once it's no longer required
             if (transferInfo != null) {
                 transferInfo.appendHoldingChange(cid, holding, false);
             }
