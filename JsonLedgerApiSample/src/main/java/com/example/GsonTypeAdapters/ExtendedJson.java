@@ -19,4 +19,6 @@ public class ExtendedJson {
                     .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
                     .registerTypeAdapter(KeyPair.class, new KeyPairTypeAdapter())
                     .create();
+
+    public static final Gson gsonPretty = gson.newBuilder().setPrettyPrinting().create();
 }

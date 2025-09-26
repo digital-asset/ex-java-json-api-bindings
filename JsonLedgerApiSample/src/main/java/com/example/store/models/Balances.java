@@ -6,9 +6,19 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 
 public class Balances {
-    private HashMap<InstrumentId, BigDecimal> balances = new HashMap<>();
+    final private HashMap<InstrumentId, BigDecimal> balances = new HashMap<>();
 
-    public Balances() {};
+    public Balances() {
+    }
+
+    ;
+
+    public void add(Balances other) {
+        for (var entry : other.balances.entrySet()) {
+            balances.put(entry.getKey(),
+                    balances.getOrDefault(entry.getKey(), BigDecimal.ZERO).add(entry.getValue()));
+        }
+    }
 
     public void credit(InstrumentId instrumentId, BigDecimal amount) {
         this.balances.put(instrumentId, this.balances.getOrDefault(instrumentId, BigDecimal.ZERO).add(amount));

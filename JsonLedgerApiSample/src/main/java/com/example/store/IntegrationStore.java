@@ -1,15 +1,23 @@
 package com.example.store;
 
 import com.example.ConversionHelpers;
+import com.example.GsonTypeAdapters.ExtendedJson;
+import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 import com.example.models.ContractAndId;
 import com.example.models.TemplateId;
 import com.example.store.models.Balances;
+import com.example.store.models.TransferLog;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
+import splice.api.token.transferinstructionv1.*;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Completed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Failed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Pending;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -29,16 +37,51 @@ public class IntegrationStore {
     private long lastIngestedOffset = -1;
     private String sourceSynchronizerId = null;
     private String lastIngestedRecordTime = null;
+
+    // Might be lagging behind lastIngestedOffset if an offset checkpoint was ingested last
+    private String lastIngestedUpdateId = null;
+
     private final String treasuryParty;
-    private final HashMap<String, Balances> userBalances = new HashMap<>();
+    private final TransferLog transferLog;
 
     public BigDecimal getBalance(InstrumentId instrumentId, String depositId) {
-        return userBalances.getOrDefault(depositId, new Balances()).getBalance(instrumentId);
+        return transferLog.getDepositBalances().getOrDefault(depositId, new Balances()).getBalance(instrumentId);
     }
 
-    private record TransferInfo(
-            String sender,
-            String depositId) {
+    private static class TransferInfo {
+        @Nonnull
+        final public String sender;
+        final public String receiver;
+        @Nonnull
+        final public String depositId;
+        final public Transfer transferSpec;
+        final public ArrayList<TransferLog.HoldingChange> treasuryHoldingChanges = new ArrayList<>();
+
+        public TransferInfo(@Nonnull String sender, String receiver, @Nonnull String depositId, Transfer transferSpec) {
+            this.sender = sender;
+            this.receiver = receiver;
+            this.depositId = depositId;
+            this.transferSpec = transferSpec;
+        }
+
+        public void appendHoldingChange(String contractId, HoldingView holding, boolean archived) {
+            treasuryHoldingChanges.add(new TransferLog.HoldingChange(contractId, holding, archived));
+        }
+
+        public Set<InstrumentId> affectedInstrumentIds() {
+            HashSet<InstrumentId> instrumentIds = new HashSet<>();
+            for (var hc : treasuryHoldingChanges) {
+                instrumentIds.add(hc.holding().instrumentId);
+            }
+            return instrumentIds;
+        }
+
+        public BigDecimal treasuryHoldingChangeAmount(InstrumentId instrumentId) {
+            return treasuryHoldingChanges.stream()
+                    .filter(hc -> hc.holding().instrumentId.equals(instrumentId))
+                    .map(hc -> hc.archived() ? hc.holding().amount.negate() : hc.holding().amount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
     }
 
     private class TransactionParser {
@@ -52,7 +95,8 @@ public class IntegrationStore {
 
         private final Integer lastDescendantNodeId;
         private final Iterator<Event> events;
-        private TransferInfo transferInfo;
+        private final int rootNodeId;
+        private final TransferInfo transferInfo;
 
         /**
          * Parse the events in the iterator up to and including the event with the given node ID.
@@ -60,8 +104,9 @@ public class IntegrationStore {
          * This parser properly follows the tree structure of exercise nodes and their children.
          * It will always parse at least one event.
          */
-        TransactionParser(Iterator<Event> events, int lastDescendantNodeId, TransferInfo transferInfo) {
+        TransactionParser(int rootNodeId, Iterator<Event> events, int lastDescendantNodeId, TransferInfo transferInfo) {
             assert events.hasNext();
+            this.rootNodeId = rootNodeId;
             this.events = events;
             this.lastDescendantNodeId = lastDescendantNodeId;
             this.transferInfo = transferInfo;
@@ -102,7 +147,7 @@ public class IntegrationStore {
             if (interfaceViews != null) {
                 for (JsInterfaceView view : interfaceViews) {
                     if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
-                        String viewJson = com.example.client.ledger.invoker.JSON.getGson().toJson(view.getViewValue());
+                        String viewJson = JSON.getGson().toJson(view.getViewValue());
                         HoldingView holding = ConversionHelpers.convertFromJson(viewJson, HoldingView::fromJson);
                         ingestCreateHoldingEvent(createdEvent.getContractId(), holding, transferInfo);
                         return createdEvent.getNodeId();
@@ -127,45 +172,98 @@ public class IntegrationStore {
                     log.info(() -> "Ignoring consuming exercise event for untracked contract: " + exercisedEvent.toJson());
                 } else {
                     log.info("Processing consuming choice " + exercisedEvent.getChoice() + " on tracked holding " + cid);
-                    if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
-                        // TODO: consider just forbidding this case, and ignoring a deposit that triggers it
-                        //
-                        // Seeing a consuming exercise on a tracked holding (i.e., one owned by the treasury party)
-                        // for an incoming transfer is surprising. Most token admins will not use such a pattern,
-                        // but some might have workflows where the holding is both
-                        // created and archived within the same transfer.
-                        //
-                        // The safe option is to process it as a debit so that create + archive pairs net to zero.
-                        userBalances.putIfAbsent(transferInfo.depositId, new Balances());
-                        userBalances.get(transferInfo.depositId).debit(oldView.instrumentId, oldView.amount);
-                        // Note: we attribute *all* holding changes below an exercise node representing a transfer to the same transfer info.
-                        // Most registries will only create one holding for the receiver per transfer, but some might use multiple intermediate steps,
-                        log.warning("Unexpected archival of tracked holding within an incoming transfer: debiting " + oldView.amount + " of " + oldView.instrumentId + " sent by " + transferInfo.sender + " from deposit " + transferInfo.depositId);
+                    if (transferInfo != null) {
+                        transferInfo.appendHoldingChange(cid, oldView, true);
                     }
                 }
             }
 
             // If there is no transfer info yet, try to extract it from the exercise event
             if (transferInfo == null) {
-                transferInfo = parseTransferInfoFromExerciseEvent(exercisedEvent);
-            }
+                TransferInfo newTransferInfo = parseTransferInfoFromExerciseEvent(exercisedEvent);
 
-            // Parse child nodes, which are a transaction by themselves,
-            // see https://docs.digitalasset.com/overview/3.3/explanations/ledger-model/ledger-structure.html#transactions
-            log.finer("Starting parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
-            TransactionParser subtransactionParser = new TransactionParser(events, exercisedEvent.getLastDescendantNodeId(), transferInfo);
-            log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
-            return subtransactionParser.parse();
+                if (newTransferInfo != null) {
+                    // Parse child nodes, which are a transaction by themselves,
+                    // see https://docs.digitalasset.com/overview/3.3/explanations/ledger-model/ledger-structure.html#transactions
+                    log.finer("Starting parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
+                    TransactionParser subtransactionParser = new TransactionParser(exercisedEvent.getNodeId(), events, exercisedEvent.getLastDescendantNodeId(), newTransferInfo);
+                    log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
+                    int lastNodeId = subtransactionParser.parse();
+
+                    // Determine total amount transferred based on holding changes.
+                    // We use the holding changes rather than the transfer spec, as they are the ground truth of what actually happened.
+                    Set<InstrumentId> instrumentIds = newTransferInfo.affectedInstrumentIds();
+                    if (instrumentIds.size() != 1) {
+                        log.warning("Ignoring transfer affecting multiple instrument IDs " + instrumentIds + " in exercise event" + exercisedEvent.toJson());
+                        // TODO: report this parse error on the transfer log (make it into a tx history log)
+                        return lastNodeId;
+                    } else {
+                        InstrumentId instrumentId = instrumentIds.iterator().next();
+                        BigDecimal rawAmount = newTransferInfo.treasuryHoldingChangeAmount(instrumentId);
+                        BigDecimal amount = newTransferInfo.sender.equals(treasuryParty) ? rawAmount.negate() : rawAmount;
+                        // record the transfer
+                        TransferLog.Transfer t = new TransferLog.Transfer(
+                                lastIngestedUpdateId,
+                                lastIngestedRecordTime,
+                                lastIngestedOffset,
+                                exercisedEvent.getNodeId(),
+                                newTransferInfo.sender,
+                                // TODO: validate this with the holding changes
+                                newTransferInfo.receiver != null ? newTransferInfo.receiver : treasuryParty,
+                                newTransferInfo.depositId,
+                                instrumentId,
+                                amount,
+                                newTransferInfo.treasuryHoldingChanges,
+                                newTransferInfo.transferSpec
+                        );
+                        transferLog.addTransfer(t);
+                        return lastNodeId;
+                    }
+                }
+            }
+            // Default case: just flatten the parsing of the child nodes into the parent
+            return exercisedEvent.getNodeId();
         }
 
-        static TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
-            // TODO: parse the info from TransferInstruction choices as well
-
-            // The below is a fallback to parse the info from arbitrary "meta" fields in an exerciseResult
-            if (packagesWithGenericMetadataParsing.contains(exercisedEvent.getPackageName())) {
+        TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
+            if (exercisedEvent.getChoice().equals(TransferFactory.CHOICE_TransferFactory_Transfer.name)
+                    && TemplateId.TRANSFER_FACTORY_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
+                // Parse information from the token standard choice argument
+                TransferFactory_Transfer transferChoiceArg = ConversionHelpers.convertViaJson(
+                        exercisedEvent.getChoiceArgument(),
+                        JSON.getGson()::toJson,
+                        TransferFactory_Transfer::fromJson);
+                Transfer t = transferChoiceArg.transfer;
+                String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
+                TransferInstructionResult transferResult =
+                        ConversionHelpers.convertViaJson(
+                                exercisedEvent.getExerciseResult(),
+                                JSON.getGson()::toJson,
+                                TransferInstructionResult::fromJson);
+                if (transferResult.output instanceof TransferInstructionResult_Completed) {
+                    return new TransferInfo(
+                            t.sender,
+                            t.receiver,
+                            memoTag,
+                            t
+                    );
+                } else if (transferResult.output instanceof TransferInstructionResult_Pending) {
+                    // TODO: implement multi-step transfer support
+                    log.warning("Encountered pending multi-step transfers -- not yet supported:" + exercisedEvent.toJson());
+                    return null;
+                } else if (transferResult.output instanceof TransferInstructionResult_Failed) {
+                    // TODO: implement multi-step transfer support
+                    log.warning("Encountered aborted multi-step transfer -- not yet supported: " + exercisedEvent.toJson());
+                    return null;
+                } else {
+                    log.severe("Encountered unknown transfer result: " + exercisedEvent.toJson());
+                    return null;
+                }
+            } else if (packagesWithGenericMetadataParsing.contains(exercisedEvent.getPackageName())) {
+                // This a fallback to parse the info from arbitrary "meta" fields in an exerciseResult
                 Object result0 = exercisedEvent.getExerciseResult();
                 // convert to JSON and parse as generic JSON to see whether there is a .meta field
-                String resultJson = com.example.client.ledger.invoker.JSON.getGson().toJson(result0);
+                String resultJson = JSON.getGson().toJson(result0);
                 log.fine("ATTEMPTING TO PARSE EXERCISE RESULT: " + resultJson);
                 try {
                     JsonElement element = JsonParser.parseString(resultJson);
@@ -179,7 +277,8 @@ public class IntegrationStore {
                         if (metadata.has(SENDER_KEY) && metadata.has(MEMO_KEY)) {
                             String sender = metadata.get(SENDER_KEY).getAsString();
                             String depositId = metadata.get(MEMO_KEY).getAsString();
-                            TransferInfo transferInfo = new TransferInfo(sender, depositId);
+                            // Here we don't know the receiver. We'll have to infer it from the Holding changes.
+                            TransferInfo transferInfo = new TransferInfo(sender, null, depositId, null);
                             log.info(() -> "Detected transfer info " + transferInfo + " in exercise result: " + resultJson);
                             return transferInfo;
                         } else {
@@ -198,28 +297,12 @@ public class IntegrationStore {
 
     public IntegrationStore(String treasuryParty) {
         this.treasuryParty = treasuryParty;
+        transferLog = new TransferLog(treasuryParty);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("IntegrationStore{")
-                .append("\ntreasuryParty='").append(treasuryParty).append('\'')
-                .append("\nlastIngestedOffset=").append(lastIngestedOffset)
-                .append("\nsourceSynchronizerId='").append(sourceSynchronizerId).append('\'')
-                .append("\nlastIngestedRecordTime='").append(lastIngestedRecordTime).append('\'')
-                .append("\nactiveHoldings={\n");
-
-        activeHoldings.forEach((key, value) ->
-                sb.append("  ").append(key).append(": ").append(value).append("\n")
-        );
-        sb.append("}\nuserBalances={\n");
-        userBalances.forEach((key, value) ->
-                sb.append("  ").append(key).append(": ").append(value).append("\n")
-        );
-
-        sb.append("}}");
-        return sb.toString();
+        return ExtendedJson.gsonPretty.toJson(this);
     }
 
     public HashMap<String, HoldingView> getActiveHoldings() {
@@ -296,9 +379,9 @@ public class IntegrationStore {
     }
 
     private void ingestTransaction(JsTransaction tx) {
-        updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime());
+        updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
         assert tx.getEvents() != null;
-        TransactionParser parser = new TransactionParser(tx.getEvents().iterator(), Integer.MAX_VALUE, null);
+        TransactionParser parser = new TransactionParser(-1, tx.getEvents().iterator(), Integer.MAX_VALUE, null);
         parser.parse();
     }
 
@@ -307,30 +390,30 @@ public class IntegrationStore {
         List<SynchronizerTime> times = checkpoint.getSynchronizerTimes();
         if (times != null && times.size() == 1) {
             SynchronizerTime time = times.get(0);
-            updateLastIngested(checkpoint.getOffset(), time.getSynchronizerId(), time.getRecordTime());
+            updateLastIngested(checkpoint.getOffset(), time.getSynchronizerId(), time.getRecordTime(), null);
         } else {
             throw new UnsupportedOperationException("Multiple synchronizers are not yet supported, failed to handle checkpoint: " + checkpoint.toJson());
         }
     }
 
-    private void updateLastIngested(Long offset, String synchronizerId, String recordTime) {
+    private void updateLastIngested(Long offset, String synchronizerId, String recordTime, String updateId) {
         if (this.sourceSynchronizerId != null && !this.sourceSynchronizerId.equals(synchronizerId)) {
             throw new IllegalStateException("Multiple synchronizers are not yet supported. Existing: " + this.sourceSynchronizerId + ", new: " + synchronizerId);
         }
         this.lastIngestedOffset = offset;
         this.sourceSynchronizerId = synchronizerId;
         this.lastIngestedRecordTime = recordTime;
+        this.lastIngestedUpdateId = updateId;
     }
 
     private void ingestCreateHoldingEvent(String cid, HoldingView holding, TransferInfo transferInfo) {
+        // TODO: consider tracking non-treasury owned holdings -- may be useful for dealing with support requests
         if (treasuryParty.equals(holding.owner)) {
             assert !activeHoldings.containsKey(cid);
             log.info("New active holding for treasury party: " + cid + " -> " + holding.toJson());
             activeHoldings.put(cid, holding);
-            if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
-                userBalances.putIfAbsent(transferInfo.depositId, new Balances());
-                userBalances.get(transferInfo.depositId).credit(holding.instrumentId, holding.amount);
-                log.info("Credited " + holding.amount + " of " + holding.instrumentId + " sent by " + transferInfo.sender + " into deposit " + transferInfo.depositId);
+            if (transferInfo != null) {
+                transferInfo.appendHoldingChange(cid, holding, false);
             }
         } else {
             log.finer(() -> "Ignoring creation of holding not owned by treasury party: " + cid + " -> " + holding.toJson());
