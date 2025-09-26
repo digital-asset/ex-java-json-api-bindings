@@ -37,7 +37,8 @@ public record Env(
         String memoTag,
         Optional<String> exchangePartyId,
         String treasuryPartyHint,
-        String testPartyHint
+        String testPartyHint,
+        String identitiesCacheFile
 ) {
     public final static String MANAGING_USER_TOKEN_KEY = "VALIDATOR_TOKEN";
 
@@ -65,6 +66,7 @@ public record Env(
         Optional<String> exchangePartyId = readExchangeParty();
         String treasuryPartyHint = getenv("TREASURY_PARTY_HINT", "treasury");
         String testPartyHint = getenv("TEST_PARTY_HINT", "alice");
+        String identitiesCacheFile = getenv("IDENTITIES_CACHE", "identities-cache.json");
 
         return new Env(
                 managingUser,
@@ -80,7 +82,8 @@ public record Env(
                 memoTag,
                 exchangePartyId,
                 treasuryPartyHint,
-                testPartyHint
+                testPartyHint,
+                identitiesCacheFile
         );
     }
 

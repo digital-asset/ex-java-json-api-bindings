@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 dependency-reduced-pom.xml
 .env
+identities-cache.json
 
 ### IntelliJ IDEA ###
 .idea/
