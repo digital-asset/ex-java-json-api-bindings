@@ -51,6 +51,8 @@ public class CommandCompletionTracker {
                     .getOffsetCheckpoint()
                     .getValue()
                     .getOffset();
+
+            System.out.println("Latest known offset moved to " + this.nextOffset);
         } else {
             throw new UnsupportedOperationException("Did not know how to handle completion response item " + subResponse);
         }
