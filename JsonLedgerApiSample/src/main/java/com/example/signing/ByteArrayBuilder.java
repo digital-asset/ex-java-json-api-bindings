@@ -1,5 +1,8 @@
 package com.example.signing;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +30,41 @@ public class ByteArrayBuilder {
     }
 
     public ByteArrayBuilder append(byte b) {
-        this.byteArrays.add(new byte[] { b });
-        this.length++;
-        return this;
+        return this.append(new byte[] { b });
+    }
+
+    public ByteArrayBuilder append(boolean value) {
+        return value ? this.append((byte)1) : this.append((byte)0);
+    }
+
+    public ByteArrayBuilder append(int i, ByteOrder byteOrder) {
+        ByteBuffer buf = ByteBuffer
+                .allocate(4)
+                .order(byteOrder)
+                .putInt(i);
+
+        return this.append(buf.array());
+    }
+
+    public ByteArrayBuilder append(int i) {
+        return this.append(i, ByteOrder.BIG_ENDIAN);
+    }
+
+    public ByteArrayBuilder append(long l, ByteOrder byteOrder) {
+        ByteBuffer buf = ByteBuffer
+                .allocate(4)
+                .order(byteOrder)
+                .putLong(l);
+
+        return this.append(buf.array());
+    }
+
+    public ByteArrayBuilder append(long l) {
+        return this.append(l, ByteOrder.BIG_ENDIAN);
+    }
+
+    public ByteArrayBuilder append(String s) {
+        return this.append(s.getBytes(StandardCharsets.UTF_8));
     }
 
     public byte[] build() {
