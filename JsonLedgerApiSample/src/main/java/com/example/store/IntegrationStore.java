@@ -1,13 +1,16 @@
 package com.example.store;
 
 import com.example.ConversionHelpers;
+import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 import com.example.models.ContractAndId;
 import com.example.models.TemplateId;
 import com.example.store.models.Balances;
+import com.example.store.models.TransferLog;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
@@ -29,16 +32,22 @@ public class IntegrationStore {
     private long lastIngestedOffset = -1;
     private String sourceSynchronizerId = null;
     private String lastIngestedRecordTime = null;
+
+    // Might be lagging behind lastIngestedOffset if an offset checkpoint was ingested last
+    private String lastIngestedUpdateId = null;
+
     private final String treasuryParty;
     private final HashMap<String, Balances> userBalances = new HashMap<>();
+    private final TransferLog transferLog;
 
     public BigDecimal getBalance(InstrumentId instrumentId, String depositId) {
         return userBalances.getOrDefault(depositId, new Balances()).getBalance(instrumentId);
     }
 
     private record TransferInfo(
-            String sender,
-            String depositId) {
+            @Nonnull String sender,
+            String receiver,
+            @Nonnull String depositId) {
     }
 
     private class TransactionParser {
@@ -52,6 +61,7 @@ public class IntegrationStore {
 
         private final Integer lastDescendantNodeId;
         private final Iterator<Event> events;
+        private final int rootNodeId;
         private TransferInfo transferInfo;
 
         /**
@@ -60,8 +70,9 @@ public class IntegrationStore {
          * This parser properly follows the tree structure of exercise nodes and their children.
          * It will always parse at least one event.
          */
-        TransactionParser(Iterator<Event> events, int lastDescendantNodeId, TransferInfo transferInfo) {
+        TransactionParser(int rootNodeId, Iterator<Event> events, int lastDescendantNodeId, TransferInfo transferInfo) {
             assert events.hasNext();
+            this.rootNodeId = rootNodeId;
             this.events = events;
             this.lastDescendantNodeId = lastDescendantNodeId;
             this.transferInfo = transferInfo;
@@ -102,7 +113,7 @@ public class IntegrationStore {
             if (interfaceViews != null) {
                 for (JsInterfaceView view : interfaceViews) {
                     if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
-                        String viewJson = com.example.client.ledger.invoker.JSON.getGson().toJson(view.getViewValue());
+                        String viewJson = JSON.getGson().toJson(view.getViewValue());
                         HoldingView holding = ConversionHelpers.convertFromJson(viewJson, HoldingView::fromJson);
                         ingestCreateHoldingEvent(createdEvent.getContractId(), holding, transferInfo);
                         return createdEvent.getNodeId();
@@ -153,19 +164,19 @@ public class IntegrationStore {
             // Parse child nodes, which are a transaction by themselves,
             // see https://docs.digitalasset.com/overview/3.3/explanations/ledger-model/ledger-structure.html#transactions
             log.finer("Starting parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
-            TransactionParser subtransactionParser = new TransactionParser(events, exercisedEvent.getLastDescendantNodeId(), transferInfo);
+            TransactionParser subtransactionParser = new TransactionParser(exercisedEvent.getNodeId(), events, exercisedEvent.getLastDescendantNodeId(), transferInfo);
             log.finer("Completed parsing sub-transaction of choice " + exercisedEvent.getChoice() + " from node id " + exercisedEvent.getNodeId() + " to " + exercisedEvent.getLastDescendantNodeId());
             return subtransactionParser.parse();
         }
 
-        static TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
+        TransferInfo parseTransferInfoFromExerciseEvent(ExercisedEvent exercisedEvent) {
             // TODO: parse the info from TransferInstruction choices as well
 
             // The below is a fallback to parse the info from arbitrary "meta" fields in an exerciseResult
             if (packagesWithGenericMetadataParsing.contains(exercisedEvent.getPackageName())) {
                 Object result0 = exercisedEvent.getExerciseResult();
                 // convert to JSON and parse as generic JSON to see whether there is a .meta field
-                String resultJson = com.example.client.ledger.invoker.JSON.getGson().toJson(result0);
+                String resultJson = JSON.getGson().toJson(result0);
                 log.fine("ATTEMPTING TO PARSE EXERCISE RESULT: " + resultJson);
                 try {
                     JsonElement element = JsonParser.parseString(resultJson);
@@ -179,7 +190,8 @@ public class IntegrationStore {
                         if (metadata.has(SENDER_KEY) && metadata.has(MEMO_KEY)) {
                             String sender = metadata.get(SENDER_KEY).getAsString();
                             String depositId = metadata.get(MEMO_KEY).getAsString();
-                            TransferInfo transferInfo = new TransferInfo(sender, depositId);
+                            // Here we don't know the receiver. We'll have to infer it from the Holding changes.
+                            TransferInfo transferInfo = new TransferInfo(sender, null, depositId);
                             log.info(() -> "Detected transfer info " + transferInfo + " in exercise result: " + resultJson);
                             return transferInfo;
                         } else {
@@ -198,8 +210,10 @@ public class IntegrationStore {
 
     public IntegrationStore(String treasuryParty) {
         this.treasuryParty = treasuryParty;
+        transferLog = new TransferLog(treasuryParty);
     }
 
+    // FIXME: go via json
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -208,6 +222,7 @@ public class IntegrationStore {
                 .append("\nlastIngestedOffset=").append(lastIngestedOffset)
                 .append("\nsourceSynchronizerId='").append(sourceSynchronizerId).append('\'')
                 .append("\nlastIngestedRecordTime='").append(lastIngestedRecordTime).append('\'')
+                .append("\nlastIngestedUpdateId='").append(lastIngestedUpdateId).append('\'')
                 .append("\nactiveHoldings={\n");
 
         activeHoldings.forEach((key, value) ->
@@ -296,9 +311,9 @@ public class IntegrationStore {
     }
 
     private void ingestTransaction(JsTransaction tx) {
-        updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime());
+        updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
         assert tx.getEvents() != null;
-        TransactionParser parser = new TransactionParser(tx.getEvents().iterator(), Integer.MAX_VALUE, null);
+        TransactionParser parser = new TransactionParser(-1, tx.getEvents().iterator(), Integer.MAX_VALUE, null);
         parser.parse();
     }
 
@@ -307,19 +322,20 @@ public class IntegrationStore {
         List<SynchronizerTime> times = checkpoint.getSynchronizerTimes();
         if (times != null && times.size() == 1) {
             SynchronizerTime time = times.get(0);
-            updateLastIngested(checkpoint.getOffset(), time.getSynchronizerId(), time.getRecordTime());
+            updateLastIngested(checkpoint.getOffset(), time.getSynchronizerId(), time.getRecordTime(), null);
         } else {
             throw new UnsupportedOperationException("Multiple synchronizers are not yet supported, failed to handle checkpoint: " + checkpoint.toJson());
         }
     }
 
-    private void updateLastIngested(Long offset, String synchronizerId, String recordTime) {
+    private void updateLastIngested(Long offset, String synchronizerId, String recordTime, String updateId) {
         if (this.sourceSynchronizerId != null && !this.sourceSynchronizerId.equals(synchronizerId)) {
             throw new IllegalStateException("Multiple synchronizers are not yet supported. Existing: " + this.sourceSynchronizerId + ", new: " + synchronizerId);
         }
         this.lastIngestedOffset = offset;
         this.sourceSynchronizerId = synchronizerId;
         this.lastIngestedRecordTime = recordTime;
+        this.lastIngestedUpdateId = updateId;
     }
 
     private void ingestCreateHoldingEvent(String cid, HoldingView holding, TransferInfo transferInfo) {
