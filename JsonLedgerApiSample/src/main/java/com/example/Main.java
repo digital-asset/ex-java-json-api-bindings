@@ -27,12 +27,17 @@ import com.example.services.Wallet;
 import com.example.signing.Keys;
 import com.example.signing.SignatureProvider;
 import com.example.store.IntegrationStore;
+import com.example.testdata.TestFiles;
 import com.example.testdata.TestIdentities;
+import com.example.testdata.WorkflowInfo;
+import com.google.gson.Gson;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -122,7 +127,7 @@ public class Main {
 
             String memoTag = env.memoTag();
 
-            // perform a transfer simulating a deposit from alice to the treasury
+            // Perform a transfer modelling a deposit from alice to the treasury
             transferAsset(
                     wallet,
                     ids.synchronizerId(),
@@ -133,6 +138,17 @@ public class Main {
                     ids.cantonCoinId(),
                     Optional.of(memoTag));
 
+            // Perform a transfer modelling a withdrawal of funds from the treasury to alice
+            String withdrawalId = java.util.UUID.randomUUID().toString();
+            transferAssetFromTreasury(
+                    wallet,
+                    ids,
+                    store,
+                    ids.alice().partyId(),
+                    new BigDecimal(20),
+                    ids.cantonCoinId(),
+                    withdrawalId);
+
             printStep("Success!");
             printTotalHoldings(wallet, ids.all(), ids.cantonCoinId());
 
@@ -140,6 +156,19 @@ public class Main {
             ingestAndParseTransactions(wallet, store);
             printStep("State of local store after final transfer");
             System.out.println(store);
+
+            // Write out test data for use in automated integration tests if requested via --write-test-data
+            printStep("Write integration test data");
+            if (Arrays.asList(args).contains("--write-test-data")) {
+                WorkflowInfo info = new WorkflowInfo(
+                        memoTag,
+                        withdrawalId
+                );
+                writeIntegrationTestData(wallet, testStartOffset, ids, info);
+            } else {
+                System.out.println("Skipping writing integration test data, pass --write-test-data to enable");
+            }
+
             System.exit(0);
         } catch (Exception ex) {
             handleException(ex);
@@ -341,17 +370,57 @@ public class Main {
 
         List<ContractAndId<HoldingView>> holdings = wallet.selectHoldingsForTransfer(senderPartyId, instrumentId, amount);
         validateHoldings(amount, holdings);
+        List<String> holdingContractIds = holdings.stream().map(ContractAndId::contractId).toList();
 
         String commandId = java.util.UUID.randomUUID().toString();
 
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
-        boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdings, true);
+        boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdingContractIds, true);
         if (!transferWasSubmitted) {
             throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
         }
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
+
+        System.out.println("Transfer complete");
+    }
+
+    /**
+     * Transfer asset from the treasury, using the IntegrationStore to select holdings.
+     * <p>
+     * Using the IntegrationStore is important to avoid getting confusing by earlier runs with the same cached
+     * treasury party.
+     */
+    private static void transferAssetFromTreasury(
+            Wallet wallet,
+            TestIdentities ids,
+            IntegrationStore store,
+            String receiverPartyId,
+            BigDecimal amount,
+            InstrumentId instrumentId,
+            String transferId) throws Exception {
+        printStep("Transfer " + amount + " from treasury (" + ids.treasury().partyId() + ") to " + receiverPartyId);
+
+        // Update integration store to ensure we have the latest holdings
+        ingestAndParseTransactions(wallet, store);
+        List<String> holdings = store.selectHoldingsForWithdrawal(instrumentId, amount).orElseGet(
+                () -> {
+                    throw new RuntimeException("Insufficient holdings in treasury to transfer " + amount + " units");
+                }
+        );
+
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        Long offsetBeforeTransfer = wallet.getLedgerEnd();
+        boolean transferWasSubmitted =
+                wallet.transferHoldings(ids.synchronizerId(), commandId, ids.treasury().partyId(), Optional.of(ids.treasury().keyPair()), receiverPartyId, instrumentId, Optional.of(transferId), new HashMap<>(), amount, holdings, true);
+        if (!transferWasSubmitted) {
+            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
+        }
+
+        System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);
+        expectSuccessfulCompletion(wallet, ids.treasury().partyId(), commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
     }
@@ -383,7 +452,21 @@ public class Main {
         System.exit(1);
     }
 
+    private static void writeIntegrationTestData(Wallet wallet, Long startOffset, TestIdentities ids, WorkflowInfo info) {
+        Gson gson = JSON.getGson().newBuilder().setPrettyPrinting().create();
+        try {
+            java.nio.file.Files.writeString(TestFiles.IDENTITIES_FILE, gson.toJson(ids));
+            java.nio.file.Files.writeString(TestFiles.WORKFLOW_INFO_FILE, gson.toJson(info));
+            List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(ids.treasury().partyId(), startOffset);
+            java.nio.file.Files.writeString(TestFiles.TREASURY_UPDATES_FILE, gson.toJson(updates));
+        } catch (Exception e) {
+            System.out.println("Could not write integration test data to file due to: " + e);
+        }
+        System.out.println("Wrote integration test data to '" + TestFiles.DATA_DIR + "'");
+    }
+
     private interface WaitLoopCheck {
         boolean getAsBoolean() throws Exception;
     }
+
 }

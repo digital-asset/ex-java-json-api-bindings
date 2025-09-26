@@ -51,11 +51,11 @@ public class TokenStandard {
             Map<String, String> otherTransferMetadata,
             Instant requestedAt,
             Instant executeBefore,
-            List<ContractAndId<HoldingView>> holdings) {
+            List<String> holdings) {
 
         List<Holding.ContractId> holdingCids = holdings
                 .stream()
-                .map((h) -> new Holding.ContractId(h.contractId()))
+                .map(Holding.ContractId::new)
                 .toList();
 
         Metadata emptyMetadata = new Metadata(new HashMap<>());

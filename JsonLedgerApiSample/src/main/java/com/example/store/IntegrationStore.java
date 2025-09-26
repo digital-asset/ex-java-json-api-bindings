@@ -124,7 +124,7 @@ public class IntegrationStore {
                 String cid = exercisedEvent.getContractId();
                 HoldingView oldView = activeHoldings.remove(cid);
                 if (oldView == null) {
-                    log.fine(() -> "Ignoring consuming exercise event for untracked contract: " + exercisedEvent.toJson());
+                    log.info(() -> "Ignoring consuming exercise event for untracked contract: " + exercisedEvent.toJson());
                 } else {
                     log.info("Processing consuming choice " + exercisedEvent.getChoice() + " on tracked holding " + cid);
                     if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
@@ -242,7 +242,6 @@ public class IntegrationStore {
         return treasuryParty;
     }
 
-
     public void ingestAcs(List<JsContractEntry> contracts, long offset) {
         for (JsContractEntry contract : contracts) {
             ingestActiveContract(contract);
@@ -253,6 +252,27 @@ public class IntegrationStore {
     public Optional<HoldingView> lookupHoldingById(String contractId) {
         requireAcsIngested();
         return Optional.ofNullable(activeHoldings.get(contractId));
+    }
+
+    public Optional<List<String>> selectHoldingsForWithdrawal(InstrumentId instrumentId, BigDecimal amount) {
+        requireAcsIngested();
+        // Simple greedy algorithm: select arbitrary holdings until the amount is covered
+        // TODO: switch to selecting as per https://docs.digitalasset.com/integrate/devnet/exchange-integration/workflows.html#utxo-selection-and-management
+        List<String> selected = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+        for (Map.Entry<String, HoldingView> entry : activeHoldings.entrySet()) {
+            HoldingView holding = entry.getValue();
+            if (holding.instrumentId.equals(instrumentId)) {
+                selected.add(entry.getKey());
+                total = total.add(holding.amount);
+                if (total.compareTo(amount) >= 0) {
+                    log.info("Selected holdings " + selected + " worth " + total + " to cover withdrawal of " + amount + " of " + instrumentId);
+                    return Optional.of(selected);
+                }
+            }
+        }
+        log.warning("Insufficient holdings to cover withdrawal of " + amount + " of " + instrumentId + " (total available: " + total + "), returning empty selection");
+        return Optional.empty();
     }
 
     private void requireAcsIngested() {
@@ -307,7 +327,7 @@ public class IntegrationStore {
             assert !activeHoldings.containsKey(cid);
             log.info("New active holding for treasury party: " + cid + " -> " + holding.toJson());
             activeHoldings.put(cid, holding);
-            if (transferInfo != null) {
+            if (transferInfo != null && !transferInfo.sender.equals(treasuryParty)) {
                 userBalances.putIfAbsent(transferInfo.depositId, new Balances());
                 userBalances.get(transferInfo.depositId).credit(holding.instrumentId, holding.amount);
                 log.info("Credited " + holding.amount + " of " + holding.instrumentId + " sent by " + transferInfo.sender + " into deposit " + transferInfo.depositId);
