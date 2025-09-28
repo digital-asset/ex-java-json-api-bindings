@@ -162,6 +162,16 @@ public class Wallet {
                 .toList();
     }
 
+    public List<JsGetUpdatesResponse> queryForHoldingTransactions(String partyId, Long beginAfterOffset) throws Exception {
+        List<CumulativeFilter> filters = List.of(
+                Ledger.wildcardFilter(),
+                Ledger.createFilterByInterface(TemplateId.HOLDING_INTERFACE_ID),
+                Ledger.createFilterByInterface(TemplateId.TRANSFER_FACTORY_INTERFACE_ID),
+                Ledger.createFilterByInterface(TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID)
+                );
+        return this.ledgerApi.getUpdatesWithFilter(partyId, filters, beginAfterOffset);
+    }
+
     public List<ContractAndId<HoldingView>> selectHoldingsForTransfer(String partyId, InstrumentId instrumentId, BigDecimal transferAmount) throws Exception {
 
         final BigDecimal[] remainingReference = {transferAmount};

@@ -17,6 +17,7 @@ package com.example;
 
 import com.example.access.ExternalParty;
 import com.example.client.ledger.model.CompletionStreamResponse;
+import com.example.client.ledger.model.JsGetUpdatesResponse;
 import com.example.client.ledger.model.Status;
 import com.example.models.ContractAndId;
 import com.example.services.CommandCompletionTracker;
@@ -24,6 +25,7 @@ import com.example.services.Ledger;
 import com.example.services.Wallet;
 import com.example.signing.Keys;
 import com.example.signing.SignatureProvider;
+import com.example.store.IntegrationStore;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
@@ -84,6 +86,8 @@ public class Main {
 
             String dsoParty = wallet.getDsoPartyId();
 
+            // Create treasury party jointly with store
+            String offsetBeforeParty = wallet.getLedgerEnd().toString();
             ExternalParty treasuryParty = env.existingTreasuryParty()
                     .orElseGet(() -> allocateNewExternalParty(
                             wallet,
@@ -92,6 +96,10 @@ public class Main {
                             resolvedExchangePartyId,
                             env.treasuryPartyHint()
                     ));
+            IntegrationStore store = new IntegrationStore(treasuryParty.partyId());
+            // Here we know the the ACS for the newly allocated party is empty.
+            // TODO: also support initialization from an ACS snapshot
+            store.ingestAcs(List.of(), Long.parseLong(offsetBeforeParty));
 
             ExternalParty testParty = env.existingTestParty()
                     .orElseGet(() -> allocateNewExternalParty(
@@ -114,6 +122,10 @@ public class Main {
             transferAmount1 = transferAmount1.add(estimatedFees);
 
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+
+            ingestAndParseTransactions(wallet, store, treasuryParty);
+            printStep("State of local store after initial ingestion");
+            System.out.println(store);
 
             // perform a transfer from the local party operator
             transferAsset(
@@ -146,7 +158,25 @@ public class Main {
 
             printStep("Success!");
             printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+
+            // Update IntegrationStore -- this would usually happen in a background process
+            ingestAndParseTransactions(wallet, store, treasuryParty);
+            printStep("State of local store after final transfer");
+            System.out.println(store);
             System.exit(0);
+        } catch (Exception ex) {
+            handleException(ex);
+        }
+    }
+
+    private static void ingestAndParseTransactions(Wallet wallet, IntegrationStore store, ExternalParty treasuryParty) {
+        long lastIngestedOffset = store.getLastIngestedOffset();
+        assert lastIngestedOffset >= 0;
+        try {
+            List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(treasuryParty.partyId(), lastIngestedOffset);
+            for (JsGetUpdatesResponse updateResponse : updates) {
+                store.ingestUpdate(updateResponse.getUpdate());
+            }
         } catch (Exception ex) {
             handleException(ex);
         }
