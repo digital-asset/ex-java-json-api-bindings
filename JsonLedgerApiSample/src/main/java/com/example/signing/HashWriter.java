@@ -1,5 +1,7 @@
 package com.example.signing;
 
+import com.google.protobuf.ByteString;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +32,10 @@ public class HashWriter {
 
     public void append(byte[] bytes) {
         this.currentContext.append(bytes);
+    }
+
+    public void append(ByteString byteString) {
+        this.currentContext.append(byteString);
     }
 
     public void append(byte b) {

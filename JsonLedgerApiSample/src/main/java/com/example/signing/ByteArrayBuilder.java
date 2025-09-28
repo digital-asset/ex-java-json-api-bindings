@@ -1,5 +1,7 @@
 package com.example.signing;
 
+import com.google.protobuf.ByteString;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +29,10 @@ public class ByteArrayBuilder {
         this.byteArrays.add(bytes);
         this.length += bytes.length;
         return this;
+    }
+
+    public ByteArrayBuilder append(ByteString byteString) {
+        return this.append(byteString.toByteArray());
     }
 
     public ByteArrayBuilder append(byte b) {
