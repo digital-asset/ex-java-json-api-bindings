@@ -1,7 +1,6 @@
 package com.example.store.models;
 
 import jakarta.annotation.Nonnull;
-import org.checkerframework.checker.nullness.qual.AssertNonNullIfNonNull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 

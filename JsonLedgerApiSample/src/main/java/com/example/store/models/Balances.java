@@ -4,14 +4,18 @@ import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Balances {
     final private HashMap<InstrumentId, BigDecimal> balances = new HashMap<>();
 
     public Balances() {
-    }
+    };
 
-    ;
+    public Map<InstrumentId, BigDecimal> getBalanceMap() {
+        removeZeroBalances();
+        return balances;
+    }
 
     public void add(Balances other) {
         for (var entry : other.balances.entrySet()) {
@@ -41,5 +45,9 @@ public class Balances {
         );
         sb.append("}}");
         return sb.toString();
+    }
+
+    private void removeZeroBalances() {
+        balances.entrySet().removeIf(entry -> entry.getValue().equals(BigDecimal.ZERO));
     }
 }
