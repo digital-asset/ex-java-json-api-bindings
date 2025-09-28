@@ -35,7 +35,7 @@ class IntegrationStoreTest {
         }
     }
 
-    private static final Logger log = Logger.getLogger(IntegrationStore.class.getName());
+    private static final Logger log = Logger.getLogger(IntegrationStoreTest.class.getName());
 
     final static String treasuryParty = "treasury::12206b095339d93f62c84ae52c8d60e057f6da8ad14903d5f4c43e5bb274fb5ea3d0";
     final static String dsoParty = "DSO::1220f60c100fd31e578dac20fa856e20374c6ae6694b69419de3193e074c14a19a3a";

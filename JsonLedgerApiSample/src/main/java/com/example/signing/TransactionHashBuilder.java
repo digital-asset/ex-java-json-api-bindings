@@ -109,6 +109,7 @@ public class TransactionHashBuilder extends HashWriter {
         encode(metadata.getSynchronizerId());
         encodeProtoOptional(metadata.hasMinLedgerEffectiveTime(), metadata::getMinLedgerEffectiveTime, this::append);
         encodeProtoOptional(metadata.hasMaxLedgerEffectiveTime(), metadata::getMaxLedgerEffectiveTime, this::append);
+        append(metadata.getPreparationTime());
         encode(metadata.getInputContractsList(), this::encodeInputContract);
     }
 
@@ -134,6 +135,7 @@ public class TransactionHashBuilder extends HashWriter {
         encode(exercise.getPackageName());
         encodeIdentifier(exercise.getTemplateId());
         encode(exercise.getSignatoriesList(), this::encode);
+        encode(exercise.getStakeholdersList(), this::encode);
         encode(exercise.getActingPartiesList(), this::encode);
         encodeProtoOptional(exercise.hasInterfaceId(), exercise::getInterfaceId, this::encodeIdentifier);
         encode(exercise.getChoiceId());
@@ -295,7 +297,7 @@ public class TransactionHashBuilder extends HashWriter {
         }
     }
 
-    public byte[] build() {
+    public byte[] hash() {
         hashed(() -> {
             append(PREPARED_TRANSACTION_HASH_PURPOSE);
             append(HASHING_SCHEME_VERSION_V2);

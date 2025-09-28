@@ -58,7 +58,7 @@ public class ByteArrayBuilder {
 
     public ByteArrayBuilder append(long l, ByteOrder byteOrder) {
         ByteBuffer buf = ByteBuffer
-                .allocate(4)
+                .allocate(8)
                 .order(byteOrder)
                 .putLong(l);
 
