@@ -2,15 +2,12 @@ package com.example.signing;
 
 import com.google.protobuf.ByteString;
 
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 
 public class HashWriter {
 
     public interface Hashed {
-        void writeHashItems() throws NoSuchAlgorithmException;
+        void writeHashItems();
     }
 
     ByteArrayBuilder currentContext;
@@ -19,7 +16,7 @@ public class HashWriter {
         this.currentContext = new ByteArrayBuilder();
     }
 
-    public void hashed(Hashed callback) throws NoSuchAlgorithmException {
+    public void hashed(Hashed callback) {
 
         ByteArrayBuilder prev = this.currentContext;
         this.currentContext = new ByteArrayBuilder();
