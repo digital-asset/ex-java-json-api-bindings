@@ -56,9 +56,9 @@ public class Main {
 
             Env env = Env.validate();
 
-            SignatureProvider signatureProvider = Ledger::sign;
-
             // using this SignatureProvider visualises transactions during transaction signing
+            SignatureProvider signatureProvider = Ledger::sign;
+            // SignatureProvider signatureProvider = Ledger::verifyAndSign;
             // SignatureProvider signatureProvider = Ledger::printAndSign;
 
             Wallet wallet = new Wallet(

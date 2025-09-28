@@ -278,16 +278,19 @@ public class TransactionHashBuilder extends HashWriter {
 
     private void encodeNode(InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node) {
         var v1 = node.getV1();
-        ByteString seed = this.nodeSeedsById.get(node.getNodeId()).getSeed();
+
+        var seed = this.nodeSeedsById.get(node.getNodeId());
         switch (v1.getNodeTypeCase()) {
             case CREATE:
-                encodeCreatedNode(v1.getCreate(), Optional.of(seed));
+                encodeCreatedNode(v1.getCreate(), Optional.ofNullable(seed)
+                    .map(InteractiveSubmissionServiceOuterClass.DamlTransaction.NodeSeed::getSeed));
                 break;
             case FETCH:
                 encodeFetchNode(v1.getFetch());
                 break;
             case EXERCISE:
-                encodeExerciseNode(v1.getExercise(), seed);
+                assert seed != null;
+                encodeExerciseNode(v1.getExercise(), seed.getSeed());
                 break;
             case ROLLBACK:
                 encodeRollbackNode(v1.getRollback());

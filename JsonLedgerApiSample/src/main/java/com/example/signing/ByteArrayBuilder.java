@@ -12,9 +12,9 @@ public class ByteArrayBuilder {
 
     public static byte[] concat(byte[] lhs, byte[] rhs) {
         return new ByteArrayBuilder()
-                .append(lhs)
-                .append(rhs)
-                .build();
+            .append(lhs)
+            .append(rhs)
+            .build();
     }
 
     private List<byte[]> byteArrays;
