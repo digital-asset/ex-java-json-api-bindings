@@ -35,10 +35,7 @@ public record TxHistoryEntry(
         @Nonnull List<Event> transactionEvents
 ) {
 
-    // TODO: distinguish REJECTED, WITHDRAWN, OTHER_FAILURE
-    public enum TransferStatus {COMPLETED, PENDING, FAILED}
-
-    ;
+    public enum TransferStatus {COMPLETED, PENDING, REJECTED, WITHDRAWN, FAILED_OTHER}
 
     public TxHistoryEntry {
         if (treasuryHoldingChanges.isEmpty() && transferInstructionChanges.isEmpty()) {

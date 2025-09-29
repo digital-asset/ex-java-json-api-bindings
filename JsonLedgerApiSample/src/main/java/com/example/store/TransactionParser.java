@@ -146,7 +146,7 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, transferResult);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
@@ -169,7 +169,7 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, transferResult);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
@@ -268,7 +268,7 @@ public class TransactionParser {
         }
     }
 
-    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, TransferInstructionResult result) {
+    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, String choiceName, TransferInstructionResult result) {
         String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
         // parse status of transfer
@@ -284,7 +284,13 @@ public class TransactionParser {
                 log.warning("Unexpectedly failed to find pending transfer instruction: " + pendingResult.transferInstructionCid.contractId);
             }
         } else if (result.output instanceof TransferInstructionResult_Failed) {
-            transferStatus = TxHistoryEntry.TransferStatus.FAILED;
+            if (choiceName.equals(TransferInstruction.CHOICE_TransferInstruction_Reject.name)) {
+                transferStatus = TxHistoryEntry.TransferStatus.REJECTED;
+            } else if (choiceName.equals(TransferInstruction.CHOICE_TransferInstruction_Withdraw.name)) {
+                transferStatus = TxHistoryEntry.TransferStatus.WITHDRAWN;
+            } else {
+                transferStatus = TxHistoryEntry.TransferStatus.FAILED_OTHER;
+            }
         } else {
             log.warning("Unrecognized transfer result output:" + ExtendedJson.gson.toJson(result.output));
         }

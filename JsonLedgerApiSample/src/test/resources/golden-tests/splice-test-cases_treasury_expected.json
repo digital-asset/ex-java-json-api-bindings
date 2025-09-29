@@ -4816,7 +4816,7 @@
           "id": "Amulet"
         },
         "amount": 1000.0000000000,
-        "transferStatus": "FAILED"
+        "transferStatus": "REJECTED"
       },
       "treasuryHoldingChanges": [
         {
@@ -5064,7 +5064,7 @@
           "id": "Amulet"
         },
         "amount": 1000.0000000000,
-        "transferStatus": "FAILED"
+        "transferStatus": "WITHDRAWN"
       },
       "treasuryHoldingChanges": [
         {
@@ -6200,7 +6200,7 @@
           "id": "Amulet"
         },
         "amount": 200.0000000000,
-        "transferStatus": "FAILED"
+        "transferStatus": "REJECTED"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -6308,7 +6308,7 @@
           "id": "Amulet"
         },
         "amount": 200.0000000000,
-        "transferStatus": "FAILED"
+        "transferStatus": "WITHDRAWN"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
