@@ -16,10 +16,7 @@
 package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
-import com.example.GsonTypeAdapters.AvContractIdTypeAdapter;
-import com.example.GsonTypeAdapters.ContractIdTypeAdapterFactory;
-import com.example.GsonTypeAdapters.InstantTypeAdapter;
-import com.example.GsonTypeAdapters.OptionalTypeAdapterFactory;
+import com.example.GsonTypeAdapters.*;
 import com.daml.ledger.javaapi.data.TransactionShape;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
@@ -50,6 +47,7 @@ public class Ledger {
                         .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
                         .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
                         .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
+                        .registerTypeAdapter(KeyPair.class, new KeyPairTypeAdapter())
                         .create());
     }
 
