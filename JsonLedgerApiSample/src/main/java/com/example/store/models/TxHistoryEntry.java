@@ -31,6 +31,7 @@ public record TxHistoryEntry(
         @Nonnull String kind,
         @Nonnull Label details,
         @Nonnull List<HoldingChange> treasuryHoldingChanges,
+        // FIXME: pendingTransferInstructionChanges would be a better name
         @Nonnull List<TransferInstructionChange> transferInstructionChanges,
         @Nonnull List<Event> transactionEvents
 ) {
@@ -75,16 +76,23 @@ public record TxHistoryEntry(
         boolean isRecognized();
     }
 
-    public record TransferIn(
+    public record TransferDetails(
             @Nonnull
-            String senderPartyId,
-            @Nonnull String memoTag,
+            String memoTag,
             @Nonnull
             InstrumentId instrumentId,
             @Nonnull
             BigDecimal amount,
+            // FIXME: track on-ledger correlation id
             TransferStatus transferStatus,
-            TransferInstruction.ContractId pendingInstructionCid) implements Label {
+            TransferInstruction.ContractId pendingInstructionCid) {
+    }
+
+    public record TransferIn(
+            @Nonnull
+            String senderPartyId,
+            @Nonnull TransferDetails details
+            ) implements Label {
         @Override
         public boolean isRecognized() {
             return true;
@@ -93,14 +101,7 @@ public record TxHistoryEntry(
 
     public record TransferOut(
             @Nonnull String receiverPartyId,
-            @Nonnull String memoTag,
-            @Nonnull
-            InstrumentId instrumentId,
-            @Nonnull
-            BigDecimal amount,
-            // FIXME: track on-ledger correlation id
-            TransferStatus transferStatus,
-            TransferInstruction.ContractId pendingInstructionCid) implements Label {
+            @Nonnull TransferDetails details) implements Label {
         @Override
         public boolean isRecognized() {
             return true;
@@ -108,7 +109,7 @@ public record TxHistoryEntry(
     }
 
     public record SplitMerge(
-            @Nonnull InstrumentId instrumentId
+            @Nonnull TransferDetails details
     ) implements Label {
         @Override
         public boolean isRecognized() {

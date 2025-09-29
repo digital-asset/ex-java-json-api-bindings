@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nullable;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 import splice.api.token.transferinstructionv1.*;
@@ -218,13 +217,13 @@ public class TransactionParser {
                             // Only parse credits
                             if (balanceChange.compareTo(BigDecimal.ZERO) > 0) {
                                 // This is an incoming transfer
-                                TxHistoryEntry.TransferIn label = new TxHistoryEntry.TransferIn(
-                                        sender,
+                                TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails(
                                         memoTag,
                                         instrumentId,
                                         balanceChange,
                                         TxHistoryEntry.TransferStatus.COMPLETED,
                                         null);
+                                TxHistoryEntry.TransferIn label = new TxHistoryEntry.TransferIn(sender, details);
                                 TxHistoryEntry entry = new TxHistoryEntry(
                                         updateMetadata,
                                         exercisedEvent.getNodeId(),
@@ -293,23 +292,23 @@ public class TransactionParser {
 
         // if status is determined, then determine direction of transfer
         if (transferStatus != null) {
-            return mkTransferLabel(t, treasuryParty, memoTag, transferStatus, pendingInstruction);
+            TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails(memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction);
+            return mkTransferLabel(t, treasuryParty, details);
         } else {
             return Optional.empty();
         }
     }
 
     @Nonnull
-    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, String memoTag, TxHistoryEntry.TransferStatus transferStatus, TransferInstruction.ContractId pendingInstructionCid) {
+    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, TxHistoryEntry.TransferDetails details) {
         if (t.sender.equals(treasuryParty)) {
             if (t.receiver.equals(t.sender)) {
-                // FIXME: handle pending and failed self-transfers
-                return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
+                return Optional.of(new TxHistoryEntry.SplitMerge(details));
             } else {
-                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstructionCid));
+                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, details));
             }
         } else if (t.receiver.equals(treasuryParty)) {
-            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstructionCid));
+            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, details));
         } else {
             return Optional.empty();
         }
@@ -355,8 +354,9 @@ public class TransactionParser {
                     String viewJson = JSON.getGson().toJson(view.getViewValue());
                     TransferInstruction.ContractId pendingInstructionCid = new TransferInstruction.ContractId(createdEvent.getContractId());
                     TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
-                    Optional<TxHistoryEntry.Label> label =
-                            mkTransferLabel(instruction.transfer, utxoStore.treasuryPartyId(), "", TxHistoryEntry.TransferStatus.PENDING, pendingInstructionCid);
+                    Transfer t = instruction.transfer;
+                    TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails("", t.instrumentId, t.amount, TxHistoryEntry.TransferStatus.PENDING, pendingInstructionCid);
+                    Optional<TxHistoryEntry.Label> label = mkTransferLabel(t, utxoStore.treasuryPartyId(), details);
                     if (label.isPresent()) {
                         String cid = createdEvent.getContractId();
                         TxHistoryEntry.TransferInstructionChange creation = new TxHistoryEntry.TransferInstructionChange(cid, instruction, false);

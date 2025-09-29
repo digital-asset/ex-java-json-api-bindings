@@ -82,23 +82,24 @@ class IntegrationStoreTest {
         assertEquals(2, history.size());
 
         TxHistoryEntry entry1 = history.get(0);
-        TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(
-                ids.alice().partyId(),
+        TxHistoryEntry.TransferDetails transferDetails1 = new TxHistoryEntry.TransferDetails(
                 info.aliceDepositId(),
                 ids.cantonCoinId(), damlDecimal(100),
                 TxHistoryEntry.TransferStatus.COMPLETED,
                 null
         );
+        TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(ids.alice().partyId(), transferDetails1);
         assertEquals(label1, entry1.details());
 
         TxHistoryEntry entry2 = history.get(1);
-        TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(
-                ids.alice().partyId(),
+        TxHistoryEntry.TransferDetails transferDetails2 = new TxHistoryEntry.TransferDetails(
                 info.aliceWithdrawalId(),
                 ids.cantonCoinId(), damlDecimal(20),
                 TxHistoryEntry.TransferStatus.COMPLETED,
                 null
         );
+
+        TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(ids.alice().partyId(), transferDetails2);
         assertEquals(label2, entry2.details());
     }
 
@@ -108,7 +109,7 @@ class IntegrationStoreTest {
         // used in the https://github.com/hyperledger-labs/splice repo as part of
         // the token standard parsing reference implementation copied from
         // https://github.com/hyperledger-labs/splice/blob/fa489964c2b37e1b5d0adad66eabe7315eef473b/token-standard/cli/__tests__/mocks/data/txs.json
-         // and then modified using search-and-replace to replace "alice::normalized" with "treasury::normalized".
+        // and then modified using search-and-replace to replace "alice::normalized" with "treasury::normalized".
         testGolden("splice-test-cases", "treasury::normalized");
     }
 

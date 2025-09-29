@@ -154,13 +154,15 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "aliceValidator::normalized",
-        "memoTag": "token-standard-transfer-description",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "COMPLETED"
+        "details": {
+          "memoTag": "token-standard-transfer-description",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "COMPLETED"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -438,13 +440,15 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "aliceValidator::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 100.0000000000,
-        "transferStatus": "COMPLETED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 100.0000000000,
+          "transferStatus": "COMPLETED"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -1433,14 +1437,16 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "32"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "32"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -2031,14 +2037,16 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "37"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "37"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -2582,14 +2590,16 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "42"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "42"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -3133,14 +3143,16 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "47"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "47"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -3684,14 +3696,16 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "52"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "52"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -4235,13 +4249,15 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "COMPLETED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "COMPLETED"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -4700,13 +4716,15 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "REJECTED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "REJECTED"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -4948,13 +4966,15 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "WITHDRAWN"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "WITHDRAWN"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -5196,14 +5216,16 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "63"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "63"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5325,14 +5347,16 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "65"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "65"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5454,14 +5478,16 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "67"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "67"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5583,14 +5609,16 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "PENDING",
-        "pendingInstructionCid": "69"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "pendingInstructionCid": "69"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5712,13 +5740,15 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "COMPLETED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "COMPLETED"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -5996,13 +6026,15 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "REJECTED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "REJECTED"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -6104,13 +6136,15 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 200.0000000000,
-        "transferStatus": "WITHDRAWN"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "WITHDRAWN"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -6956,13 +6990,15 @@
       "kind": "TransferOut",
       "details": {
         "receiverPartyId": "bob::normalized",
-        "memoTag": "",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 1000.0000000000,
-        "transferStatus": "REJECTED"
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "REJECTED"
+        }
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -7054,13 +7090,15 @@
       "kind": "TransferIn",
       "details": {
         "senderPartyId": "charlie::normalized",
-        "memoTag": "non-ts-transfer",
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
-        },
-        "amount": 489.0000000000,
-        "transferStatus": "COMPLETED"
+        "details": {
+          "memoTag": "non-ts-transfer",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 489.0000000000,
+          "transferStatus": "COMPLETED"
+        }
       },
       "treasuryHoldingChanges": [
         {
