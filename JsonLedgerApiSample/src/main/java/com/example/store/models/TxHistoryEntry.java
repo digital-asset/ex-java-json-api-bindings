@@ -13,14 +13,16 @@ import java.util.List;
 /**
  * An entry in the transaction history log that explains the reason for a transaction affecting the treasury party's holdings.
  *
- * @param updateMetadata         metadata of the update containing the transaction
- * @param exerciseNodeId         the root node of the transaction
- * @param kind                   the kind of transaction, e.g. "TransferIn", "TransferOut", "SplitMerge", "UnrecognizedChoice", "BareCreate"
- * @param details                the details parsed from the transaction
- * @param treasuryHoldingChanges the list of holdings created or archived for the treasury party as part of this transaction
- * @param transactionEvents      the events of the (sub)transaction, starting with the exercise node event. These are included for debugging only.
- *                               In particular, to understand unrecognized choices; and to get a feel for how the actual transactions look like.
+ * @param updateMetadata             metadata of the update containing the transaction
+ * @param exerciseNodeId             the root node of the transaction
+ * @param kind                       the kind of transaction, e.g. "TransferIn", "TransferOut", "SplitMerge", "UnrecognizedChoice", "BareCreate"
+ * @param details                    the details parsed from the transaction
+ * @param treasuryHoldingChanges     the list of holdings created or archived for the treasury party as part of this transaction
+ * @param transferInstructionChanges the changes to the set of pending transfer instructions as part of this transaction
+ * @param transactionEvents          the events of the (sub)transaction, starting with the exercise node event. These are included for debugging only.
+ *                                   In particular, to understand unrecognized choices; and to get a feel for how the actual transactions look like.
  */
+// TODO: consider merging the treasuryHoldingChanges and transferInstructionChanges into a single list of Utxo changes
 public record TxHistoryEntry(
         @Nonnull UpdateMetadata updateMetadata,
         @Nonnull long exerciseNodeId,
@@ -29,15 +31,18 @@ public record TxHistoryEntry(
         @Nonnull String kind,
         @Nonnull Label details,
         @Nonnull List<HoldingChange> treasuryHoldingChanges,
+        @Nonnull List<TransferInstructionChange> transferInstructionChanges,
         @Nonnull List<Event> transactionEvents
 ) {
 
     // TODO: distinguish REJECTED, WITHDRAWN, OTHER_FAILURE
-    public enum TransferStatus { COMPLETED, PENDING, FAILED };
+    public enum TransferStatus {COMPLETED, PENDING, FAILED}
+
+    ;
 
     public TxHistoryEntry {
-        if (treasuryHoldingChanges.isEmpty()) {
-            throw new IllegalArgumentException("treasuryHoldingChanges cannot be empty");
+        if (treasuryHoldingChanges.isEmpty() && transferInstructionChanges.isEmpty()) {
+            throw new IllegalArgumentException("Not both of treasuryHoldingChanges and transferInstructionChanges can be empty");
         }
     }
 
@@ -46,6 +51,7 @@ public record TxHistoryEntry(
             @Nonnull long exerciseNodeId,
             @Nonnull Label label,
             @Nonnull List<HoldingChange> treasuryHoldingChanges,
+            @Nonnull List<TransferInstructionChange> transferInstructionChanges,
             @Nonnull List<Event> subtransaction) {
         this(
                 updateMetadata,
@@ -53,6 +59,7 @@ public record TxHistoryEntry(
                 label.getClass().getSimpleName(),
                 label,
                 treasuryHoldingChanges,
+                transferInstructionChanges,
                 subtransaction);
     }
 
@@ -79,8 +86,8 @@ public record TxHistoryEntry(
             InstrumentId instrumentId,
             @Nonnull
             BigDecimal amount,
-            // FIXME
-            TransferInstructionStatus pending) implements Label {
+            TransferStatus transferStatus,
+            TransferInstructionView pendingInstruction) implements Label {
         @Override
         public boolean isRecognized() {
             return true;
@@ -136,5 +143,14 @@ public record TxHistoryEntry(
     ) {
     }
 
+    /**
+     * A change to the set of pending transfer instructions
+     */
+    public record TransferInstructionChange(
+            @Nonnull String contractId,
+            @Nonnull TransferInstructionView transferInstruction,
+            boolean archived
+    ) {
+    }
 
 }

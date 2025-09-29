@@ -86,6 +86,7 @@ class IntegrationStoreTest {
                 ids.alice().partyId(),
                 info.aliceDepositId(),
                 ids.cantonCoinId(), damlDecimal(100),
+                TxHistoryEntry.TransferStatus.COMPLETED,
                 null
         );
         assertEquals(label1, entry1.details());

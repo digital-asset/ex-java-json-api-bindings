@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 import splice.api.token.transferinstructionv1.*;
@@ -97,6 +98,20 @@ public class TransactionParser {
             holdingChanges.addAll(entry.treasuryHoldingChanges());
         }
 
+        // compute changes to pending transfer instructions
+        List<TxHistoryEntry.TransferInstructionChange> instructionChanges = new ArrayList<>();
+        if (consumedTransferInstruction.isPresent()) {
+            TxHistoryEntry.TransferInstructionChange archival = new TxHistoryEntry.TransferInstructionChange(
+                    exercisedEvent.getContractId(),
+                    consumedTransferInstruction.get(),
+                    true
+            );
+            instructionChanges.add(archival);
+        }
+        for (TxHistoryEntry entry : childEntries) {
+            instructionChanges.addAll(entry.transferInstructionChanges());
+        }
+
         // gather events that form subtransaction
         List<Event> transactionEvents = new ArrayList<>();
         if (exercisedEvent != null) {
@@ -107,14 +122,13 @@ public class TransactionParser {
         }
 
         // Determine log entries to return
-        if (holdingChanges.isEmpty()) {
+        if (holdingChanges.isEmpty() && instructionChanges.isEmpty()) {
             // no holding changes ==> nothing to report
             return List.of();
 
         } else if (exercisedEvent == null) {
             // we are parsing the root transaction ==> just return the parsed child entries
             return childEntries;
-
 
         } else if (exercisedEvent.getChoice().equals(TransferFactory.CHOICE_TransferFactory_Transfer.name)
                 && TemplateId.TRANSFER_FACTORY_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
@@ -125,7 +139,6 @@ public class TransactionParser {
                     JSON.getGson()::toJson,
                     TransferFactory_Transfer::fromJson);
             Transfer t = transferChoiceArg.transfer;
-            String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
             // Attempt to determine label
             TransferInstructionResult transferResult =
@@ -133,13 +146,14 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, memoTag, transferResult);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
                         holdingChanges,
+                        instructionChanges,
                         transactionEvents
                 );
                 return List.of(entry);
@@ -148,7 +162,6 @@ public class TransactionParser {
                 && TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
             // we are parsing TransferInstruction choice ==> determine kind of transfer
             Transfer t = consumedTransferInstruction.get().transfer;
-            String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
             // Attempt to determine label
             TransferInstructionResult transferResult =
@@ -156,13 +169,14 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, memoTag, transferResult);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
                         holdingChanges,
+                        instructionChanges,
                         transactionEvents
                 );
                 return List.of(entry);
@@ -204,11 +218,19 @@ public class TransactionParser {
                             // Only parse credits
                             if (balanceChange.compareTo(BigDecimal.ZERO) > 0) {
                                 // This is an incoming transfer
+                                TxHistoryEntry.TransferIn label = new TxHistoryEntry.TransferIn(
+                                        sender,
+                                        memoTag,
+                                        instrumentId,
+                                        balanceChange,
+                                        TxHistoryEntry.TransferStatus.COMPLETED,
+                                        null);
                                 TxHistoryEntry entry = new TxHistoryEntry(
                                         updateMetadata,
                                         exercisedEvent.getNodeId(),
-                                        new TxHistoryEntry.TransferIn(sender, memoTag, instrumentId, balanceChange, null),
+                                        label,
                                         holdingChanges,
+                                        instructionChanges,
                                         transactionEvents
                                 );
                                 return List.of(entry);
@@ -231,6 +253,7 @@ public class TransactionParser {
                 exercisedEvent.getNodeId(),
                 label,
                 holdingChanges,
+                instructionChanges,
                 transactionEvents
         );
         if (consumedHolding.isPresent()) {
@@ -245,43 +268,49 @@ public class TransactionParser {
         }
     }
 
-    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, String memoTag, TransferInstructionResult result) {
-        // TODO: pending and failed transfers
+    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, TransferInstructionResult result) {
+        String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
+
+        // parse status of transfer
+        TxHistoryEntry.TransferStatus transferStatus = null;
+        TransferInstructionView pendingInstruction = null;
+        if (result.output instanceof TransferInstructionResult_Completed) {
+            transferStatus = TxHistoryEntry.TransferStatus.COMPLETED;
+        } else if (result.output instanceof TransferInstructionResult_Pending pendingResult) {
+            pendingInstruction = utxoStore.getTransferInstruction(pendingResult.transferInstructionCid.contractId);
+            if (pendingInstruction != null) {
+                transferStatus = TxHistoryEntry.TransferStatus.PENDING;
+            } else {
+                log.warning("Unexpectedly failed to find pending transfer instruction: " + pendingResult.transferInstructionCid.contractId);
+            }
+        } else if (result.output instanceof TransferInstructionResult_Failed) {
+            transferStatus = TxHistoryEntry.TransferStatus.FAILED;
+        } else {
+            log.warning("Unrecognized transfer result output:" + ExtendedJson.gson.toJson(result.output));
+        }
+
+        // if status is determined, then determine direction of transfer
+        if (transferStatus != null) {
+            return mkTransferLabel(t, treasuryParty, memoTag, transferStatus, pendingInstruction);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Nonnull
+    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, String memoTag, TxHistoryEntry.TransferStatus transferStatus, TransferInstructionView pendingInstruction) {
         if (t.sender.equals(treasuryParty)) {
             if (t.receiver.equals(t.sender)) {
-                if (result.output instanceof TransferInstructionResult_Completed) {
-                    return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
-                } else {
-                    // TODO: consider recording these log messages on the transaction log entry itself
-                    log.warning("Unexpected pending or failed self-transfer.");
-                }
+                // FIXME: handle pending and failed self-transfers
+                return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
             } else {
-                // parse an outgoing transfer one-step or multi-step
-                TxHistoryEntry.TransferStatus transferStatus = null;
-                TransferInstructionView pendingInstruction = null;
-                if (result.output instanceof TransferInstructionResult_Completed) {
-                    transferStatus = TxHistoryEntry.TransferStatus.COMPLETED;
-                } else if (result.output instanceof TransferInstructionResult_Pending pendingResult) {
-                    pendingInstruction = utxoStore.getTransferInstruction(pendingResult.transferInstructionCid.contractId);
-                    if (pendingInstruction != null) {
-                        transferStatus = TxHistoryEntry.TransferStatus.PENDING;
-                    } else {
-                        log.warning("Unexpectedly failed to find pending transfer instruction: " + pendingResult.transferInstructionCid.contractId);
-                    }
-                } else if (result.output instanceof TransferInstructionResult_Failed) {
-                    transferStatus = TxHistoryEntry.TransferStatus.FAILED;
-                } else {
-                    log.warning("Unrecognized transfer result output:" + ExtendedJson.gson.toJson(result.output));
-                }
-                if (transferStatus != null) {
-                    return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
-                }
+                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
             }
         } else if (t.receiver.equals(treasuryParty)) {
-            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, null));
+            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
+        } else {
+            return Optional.empty();
         }
-        // label could not be determined
-        return Optional.empty();
     }
 
     /**
@@ -316,17 +345,28 @@ public class TransactionParser {
                                 createdEvent.getNodeId(),
                                 new TxHistoryEntry.BareCreate(createdEvent.getTemplateId()),
                                 List.of(creation),
+                                List.of(),
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
                                 )));
                     }
                 } else if (TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
                     String viewJson = JSON.getGson().toJson(view.getViewValue());
                     TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
-                    String cid = createdEvent.getContractId();
-                    utxoStore.ingestTransferInstructionCreation(cid, instruction);
-                    // We do not create a log entry for the creation of a pending transfer instruction, as
-                    // we expect all of their changes to come about using one of the four choices on TransferInstruction
-                    // interface: https://github.com/hyperledger-labs/splice/blob/9d1025c0d5016c6040c49981c97d3f61a14edadf/token-standard/splice-api-token-transfer-instruction-v1/daml/Splice/Api/Token/TransferInstructionV1.daml#L123-L168
+                    Optional<TxHistoryEntry.Label> label =
+                            mkTransferLabel(instruction.transfer, utxoStore.treasuryPartyId(), "", TxHistoryEntry.TransferStatus.PENDING, instruction);
+                    if (label.isPresent()) {
+                        String cid = createdEvent.getContractId();
+                        TxHistoryEntry.TransferInstructionChange creation = new TxHistoryEntry.TransferInstructionChange(cid, instruction, false);
+                        utxoStore.ingestTransferInstructionCreation(cid, instruction);
+                        childEntries.add(new TxHistoryEntry(
+                                updateMetadata,
+                                createdEvent.getNodeId(),
+                                label.get(),
+                                List.of(),
+                                List.of(creation),
+                                List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
+                                )));
+                    }
                 }
             }
         }

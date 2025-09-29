@@ -159,7 +159,8 @@
           "admin": "dso::normalized",
           "id": "Amulet"
         },
-        "amount": 200.0000000000
+        "amount": 200.0000000000,
+        "transferStatus": "COMPLETED"
       },
       "treasuryHoldingChanges": [
         {
@@ -181,6 +182,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -482,6 +484,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -879,6 +882,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -1233,6 +1237,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -1535,6 +1540,35 @@
                 "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
                 "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
               }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "32",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "34"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
             }
           },
           "archived": false
@@ -1929,6 +1963,83 @@
             "createdAt": "1971-01-01T00:00:08.000080Z",
             "packageName": "splice-amulet"
           }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 8,
+            "nodeId": 17,
+            "contractId": "32",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "34",
+              "transfer": {
+                "amount": "1000.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "34"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "bob::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "treasury::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "1000.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "34"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "bob::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "treasury::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "treasury::normalized"
+            ],
+            "observers": [
+              "bob::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:08.000090Z",
+            "packageName": "splice-amulet"
+          }
         }
       ]
     },
@@ -2031,6 +2142,35 @@
                 "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
                 "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
               }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "37",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "39"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
             }
           },
           "archived": false
@@ -2396,6 +2536,83 @@
             "createdAt": "1971-01-01T00:00:09.000070Z",
             "packageName": "splice-amulet"
           }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 9,
+            "nodeId": 14,
+            "contractId": "37",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "39",
+              "transfer": {
+                "amount": "1000.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "39"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "bob::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "treasury::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "1000.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "39"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "bob::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "treasury::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "treasury::normalized"
+            ],
+            "observers": [
+              "bob::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:09.000080Z",
+            "packageName": "splice-amulet"
+          }
         }
       ]
     },
@@ -2498,6 +2715,35 @@
                 "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
                 "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
               }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "42",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "44"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
             }
           },
           "archived": false
@@ -2863,6 +3109,83 @@
             "createdAt": "1971-01-01T00:00:10.000070Z",
             "packageName": "splice-amulet"
           }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 10,
+            "nodeId": 14,
+            "contractId": "42",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "44",
+              "transfer": {
+                "amount": "1000.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "44"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "bob::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "treasury::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "1000.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "44"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "bob::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "treasury::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "treasury::normalized"
+            ],
+            "observers": [
+              "bob::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:10.000080Z",
+            "packageName": "splice-amulet"
+          }
         }
       ]
     },
@@ -2965,6 +3288,35 @@
                 "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
                 "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
               }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "47",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "49"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
             }
           },
           "archived": false
@@ -3330,6 +3682,83 @@
             "createdAt": "1971-01-01T00:00:11.000070Z",
             "packageName": "splice-amulet"
           }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 11,
+            "nodeId": 14,
+            "contractId": "47",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "49",
+              "transfer": {
+                "amount": "1000.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "49"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "bob::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "treasury::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "1000.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "49"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "bob::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "treasury::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "treasury::normalized"
+            ],
+            "observers": [
+              "bob::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:11.000080Z",
+            "packageName": "splice-amulet"
+          }
         }
       ]
     },
@@ -3432,6 +3861,35 @@
                 "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
                 "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
               }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "52",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "0"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
             }
           },
           "archived": false
@@ -3797,6 +4255,83 @@
             "createdAt": "1971-01-01T00:00:12.000070Z",
             "packageName": "splice-amulet"
           }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 12,
+            "nodeId": 14,
+            "contractId": "52",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "0",
+              "transfer": {
+                "amount": "1000.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "0"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "bob::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "treasury::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "1000.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "0"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "bob::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "treasury::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "treasury::normalized"
+            ],
+            "observers": [
+              "bob::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:12.000080Z",
+            "packageName": "splice-amulet"
+          }
         }
       ]
     },
@@ -3897,6 +4432,35 @@
             }
           },
           "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "32",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "34"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
         }
       ],
       "transactionEvents": [
@@ -4299,6 +4863,35 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "37",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "39"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -4518,6 +5111,35 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "42",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "44"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -4676,6 +5298,610 @@
     },
     {
       "updateMetadata": {
+        "updateId": "update-17",
+        "recordTime": "1971-01-01T00:00:17Z",
+        "offset": 17
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "bob::normalized",
+            "receiver": "treasury::normalized",
+            "amount": 200.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "64"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "63",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "64"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 17,
+            "nodeId": 0,
+            "contractId": "63",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "64",
+              "transfer": {
+                "amount": "200.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "64"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "treasury::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "bob::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "200.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "64"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "treasury::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "bob::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "bob::normalized"
+            ],
+            "observers": [
+              "treasury::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:17Z",
+            "packageName": "splice-amulet"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-18",
+        "recordTime": "1971-01-01T00:00:18Z",
+        "offset": 18
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "bob::normalized",
+            "receiver": "treasury::normalized",
+            "amount": 200.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "66"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "65",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "66"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 18,
+            "nodeId": 0,
+            "contractId": "65",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "66",
+              "transfer": {
+                "amount": "200.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "66"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "treasury::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "bob::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "200.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "66"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "treasury::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "bob::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "bob::normalized"
+            ],
+            "observers": [
+              "treasury::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:18Z",
+            "packageName": "splice-amulet"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-19",
+        "recordTime": "1971-01-01T00:00:19Z",
+        "offset": 19
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "bob::normalized",
+            "receiver": "treasury::normalized",
+            "amount": 200.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "68"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "67",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "68"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 19,
+            "nodeId": 0,
+            "contractId": "67",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "68",
+              "transfer": {
+                "amount": "200.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "68"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "treasury::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "bob::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "200.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "68"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "treasury::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "bob::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "bob::normalized"
+            ],
+            "observers": [
+              "treasury::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:19Z",
+            "packageName": "splice-amulet"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-20",
+        "recordTime": "1971-01-01T00:00:20Z",
+        "offset": 20
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "bob::normalized",
+            "receiver": "treasury::normalized",
+            "amount": 200.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "70"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "69",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "70"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 20,
+            "nodeId": 0,
+            "contractId": "69",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "createArgument": {
+              "lockedAmulet": "70",
+              "transfer": {
+                "amount": "200.0000000000",
+                "executeBefore": "2025-06-18T00:00:00.000000Z",
+                "inputHoldingCids": [
+                  "70"
+                ],
+                "instrumentId": {
+                  "admin": "dso::normalized",
+                  "id": "Amulet"
+                },
+                "meta": {
+                  "values": {}
+                },
+                "receiver": "treasury::normalized",
+                "requestedAt": "2025-06-18T00:00:00.000000Z",
+                "sender": "bob::normalized"
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "meta": {
+                    "values": {}
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "transfer": {
+                    "amount": "200.0000000000",
+                    "executeBefore": "2025-06-18T00:00:00.000000Z",
+                    "inputHoldingCids": [
+                      "70"
+                    ],
+                    "instrumentId": {
+                      "admin": "dso::normalized",
+                      "id": "Amulet"
+                    },
+                    "meta": {
+                      "values": {}
+                    },
+                    "receiver": "treasury::normalized",
+                    "requestedAt": "2025-06-18T00:00:00.000000Z",
+                    "sender": "bob::normalized"
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "signatories": [
+              "dso::normalized",
+              "bob::normalized"
+            ],
+            "observers": [
+              "treasury::normalized"
+            ],
+            "createdAt": "1971-01-01T00:00:20Z",
+            "packageName": "splice-amulet"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
         "updateId": "update-21",
         "recordTime": "1971-01-01T00:00:21Z",
         "offset": 21
@@ -4689,7 +5915,8 @@
           "admin": "dso::normalized",
           "id": "Amulet"
         },
-        "amount": 200.0000000000
+        "amount": 200.0000000000,
+        "transferStatus": "COMPLETED"
       },
       "treasuryHoldingChanges": [
         {
@@ -4709,6 +5936,35 @@
             }
           },
           "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "63",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "64"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
         }
       ],
       "transactionEvents": [
@@ -4930,6 +6186,222 @@
     },
     {
       "updateMetadata": {
+        "updateId": "update-22",
+        "recordTime": "1971-01-01T00:00:22Z",
+        "offset": 22
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "FAILED"
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "65",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "66"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 22,
+            "nodeId": 0,
+            "contractId": "65",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Reject",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "amulet-rules": {
+                      "tag": "AV_ContractId",
+                      "value": "1"
+                    },
+                    "expire-lock": {
+                      "tag": "AV_Bool",
+                      "value": true
+                    },
+                    "open-round": {
+                      "tag": "AV_ContractId",
+                      "value": "10"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "treasury::normalized"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "lastDescendantNodeId": 4,
+            "exerciseResult": {
+              "meta": {
+                "values": {}
+              },
+              "output": {
+                "tag": "TransferInstructionResult_Failed",
+                "value": {}
+              },
+              "senderChangeCids": [
+                "76"
+              ]
+            },
+            "packageName": "splice-amulet",
+            "implementedInterfaces": [
+              "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-23",
+        "recordTime": "1971-01-01T00:00:23Z",
+        "offset": 23
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferIn",
+      "details": {
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000,
+        "transferStatus": "FAILED"
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "67",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "68"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 23,
+            "nodeId": 0,
+            "contractId": "67",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Withdraw",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "amulet-rules": {
+                      "tag": "AV_ContractId",
+                      "value": "1"
+                    },
+                    "expire-lock": {
+                      "tag": "AV_Bool",
+                      "value": true
+                    },
+                    "open-round": {
+                      "tag": "AV_ContractId",
+                      "value": "10"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "bob::normalized"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "lastDescendantNodeId": 4,
+            "exerciseResult": {
+              "meta": {
+                "values": {}
+              },
+              "output": {
+                "tag": "TransferInstructionResult_Failed",
+                "value": {}
+              },
+              "senderChangeCids": [
+                "77"
+              ]
+            },
+            "packageName": "splice-amulet",
+            "implementedInterfaces": [
+              "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
         "updateId": "update-24",
         "recordTime": "1971-01-01T00:00:24Z",
         "offset": 24
@@ -5131,6 +6603,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -5673,6 +7146,104 @@
     },
     {
       "updateMetadata": {
+        "updateId": "update-25",
+        "recordTime": "1971-01-01T00:00:25Z",
+        "offset": 25
+      },
+      "exerciseNodeId": 0,
+      "kind": "TransferOut",
+      "details": {
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "FAILED"
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "47",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "49"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 25,
+            "nodeId": 0,
+            "contractId": "47",
+            "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
+            "interfaceId": "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Reject",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "expire-lock": {
+                      "tag": "AV_Bool",
+                      "value": false
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "bob::normalized"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "treasury::normalized"
+            ],
+            "lastDescendantNodeId": 0,
+            "exerciseResult": {
+              "meta": {
+                "values": {}
+              },
+              "output": {
+                "tag": "TransferInstructionResult_Failed",
+                "value": {}
+              },
+              "senderChangeCids": []
+            },
+            "packageName": "splice-amulet",
+            "implementedInterfaces": [
+              "#package-name:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
         "updateId": "update-28",
         "recordTime": "1971-01-01T00:00:28Z",
         "offset": 28
@@ -5686,7 +7257,8 @@
           "admin": "dso::normalized",
           "id": "Amulet"
         },
-        "amount": 489.0000000000
+        "amount": 489.0000000000,
+        "transferStatus": "COMPLETED"
       },
       "treasuryHoldingChanges": [
         {
@@ -5708,6 +7280,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -5982,6 +7555,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "CreatedEvent": {
@@ -6061,6 +7635,7 @@
           "archived": false
         }
       ],
+      "transferInstructionChanges": [],
       "transactionEvents": [
         {
           "CreatedEvent": {
