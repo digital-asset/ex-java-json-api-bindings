@@ -23,6 +23,10 @@ import java.util.*;
 
 import static com.example.models.TokenStandard.*;
 
+/**
+ * Parser for transactions to determine changes to treasury holdings and their causes.
+ * Transactions that do not affect treasury holdings are ignored.
+ */
 public class TransactionParser {
 
     final private HoldingStore holdingStore;
@@ -183,7 +187,7 @@ public class TransactionParser {
         if (consumedHolding.isPresent()) {
             // This is a non-standard choice consuming a holding
             return List.of(entry);
-        } else if (childEntries.stream().noneMatch(e -> e.label().isRecognized())) {
+        } else if (childEntries.stream().noneMatch(e -> e.labelData().isRecognized())) {
             // No child entry uses a recognized label ==> explain them succinctly via this exercise node
             return List.of(entry);
         } else {

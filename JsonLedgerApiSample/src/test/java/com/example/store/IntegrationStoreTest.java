@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.GsonTypeAdapters.ExtendedJson;
 import com.example.client.ledger.model.JsGetUpdatesResponse;
+import com.example.store.models.TxHistoryEntry;
 import com.example.testdata.TestFiles;
 import com.example.testdata.TestIdentities;
 import com.example.testdata.WorkflowInfo;
@@ -69,9 +70,25 @@ class IntegrationStoreTest {
         // Assert exactly one active holding exists
         assertEquals(1, store.getActiveHoldings().size());
 
-        // Assert on the balances
-        // FIXME
-        // assertEquals(damlDecimal(100), store.getDepositBalance(ids.cantonCoinId(), info.aliceDepositId()));
+        // Assert on the history log
+        List<TxHistoryEntry> history = store.getTxHistoryLog();
+        assertEquals(2, history.size());
+
+        TxHistoryEntry entry1 = history.get(0);
+        TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(
+                ids.alice().partyId(),
+                info.aliceDepositId(),
+                ids.cantonCoinId(), damlDecimal(100)
+        );
+        assertEquals(label1, entry1.labelData());
+
+        TxHistoryEntry entry2 = history.get(1);
+        TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(
+                ids.alice().partyId(),
+                info.aliceWithdrawalId(),
+                ids.cantonCoinId(), damlDecimal(20)
+        );
+        assertEquals(label2, entry2.labelData());
     }
 
     static private BigDecimal damlDecimal(long val) {

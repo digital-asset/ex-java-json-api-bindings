@@ -67,10 +67,6 @@ public class IntegrationStore {
         return ExtendedJson.gsonPretty.toJson(this);
     }
 
-    // public BigDecimal getDepositBalance(InstrumentId instrumentId, String depositId) {
-    //     return transferLog.getDepositBalances().getOrDefault(depositId, new Balances()).getBalance(instrumentId);
-    // }
-
     public List<TxHistoryEntry> getTxHistoryLog() {
         return txHistoryLog;
     }

@@ -1,7 +1,6 @@
 package com.example.store.models;
 
 import jakarta.annotation.Nonnull;
-import org.checkerframework.checker.units.qual.N;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
@@ -11,13 +10,30 @@ import java.util.List;
 public record TxHistoryEntry(
         @Nonnull TxMetadata txMetadata,
         @Nonnull long exerciseNodeId,
-        @Nonnull Label label,
+        // The below is a hack to make the JSON output contains the kind of label. It does though not work for JSON decoding.
+        // TODO: use a better JSON encoding to tag the kind of label, and enable decoding
+        @Nonnull String labelKind,
+        @Nonnull Label labelData,
         @Nonnull List<HoldingChange> treasuryHoldingChanges
 ) {
+
     public TxHistoryEntry {
         if (treasuryHoldingChanges.isEmpty()) {
             throw new IllegalArgumentException("treasuryHoldingChanges cannot be empty");
         }
+    }
+
+    public TxHistoryEntry(
+            @Nonnull TxMetadata txMetadata,
+            @Nonnull long exerciseNodeId,
+            @Nonnull Label label,
+            @Nonnull List<HoldingChange> treasuryHoldingChanges) {
+        this(
+                txMetadata,
+                exerciseNodeId,
+                label.getClass().getSimpleName(),
+                label,
+                treasuryHoldingChanges);
     }
 
     public record TxMetadata(
@@ -95,4 +111,6 @@ public record TxHistoryEntry(
             boolean archived
     ) {
     }
+
+
 }
