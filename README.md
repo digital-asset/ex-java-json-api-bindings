@@ -22,12 +22,13 @@ The sample illustrates the endpoints, the request payloads, and their responses 
 * Programmatically retrieve the Synchronizer id
 * Programmatically retrieve the DSO party
 * Programmatically retrieve the Validator party
-* Onboard an external party
+* Set up a new external party using the Ledger API
 * Sign transactions as an external party
 * Establish transfer pre-approvals for an external party
 * Query for a list of token standard holdings
 * Transfer token standard assets
 * Digest the transaction stream
+* Poll the command completion APIs to know when an externally-signed command is successful
 
 The sample uses the following tools:
 
