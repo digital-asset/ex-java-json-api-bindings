@@ -273,16 +273,12 @@ public class TransactionParser {
 
         // parse status of transfer
         TxHistoryEntry.TransferStatus transferStatus = null;
-        TransferInstructionView pendingInstruction = null;
+        TransferInstruction.ContractId pendingInstruction = null;
         if (result.output instanceof TransferInstructionResult_Completed) {
             transferStatus = TxHistoryEntry.TransferStatus.COMPLETED;
         } else if (result.output instanceof TransferInstructionResult_Pending pendingResult) {
-            pendingInstruction = utxoStore.getTransferInstruction(pendingResult.transferInstructionCid.contractId);
-            if (pendingInstruction != null) {
-                transferStatus = TxHistoryEntry.TransferStatus.PENDING;
-            } else {
-                log.warning("Unexpectedly failed to find pending transfer instruction: " + pendingResult.transferInstructionCid.contractId);
-            }
+            pendingInstruction = new TransferInstruction.ContractId(pendingResult.transferInstructionCid.contractId);
+            transferStatus = TxHistoryEntry.TransferStatus.PENDING;
         } else if (result.output instanceof TransferInstructionResult_Failed) {
             if (choiceName.equals(TransferInstruction.CHOICE_TransferInstruction_Reject.name)) {
                 transferStatus = TxHistoryEntry.TransferStatus.REJECTED;
@@ -304,16 +300,16 @@ public class TransactionParser {
     }
 
     @Nonnull
-    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, String memoTag, TxHistoryEntry.TransferStatus transferStatus, TransferInstructionView pendingInstruction) {
+    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, String memoTag, TxHistoryEntry.TransferStatus transferStatus, TransferInstruction.ContractId pendingInstructionCid) {
         if (t.sender.equals(treasuryParty)) {
             if (t.receiver.equals(t.sender)) {
                 // FIXME: handle pending and failed self-transfers
                 return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
             } else {
-                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
+                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstructionCid));
             }
         } else if (t.receiver.equals(treasuryParty)) {
-            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
+            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstructionCid));
         } else {
             return Optional.empty();
         }
@@ -357,9 +353,10 @@ public class TransactionParser {
                     }
                 } else if (TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
                     String viewJson = JSON.getGson().toJson(view.getViewValue());
+                    TransferInstruction.ContractId pendingInstructionCid = new TransferInstruction.ContractId(createdEvent.getContractId());
                     TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
                     Optional<TxHistoryEntry.Label> label =
-                            mkTransferLabel(instruction.transfer, utxoStore.treasuryPartyId(), "", TxHistoryEntry.TransferStatus.PENDING, instruction);
+                            mkTransferLabel(instruction.transfer, utxoStore.treasuryPartyId(), "", TxHistoryEntry.TransferStatus.PENDING, pendingInstructionCid);
                     if (label.isPresent()) {
                         String cid = createdEvent.getContractId();
                         TxHistoryEntry.TransferInstructionChange creation = new TxHistoryEntry.TransferInstructionChange(cid, instruction, false);

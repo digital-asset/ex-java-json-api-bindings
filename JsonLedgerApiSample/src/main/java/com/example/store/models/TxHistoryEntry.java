@@ -4,7 +4,7 @@ import com.example.client.ledger.model.Event;
 import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
-import splice.api.token.transferinstructionv1.TransferInstructionStatus;
+import splice.api.token.transferinstructionv1.TransferInstruction;
 import splice.api.token.transferinstructionv1.TransferInstructionView;
 
 import java.math.BigDecimal;
@@ -84,7 +84,7 @@ public record TxHistoryEntry(
             @Nonnull
             BigDecimal amount,
             TransferStatus transferStatus,
-            TransferInstructionView pendingInstruction) implements Label {
+            TransferInstruction.ContractId pendingInstructionCid) implements Label {
         @Override
         public boolean isRecognized() {
             return true;
@@ -98,8 +98,9 @@ public record TxHistoryEntry(
             InstrumentId instrumentId,
             @Nonnull
             BigDecimal amount,
+            // FIXME: track on-ledger correlation id
             TransferStatus transferStatus,
-            TransferInstructionView pendingInstruction) implements Label {
+            TransferInstruction.ContractId pendingInstructionCid) implements Label {
         @Override
         public boolean isRecognized() {
             return true;

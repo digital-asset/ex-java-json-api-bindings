@@ -1440,29 +1440,7 @@
         },
         "amount": 1000.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "treasury::normalized",
-            "receiver": "bob::normalized",
-            "amount": 1000.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "34"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "32"
       },
       "treasuryHoldingChanges": [
         {
@@ -2060,29 +2038,7 @@
         },
         "amount": 1000.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "treasury::normalized",
-            "receiver": "bob::normalized",
-            "amount": 1000.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "39"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "37"
       },
       "treasuryHoldingChanges": [
         {
@@ -2633,29 +2589,7 @@
         },
         "amount": 1000.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "treasury::normalized",
-            "receiver": "bob::normalized",
-            "amount": 1000.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "44"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "42"
       },
       "treasuryHoldingChanges": [
         {
@@ -3206,29 +3140,7 @@
         },
         "amount": 1000.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "treasury::normalized",
-            "receiver": "bob::normalized",
-            "amount": 1000.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "49"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "47"
       },
       "treasuryHoldingChanges": [
         {
@@ -3779,29 +3691,7 @@
         },
         "amount": 1000.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "treasury::normalized",
-            "receiver": "bob::normalized",
-            "amount": 1000.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "0"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "52"
       },
       "treasuryHoldingChanges": [
         {
@@ -5313,29 +5203,7 @@
         },
         "amount": 200.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "bob::normalized",
-            "receiver": "treasury::normalized",
-            "amount": 200.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "64"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "63"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5464,29 +5332,7 @@
         },
         "amount": 200.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "bob::normalized",
-            "receiver": "treasury::normalized",
-            "amount": 200.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "66"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "65"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5615,29 +5461,7 @@
         },
         "amount": 200.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "bob::normalized",
-            "receiver": "treasury::normalized",
-            "amount": 200.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "68"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "67"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -5766,29 +5590,7 @@
         },
         "amount": 200.0000000000,
         "transferStatus": "PENDING",
-        "pendingInstruction": {
-          "transfer": {
-            "sender": "bob::normalized",
-            "receiver": "treasury::normalized",
-            "amount": 200.0000000000,
-            "instrumentId": {
-              "admin": "dso::normalized",
-              "id": "Amulet"
-            },
-            "requestedAt": "2025-06-18T00:00:00Z",
-            "executeBefore": "2025-06-18T00:00:00Z",
-            "inputHoldingCids": [
-              "70"
-            ],
-            "meta": {
-              "values": {}
-            }
-          },
-          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
-          "meta": {
-            "values": {}
-          }
-        }
+        "pendingInstructionCid": "69"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
@@ -7160,7 +6962,7 @@
           "id": "Amulet"
         },
         "amount": 1000.0000000000,
-        "transferStatus": "FAILED"
+        "transferStatus": "REJECTED"
       },
       "treasuryHoldingChanges": [],
       "transferInstructionChanges": [
