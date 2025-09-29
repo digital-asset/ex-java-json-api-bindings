@@ -249,7 +249,8 @@ public class TransactionParser {
 
     private int parseExerciseEvent(ExercisedEvent exercisedEvent) {
         TransactionParser subtransactionParser = new TransactionParser(txMetadata, holdingStore, events);
-        subtransactionParser.parse(exercisedEvent);
+        List<TxHistoryEntry> parsedChildEntries = subtransactionParser.parse(exercisedEvent);
+        childEntries.addAll(parsedChildEntries);
         return exercisedEvent.getLastDescendantNodeId();
 
     }
