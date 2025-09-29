@@ -30,7 +30,7 @@ import static com.example.models.TokenStandard.*;
 public class TransactionParser {
 
     final private HoldingStore holdingStore;
-    final private TxHistoryEntry.TxMetadata txMetadata;
+    final private TxHistoryEntry.UpdateMetadata updateMetadata;
     private final Iterator<Event> events;
     final private ArrayList<TxHistoryEntry> childEntries = new ArrayList<>();
 
@@ -42,8 +42,8 @@ public class TransactionParser {
         Optional<HoldingView> ingestArchival(String contractId);
     }
 
-    TransactionParser(TxHistoryEntry.TxMetadata txMetadata, HoldingStore holdingStore, @Nonnull Iterator<Event> events) {
-        this.txMetadata = txMetadata;
+    TransactionParser(TxHistoryEntry.UpdateMetadata updateMetadata, HoldingStore holdingStore, @Nonnull Iterator<Event> events) {
+        this.updateMetadata = updateMetadata;
         this.holdingStore = holdingStore;
         this.events = events;
     }
@@ -59,11 +59,10 @@ public class TransactionParser {
         int lastDescendantNodeId = exercisedEvent == null ? Integer.MAX_VALUE : exercisedEvent.getLastDescendantNodeId();
 
         // parse all child events
-        assert events.hasNext();
-        int nodeId;
-        do {
+        int nodeId = exercisedEvent == null ? -1 : exercisedEvent.getNodeId();
+        while (events.hasNext() && nodeId < lastDescendantNodeId) {
             nodeId = parseEvent(events.next());
-        } while (events.hasNext() && nodeId < lastDescendantNodeId);
+        }
 
         // compute changes to treasury holdings
         List<TxHistoryEntry.HoldingChange> holdingChanges = new ArrayList<>();
@@ -80,12 +79,12 @@ public class TransactionParser {
         }
 
         // gather events that form subtransaction
-        List<Event> subtransaction = new ArrayList<>();
+        List<Event> transactionEvents = new ArrayList<>();
         if (exercisedEvent != null) {
-            subtransaction.add(new Event(new EventOneOf2().exercisedEvent(exercisedEvent)));
+            transactionEvents.add(new Event(new EventOneOf2().exercisedEvent(exercisedEvent)));
         }
         for (TxHistoryEntry entry : childEntries) {
-            subtransaction.addAll(entry.subtransaction());
+            transactionEvents.addAll(entry.transactionEvents());
         }
 
         // Determine log entries to return
@@ -120,11 +119,11 @@ public class TransactionParser {
                                 TransferInstructionResult::fromJson);
                 if (transferResult.output instanceof TransferInstructionResult_Completed) {
                     TxHistoryEntry entry = new TxHistoryEntry(
-                            txMetadata,
+                            updateMetadata,
                             exercisedEvent.getNodeId(),
                             label.get(),
                             holdingChanges,
-                            subtransaction
+                            transactionEvents
                     );
                     return List.of(entry);
                 }
@@ -168,11 +167,11 @@ public class TransactionParser {
                             if (balanceChange.compareTo(BigDecimal.ZERO) > 0) {
                                 // This is an incoming transfer
                                 TxHistoryEntry entry = new TxHistoryEntry(
-                                        txMetadata,
+                                        updateMetadata,
                                         exercisedEvent.getNodeId(),
                                         new TxHistoryEntry.TransferIn(sender, memoTag, instrumentId, balanceChange),
                                         holdingChanges,
-                                        subtransaction
+                                        transactionEvents
                                 );
                                 return List.of(entry);
                             }
@@ -190,16 +189,16 @@ public class TransactionParser {
                 exercisedEvent.getTemplateId(),
                 exercisedEvent.getChoice());
         TxHistoryEntry entry = new TxHistoryEntry(
-                txMetadata,
+                updateMetadata,
                 exercisedEvent.getNodeId(),
                 label,
                 holdingChanges,
-                subtransaction
+                transactionEvents
         );
         if (consumedHolding.isPresent()) {
             // This is a non-standard choice consuming a holding
             return List.of(entry);
-        } else if (childEntries.stream().noneMatch(e -> e.labelData().isRecognized())) {
+        } else if (childEntries.stream().noneMatch(e -> e.details().isRecognized())) {
             // No child entry uses a recognized label ==> explain them succinctly via this exercise node
             return List.of(entry);
         } else {
@@ -251,7 +250,7 @@ public class TransactionParser {
                         holdingStore.ingestCreation(cid, holding);
                         TxHistoryEntry.HoldingChange creation = new TxHistoryEntry.HoldingChange(cid, holding, false);
                         childEntries.add(new TxHistoryEntry(
-                                txMetadata,
+                                updateMetadata,
                                 createdEvent.getNodeId(),
                                 new TxHistoryEntry.BareCreate(createdEvent.getTemplateId()),
                                 List.of(creation),
@@ -265,7 +264,7 @@ public class TransactionParser {
     }
 
     private int parseExerciseEvent(ExercisedEvent exercisedEvent) {
-        TransactionParser subtransactionParser = new TransactionParser(txMetadata, holdingStore, events);
+        TransactionParser subtransactionParser = new TransactionParser(updateMetadata, holdingStore, events);
         List<TxHistoryEntry> parsedChildEntries = subtransactionParser.parse(exercisedEvent);
         childEntries.addAll(parsedChildEntries);
         return exercisedEvent.getLastDescendantNodeId();

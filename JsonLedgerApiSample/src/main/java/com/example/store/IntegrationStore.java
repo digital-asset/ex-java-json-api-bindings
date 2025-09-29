@@ -102,7 +102,8 @@ public class IntegrationStore {
         BigDecimal total = BigDecimal.ZERO;
         for (Map.Entry<String, HoldingView> entry : activeHoldings.entrySet()) {
             HoldingView holding = entry.getValue();
-            if (holding.instrumentId.equals(instrumentId)) {
+            // TODO: allow using locked holdings if the lock has expired
+            if (holding.instrumentId.equals(instrumentId) && holding.lock.isEmpty()) {
                 selected.add(entry.getKey());
                 total = total.add(holding.amount);
                 if (total.compareTo(amount) >= 0) {
@@ -132,8 +133,8 @@ public class IntegrationStore {
     private void ingestTransaction(JsTransaction tx) {
         updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
         assert tx.getEvents() != null;
-        TxHistoryEntry.TxMetadata txMetadata = new TxHistoryEntry.TxMetadata(tx.getUpdateId(), tx.getRecordTime(), tx.getOffset());
-        TransactionParser parser = new TransactionParser(txMetadata, new TxParserHoldingStoreImpl(), tx.getEvents().iterator());
+        TxHistoryEntry.UpdateMetadata updateMetadata = new TxHistoryEntry.UpdateMetadata(tx.getUpdateId(), tx.getRecordTime(), tx.getOffset());
+        TransactionParser parser = new TransactionParser(updateMetadata, new TxParserHoldingStoreImpl(), tx.getEvents().iterator());
         List<TxHistoryEntry> entries = parser.parse(null);
         txHistoryLog.addAll(entries);
     }
