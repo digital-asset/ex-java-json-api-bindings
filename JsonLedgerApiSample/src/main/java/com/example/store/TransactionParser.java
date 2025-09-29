@@ -63,14 +63,16 @@ public class TransactionParser {
     }
 
     List<TxHistoryEntry> parse(ExercisedEvent exercisedEvent) {
-        // record a possible consumed holding
+        // Shared values
+        String treasuryParty = utxoStore.treasuryPartyId();
+
+        // Recording consumption
         Optional<HoldingView> consumedHolding = Optional.empty();
+        Optional<TransferInstructionView> consumedTransferInstruction = Optional.empty();
         if (exercisedEvent != null) {
             if (exercisedEvent.getConsuming()) {
                 consumedHolding = utxoStore.ingestHoldingArchival(exercisedEvent.getContractId());
-                // We currently don't track transfers instruction archivals in the TxLogEntry itself,
-                // which is why we ignore the result here.
-                utxoStore.ingestTransferInstructionArchival(exercisedEvent.getContractId());
+                consumedTransferInstruction = utxoStore.ingestTransferInstructionArchival(exercisedEvent.getContractId());
             }
         }
         int lastDescendantNodeId = exercisedEvent == null ? Integer.MAX_VALUE : exercisedEvent.getLastDescendantNodeId();
@@ -113,6 +115,7 @@ public class TransactionParser {
             // we are parsing the root transaction ==> just return the parsed child entries
             return childEntries;
 
+
         } else if (exercisedEvent.getChoice().equals(TransferFactory.CHOICE_TransferFactory_Transfer.name)
                 && TemplateId.TRANSFER_FACTORY_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
             // we are parsing TransferFactory_Transfer choice ==> determine kind of transfer
@@ -125,7 +128,29 @@ public class TransactionParser {
             String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
             // Attempt to determine label
-            String treasuryParty = utxoStore.treasuryPartyId();
+            TransferInstructionResult transferResult =
+                    ConversionHelpers.convertViaJson(
+                            exercisedEvent.getExerciseResult(),
+                            JSON.getGson()::toJson,
+                            TransferInstructionResult::fromJson);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, memoTag, transferResult);
+            if (label.isPresent()) {
+                TxHistoryEntry entry = new TxHistoryEntry(
+                        updateMetadata,
+                        exercisedEvent.getNodeId(),
+                        label.get(),
+                        holdingChanges,
+                        transactionEvents
+                );
+                return List.of(entry);
+            }
+        } else if (consumedTransferInstruction.isPresent()
+                && TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
+            // we are parsing TransferInstruction choice ==> determine kind of transfer
+            Transfer t = consumedTransferInstruction.get().transfer;
+            String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
+
+            // Attempt to determine label
             TransferInstructionResult transferResult =
                     ConversionHelpers.convertViaJson(
                             exercisedEvent.getExerciseResult(),

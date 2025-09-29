@@ -3807,11 +3807,16 @@
         "offset": 13
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
-        "choiceName": "TransferInstruction_Accept"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "COMPLETED"
       },
       "treasuryHoldingChanges": [
         {
@@ -4238,11 +4243,16 @@
         "offset": 14
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
-        "choiceName": "TransferInstruction_Reject"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "FAILED"
       },
       "treasuryHoldingChanges": [
         {
@@ -4452,11 +4462,16 @@
         "offset": 15
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
-        "choiceName": "TransferInstruction_Withdraw"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "FAILED"
       },
       "treasuryHoldingChanges": [
         {
@@ -4666,11 +4681,15 @@
         "offset": 21
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferIn",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.AmuletTransferInstruction:AmuletTransferInstruction",
-        "choiceName": "TransferInstruction_Accept"
+        "senderPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 200.0000000000
       },
       "treasuryHoldingChanges": [
         {

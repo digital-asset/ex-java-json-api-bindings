@@ -32,6 +32,7 @@ public record TxHistoryEntry(
         @Nonnull List<Event> transactionEvents
 ) {
 
+    // TODO: distinguish REJECTED, WITHDRAWN, OTHER_FAILURE
     public enum TransferStatus { COMPLETED, PENDING, FAILED };
 
     public TxHistoryEntry {
