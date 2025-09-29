@@ -79,6 +79,15 @@ public class TransactionParser {
             holdingChanges.addAll(entry.treasuryHoldingChanges());
         }
 
+        // gather events that form subtransaction
+        List<Event> subtransaction = new ArrayList<>();
+        if (exercisedEvent != null) {
+            subtransaction.add(new Event(new EventOneOf2().exercisedEvent(exercisedEvent)));
+        }
+        for (TxHistoryEntry entry : childEntries) {
+            subtransaction.addAll(entry.subtransaction());
+        }
+
         // Determine log entries to return
         if (holdingChanges.isEmpty()) {
             // no holding changes ==> nothing to report
@@ -114,7 +123,8 @@ public class TransactionParser {
                             txMetadata,
                             exercisedEvent.getNodeId(),
                             label.get(),
-                            holdingChanges
+                            holdingChanges,
+                            subtransaction
                     );
                     return List.of(entry);
                 }
@@ -161,7 +171,8 @@ public class TransactionParser {
                                         txMetadata,
                                         exercisedEvent.getNodeId(),
                                         new TxHistoryEntry.TransferIn(sender, memoTag, instrumentId, balanceChange),
-                                        holdingChanges
+                                        holdingChanges,
+                                        subtransaction
                                 );
                                 return List.of(entry);
                             }
@@ -182,7 +193,8 @@ public class TransactionParser {
                 txMetadata,
                 exercisedEvent.getNodeId(),
                 label,
-                holdingChanges
+                holdingChanges,
+                subtransaction
         );
         if (consumedHolding.isPresent()) {
             // This is a non-standard choice consuming a holding
@@ -242,8 +254,9 @@ public class TransactionParser {
                                 txMetadata,
                                 createdEvent.getNodeId(),
                                 new TxHistoryEntry.BareCreate(createdEvent.getTemplateId()),
-                                List.of(creation)
-                        ));
+                                List.of(creation),
+                                List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
+                                )));
                     }
                 }
             }

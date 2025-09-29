@@ -1,5 +1,6 @@
 package com.example.store.models;
 
+import com.example.client.ledger.model.Event;
 import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -7,6 +8,7 @@ import splice.api.token.holdingv1.InstrumentId;
 import java.math.BigDecimal;
 import java.util.List;
 
+// FIXME: javadoc
 public record TxHistoryEntry(
         @Nonnull TxMetadata txMetadata,
         @Nonnull long exerciseNodeId,
@@ -14,7 +16,8 @@ public record TxHistoryEntry(
         // TODO: use a better JSON encoding to tag the kind of label, and enable decoding
         @Nonnull String labelKind,
         @Nonnull Label labelData,
-        @Nonnull List<HoldingChange> treasuryHoldingChanges
+        @Nonnull List<HoldingChange> treasuryHoldingChanges,
+        @Nonnull List<Event> subtransaction
 ) {
 
     public TxHistoryEntry {
@@ -27,13 +30,15 @@ public record TxHistoryEntry(
             @Nonnull TxMetadata txMetadata,
             @Nonnull long exerciseNodeId,
             @Nonnull Label label,
-            @Nonnull List<HoldingChange> treasuryHoldingChanges) {
+            @Nonnull List<HoldingChange> treasuryHoldingChanges,
+            @Nonnull List<Event> subtransaction) {
         this(
                 txMetadata,
                 exerciseNodeId,
                 label.getClass().getSimpleName(),
                 label,
-                treasuryHoldingChanges);
+                treasuryHoldingChanges,
+                subtransaction);
     }
 
     public record TxMetadata(
