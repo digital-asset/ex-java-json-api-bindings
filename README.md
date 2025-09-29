@@ -17,19 +17,17 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 A minimal sample of using Java to call the JSON API endpoints (Ledger API, Validator API, etc.)
 The sample illustrates the endpoints, the request payloads, and their responses for the following:
 
+* Use the Open API specs to generate Java bindings for API endpoints
+* Use the `daml codegen` to generate Java bindings for Daml types
 * Programmatically retrieve the Synchronizer id
 * Programmatically retrieve the DSO party
 * Programmatically retrieve the Validator party
 * Onboard an external party
-* Establish transfer pre-approvals for an external party using the [Validator API](https://docs.dev.sync.global/app_dev/validator_api/index.html#external-signing-api)
-* Query for a list of token standard holdings
-* Transfer token standard assets to an external party
-
-This sample demonstrates how to:
-
 * Sign transactions as an external party
-* Use the Open API specs to generate Java bindings for API endpoints
-* Use the `daml codegen` to generate Java bindings for Daml types
+* Establish transfer pre-approvals for an external party
+* Query for a list of token standard holdings
+* Transfer token standard assets
+* Digest the transaction stream
 
 The sample uses the following tools:
 
@@ -51,60 +49,45 @@ which are typically required for production implementations:
 
 ## Version
 
-This sample was last tested with Canton Network APIs `0.4.13`.
+This sample was last tested with Canton Network APIs `0.4.18`.
 
 ## Setup
 
-1. **Start** a DevNet-connected or LocalNet validator.
-   For example, use [these instructions](https://docs.dev.sync.global/validator_operator/validator_compose.html)
-   to start a Docker Compose-based validator on your workstation.
+1. **Start** a LocalNet or DevNet validator.
+   For example, use [these instructions](https://docs.sync.global/app_dev/testing/localnet.html)
+   to start a Docker Compose-based LocalNet on your workstation.
 2. **Navigate** to your validator's built-in wallet app.
 3. **Initialize** your validator's wallet with CC using the "Tap" button.
 4. If your setup requires an authentication token, **create** a script that generates a token for a given username.
-5. **Confirm** that you can access the Validator API.
-
-    Depending on your host and ingress setup, you should be able to do something like:
-    
-    ```
-    curl http://wallet.localhost/api/validator/v0/validator-user
-    ```
-
-6. **Confirm** that you can access the JSON Ledger API.
-
+5. **Confirm** that you can access the various endpoints.
    Depending on your host and ingress setup, you should be able to do something like:
-   
-   ```
-   curl http://wallet.localhost/api/participant/v2/version
-   ```
 
-   If using the Docker Compose-based validator, you may need to
-   [add a location to the `nginx.conf`](https://docs.dev.sync.global/app_dev/ledger_api/index.html#comments) for the JSON Ledger API:
+    ```
+    # JSON Ledger API
+    curl http://canton.localhost:2975/v2/version
+    ```
    
     ```
-    server {
-      listen 80;
-      server_name wallet.localhost;
-      location /api/validator {
-        rewrite ^\/(.*) /$1 break;
-        proxy_pass http://validator:5003/api/validator;
-      }
-      location / {
-        proxy_pass http://wallet-web-ui:8080/;
-      }
+    # Validator API
+    curl http://wallet.localhost:2000/api/validator/v0/validator-user
+    ```
 
-      # expose the Ledger API
-      location /api/participant/ {
-        proxy_pass http://participant:7575/;
-      }
-    }
+    ```
+    # Scan API
+    curl http://scan.localhost:4000/api/scan/v0/scans 
+    ```
+
+    ```
+    # Scan Proxy API
+    curl --location 'http://wallet.localhost:2903/api/validator/v0/scan-proxy/dso-party-id' \
+      --header 'Accept: application/json' \
+      --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc'
     ```
 
 ## Running
 
-1. **Define** environment variables for the values shown in
-   [Env.json](./JsonLedgerApiSample/src/main/java/com/example/Env.java),
-   including authentication tokens for the Validator's wallet,
-   a sender party, and a receiving party.
+1. **Export** environment variables, as needed, for the values shown in
+   [.env.example](./JsonLedgerApiSample/.env.example).
 
 2. **Run** the sample with either:
 
@@ -123,75 +106,87 @@ This sample was last tested with Canton Network APIs `0.4.13`.
 ## Sample output
 
 ```
-> mvn exec:java
-
 === Confirm API connectivity ===
 Version: 3.3.0-SNAPSHOT
-Synchronizer id: global-domain::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
-Registry Party: DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
-Selecting synchronizer id: global-domain::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
-Exchange party not specified, defaulting to validator node party: da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3
+Synchronizer id: global-domain::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98
+Registry Party: DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98
 
 === Confirm authentication ===
-DSO Party: DSO::1220be58c29e65de40bf273be1dc2b266d43a9a002ea5b18955aeef7aac881bb471a
-Ledger end: 37503
+DSO Party: DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98
+Ledger end: 1389
 
-=== Generating keypair and wallet for treasury ===
-Allocating new external party with hint: treasury
-Allocated party: treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb
-treasury public key:  t0e+twb9uAxJN1Xe5Aif+Td/a9ZjuXX0qBOmac+MxaI=
-treasury private key: xbIIHe2Zh8e4CQa6XRtdnKzdxeeO0XMLy9RU1Wx/3s23R763Bv24DEk3Vd7kCJ/5N39r1mO5dfSoE6Zpz4zFog==
+=== Setup exchange parties (or read from cache) ===
+Attempting to read identities from cache file: identities-cache.json
+(use `export IDENTITIES_CACHE=-` to disable cache usage)
+Using cached identities:
+  Synchronizer ID: global-domain::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98
+  DSO: DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98
+  Exchange: app_user_localnet-localparty-1::1220b154113cfc2077eb1b775aba56588bae2efdbbee8066b1a0f8b5ddaddf22496c
+  Treasury: treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57
+  Alice: alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa
 
-
-=== Pre-approving treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb for CC transfers ===
-Marking offset: 37514
-Awaiting completion of transfer preapproval proposal (Command ID c96b385f-5141-4e97-9ca9-cc86c5f2b7ba
-Waiting...
-Awaiting auto-acceptance of transfer preapproval proposal
-Waiting...
-
-=== Generating keypair and wallet for alice ===
-Allocating new external party with hint: alice
-Allocated party: alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca
-alice public key:  wmaaLpmV6wlmFoUVEGdFtlEbfN9JSRSI+r8LYXehZAw=
-alice private key: jlpYidK7gtvDESjv6iU1ODdbLXDi2ALsbAi58ROMkBjCZpoumZXrCWYWhRUQZ0W2URt830lJFIj6vwthd6FkDA==
-
-
-=== Pre-approving alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca for CC transfers ===
-Marking offset: 37531
-Awaiting completion of transfer preapproval proposal (Command ID ddd82cbe-bde3-41f3-83a4-79a1930ae72e
-Waiting...
-Awaiting auto-acceptance of transfer preapproval proposal
-Waiting...
+=== Initialize integration store ===
+State of local store after initial ingestion
+IntegrationStore{
+treasuryParty='treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57'
+lastIngestedOffset=1389
+sourceSynchronizerId='null'
+lastIngestedRecordTime='null'
+activeHoldings={
+}
+userBalances={
+}}
 
 === Print total holdings ===
-treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 0 Amulet
-alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 0 Amulet
+treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57 has 320.0000000000 Amulet
+alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa has 120.0000000000 Amulet
 
 
-=== Transfer 105.00 from da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3 to alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca ===
-Found sufficient holdings for transfer: 
-- 1352135.0771429757 Amulet
-Awaiting completion of transfer from da-wallace-1::12206b78020b91dac97ee57eccd91bec29074367be0abd2fd5e99f15eb7675b5ecf3 to alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca (Command ID 17852475-66a5-4580-b4f1-328b0e65a70f)
+=== Transfer 110.0 from app_user_localnet-localparty-1::1220b154113cfc2077eb1b775aba56588bae2efdbbee8066b1a0f8b5ddaddf22496c to alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa ===
+Found sufficient holdings for transfer:
+- 221371.2480001280 Amulet
+Awaiting completion of transfer from app_user_localnet-localparty-1::1220b154113cfc2077eb1b775aba56588bae2efdbbee8066b1a0f8b5ddaddf22496c to alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa (Command ID d49be36e-b1b8-4e96-bc74-806c0d9fe659)
 
 Transfer complete
 
 === Print total holdings ===
-treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 0 Amulet
-alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 105.0000000000 Amulet
+treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57 has 320.0000000000 Amulet
+alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa has 230.0000000000 Amulet
 
 
-=== Transfer 100 from alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca to treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb ===
-Found sufficient holdings for transfer: 
-- 105.0000000000 Amulet
-Awaiting completion of transfer from alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca to treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb (Command ID ae426779-0ef3-454f-8590-2123a682510c)
+=== Transfer 100 from alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa to treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57 ===
+Found sufficient holdings for transfer:
+- 20.0000000000 Amulet
+- 100.0000000000 Amulet
+Awaiting completion of transfer from alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa to treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57 (Command ID 846fb430-9c9d-45a0-aa6f-41863f14d433)
 
-Waiting...
 Transfer complete
 
 === Success! ===
 
 === Print total holdings ===
-treasury::12205ce5def793fca34de8fe7838f746b423c49fd1fdcf2ca863f5bf8f5eb568ebfb has 100.0000000000 Amulet
-alice::122079cdac6eb9bdd5b387a5063bfd37748ca6c3d3e0478a1c02c026bf68304d19ca has 3.3333333334 Amulet
+treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57 has 420.0000000000 Amulet
+alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa has 130.0000000000 Amulet
+
+Sep 29, 2025 5:34:15 PM com.example.store.IntegrationStore$TransactionParser parseTransferInfoFromExerciseEvent
+INFO: Detected transfer info TransferInfo[sender=alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa, depositId=f806261e-bb56-4e09-a586-cd1aaffacd10] in exercise result: {"result":{"round":{"number":"39"},"summary":{"inputAppRewardAmount":"0.0000000000","inputValidatorRewardAmount":"0.0000000000","inputSvRewardAmount":"0.0000000000","inputAmuletAmount":"120.0000000000","balanceChanges":[["alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa",{"changeToInitialAmountAsOfRoundZero":"-100.0038051800","changeToHoldingFeesRate":"-0.0038051800"}],["treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57",{"changeToInitialAmountAsOfRoundZero":"100.1484020200","changeToHoldingFeesRate":"0.0038051800"}]],"holdingFees":"0.0000000000","outputFees":["0.0000000000"],"senderChangeFee":"0.0000000000","senderChangeAmount":"20.0000000000","amuletPrice":"0.0050000000","inputValidatorFaucetAmount":"0.0000000000","inputUnclaimedActivityRecordAmount":"0.0000000000"},"createdAmulets":[{"tag":"TransferResultAmulet","value":"008151517d220a572da243f103f4ab8cb0798bd298c80d8c1f93b695b361659f78ca111220200e86a983df8dfe485d4cadbaaa83e0346982b6eabebc9b09fd690a7da12e08"}],"senderChangeAmulet":"00917599df70742bcff71c8d447e713cbb98243a9b2f47a3cdbfe6f55831e4c714ca1112203ca9a25143fac8488345601cf1bff06836191c97563a6f74465580a001971414"},"meta":{"values":{"splice.lfdecentralizedtrust.org/reason":"f806261e-bb56-4e09-a586-cd1aaffacd10","splice.lfdecentralizedtrust.org/sender":"alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa","splice.lfdecentralizedtrust.org/tx-kind":"transfer"}}}
+Sep 29, 2025 5:34:15 PM com.example.store.IntegrationStore ingestCreateHoldingEvent
+INFO: New active holding for treasury party: 008151517d220a572da243f103f4ab8cb0798bd298c80d8c1f93b695b361659f78ca111220200e86a983df8dfe485d4cadbaaa83e0346982b6eabebc9b09fd690a7da12e08 -> {"owner": "treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57", "instrumentId": {"admin": "DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98", "id": "Amulet"}, "amount": "100.0000000000", "lock": null, "meta": {"values": {"amulet.splice.lfdecentralizedtrust.org/created-in-round": "39", "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"}}}
+Sep 29, 2025 5:34:15 PM com.example.store.IntegrationStore ingestCreateHoldingEvent
+INFO: Credited 100.0000000000 of splice.api.token.holdingv1.InstrumentId(DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98, Amulet) sent by alice::1220da5e10a23997aafe1f0c643119ca6dc337fde58695dec46e98c25d69955d1baa into deposit f806261e-bb56-4e09-a586-cd1aaffacd10
+
+=== State of local store after final transfer ===
+IntegrationStore{
+treasuryParty='treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57'
+lastIngestedOffset=1393
+sourceSynchronizerId='global-domain::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98'
+lastIngestedRecordTime='2025-09-29T21:34:14.005959Z'
+activeHoldings={
+  008151517d220a572da243f103f4ab8cb0798bd298c80d8c1f93b695b361659f78ca111220200e86a983df8dfe485d4cadbaaa83e0346982b6eabebc9b09fd690a7da12e08: splice.api.token.holdingv1.HoldingView(treasury::12202ae2194bd85277907d639b19faa0ac9d74fcb0fc70099850a1c706413134ff57, splice.api.token.holdingv1.InstrumentId(DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98, Amulet), 100.0000000000, Optional.empty, splice.api.token.metadatav1.Metadata({amulet.splice.lfdecentralizedtrust.org/created-in-round=39, amulet.splice.lfdecentralizedtrust.org/rate-per-round=0.00380518}))
+}
+userBalances={
+  f806261e-bb56-4e09-a586-cd1aaffacd10: Balances{
+  splice.api.token.holdingv1.InstrumentId(DSO::1220f3accf1fe3abb30f9cd32cff379294a2274ec1578efd6e2eccca09be05046a98, Amulet): 100.0000000000
+}}
+}}
 ```
