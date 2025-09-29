@@ -52,7 +52,7 @@ class IntegrationStoreTest {
      * Generate test data by running the `Main` program with `--write-test-data`.
      */
     @Test
-    void testOneDepositAndWithdrawal() {
+    void testOneDepositAndWithdrawAndCompareLog() {
         TestIdentities ids = readTestJson(TestFiles.IDENTITIES_FILE, new TypeToken<>() {
         });
         WorkflowInfo info = readTestJson(TestFiles.WORKFLOW_INFO_FILE, new TypeToken<>() {
@@ -85,7 +85,8 @@ class IntegrationStoreTest {
         TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(
                 ids.alice().partyId(),
                 info.aliceDepositId(),
-                ids.cantonCoinId(), damlDecimal(100)
+                ids.cantonCoinId(), damlDecimal(100),
+                null
         );
         assertEquals(label1, entry1.details());
 
@@ -93,7 +94,9 @@ class IntegrationStoreTest {
         TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(
                 ids.alice().partyId(),
                 info.aliceWithdrawalId(),
-                ids.cantonCoinId(), damlDecimal(20)
+                ids.cantonCoinId(), damlDecimal(20),
+                TxHistoryEntry.TransferStatus.COMPLETED,
+                null
         );
         assertEquals(label2, entry2.details());
     }
@@ -115,11 +118,13 @@ class IntegrationStoreTest {
     }
 
     @Test
-    void testOneStepDepositAndWithdraw() {
+    void testGoldenOneStepDepositAndWithdraw() {
         // Parse the same data as in the test above, but with a party that would not be the treasury.
         testGolden("one-step-deposit-and-withdraw",
                 "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8");
     }
+
+    // TODO: test parsing of a merge, and make it store a memoTag as well
 
     private void testGolden(String baseName, String treasuryPartyId) {
         String treasuryHint = treasuryPartyId.substring(0, treasuryPartyId.indexOf(':'));

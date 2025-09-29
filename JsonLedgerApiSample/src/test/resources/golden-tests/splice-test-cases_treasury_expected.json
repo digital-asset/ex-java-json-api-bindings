@@ -90,6 +90,54 @@
       }
     }
   },
+  "pendingTransferInstructions": {
+    "69": {
+      "transfer": {
+        "sender": "bob::normalized",
+        "receiver": "treasury::normalized",
+        "amount": 200.0000000000,
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "requestedAt": "2025-06-18T00:00:00Z",
+        "executeBefore": "2025-06-18T00:00:00Z",
+        "inputHoldingCids": [
+          "70"
+        ],
+        "meta": {
+          "values": {}
+        }
+      },
+      "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+      "meta": {
+        "values": {}
+      }
+    },
+    "52": {
+      "transfer": {
+        "sender": "treasury::normalized",
+        "receiver": "bob::normalized",
+        "amount": 1000.0000000000,
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "requestedAt": "2025-06-18T00:00:00Z",
+        "executeBefore": "2025-06-18T00:00:00Z",
+        "inputHoldingCids": [
+          "0"
+        ],
+        "meta": {
+          "values": {}
+        }
+      },
+      "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+      "meta": {
+        "values": {}
+      }
+    }
+  },
   "lastIngestedOffset": 30,
   "sourceSynchronizerId": "sync::normalized",
   "lastIngestedRecordTime": "1971-01-01T00:00:30Z",
@@ -393,7 +441,8 @@
           "admin": "dso::normalized",
           "id": "Amulet"
         },
-        "amount": 100.0000000000
+        "amount": 100.0000000000,
+        "transferStatus": "COMPLETED"
       },
       "treasuryHoldingChanges": [
         {
@@ -1376,11 +1425,39 @@
         "offset": 8
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.ExternalPartyAmuletRules:ExternalPartyAmuletRules",
-        "choiceName": "TransferFactory_Transfer"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "treasury::normalized",
+            "receiver": "bob::normalized",
+            "amount": 1000.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "34"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -1862,11 +1939,39 @@
         "offset": 9
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.ExternalPartyAmuletRules:ExternalPartyAmuletRules",
-        "choiceName": "TransferFactory_Transfer"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "treasury::normalized",
+            "receiver": "bob::normalized",
+            "amount": 1000.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "39"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -2301,11 +2406,39 @@
         "offset": 10
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.ExternalPartyAmuletRules:ExternalPartyAmuletRules",
-        "choiceName": "TransferFactory_Transfer"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "treasury::normalized",
+            "receiver": "bob::normalized",
+            "amount": 1000.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "44"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -2740,11 +2873,39 @@
         "offset": 11
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.ExternalPartyAmuletRules:ExternalPartyAmuletRules",
-        "choiceName": "TransferFactory_Transfer"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "treasury::normalized",
+            "receiver": "bob::normalized",
+            "amount": 1000.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "49"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -3179,11 +3340,39 @@
         "offset": 12
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
+      "kind": "TransferOut",
       "details": {
-        "packageName": "splice-amulet",
-        "templateId": "#package-name:Splice.ExternalPartyAmuletRules:ExternalPartyAmuletRules",
-        "choiceName": "TransferFactory_Transfer"
+        "receiverPartyId": "bob::normalized",
+        "memoTag": "",
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "amount": 1000.0000000000,
+        "transferStatus": "PENDING",
+        "pendingInstruction": {
+          "transfer": {
+            "sender": "treasury::normalized",
+            "receiver": "bob::normalized",
+            "amount": 1000.0000000000,
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "requestedAt": "2025-06-18T00:00:00Z",
+            "executeBefore": "2025-06-18T00:00:00Z",
+            "inputHoldingCids": [
+              "0"
+            ],
+            "meta": {
+              "values": {}
+            }
+          },
+          "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+          "meta": {
+            "values": {}
+          }
+        }
       },
       "treasuryHoldingChanges": [
         {

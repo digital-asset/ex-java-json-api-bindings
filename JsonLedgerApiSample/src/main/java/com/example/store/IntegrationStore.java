@@ -5,6 +5,8 @@ import com.example.client.ledger.model.*;
 import com.example.store.models.TxHistoryEntry;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
+import splice.api.token.transferinstructionv1.Transfer;
+import splice.api.token.transferinstructionv1.TransferInstructionView;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -18,6 +20,7 @@ public class IntegrationStore {
     private static final Logger log = Logger.getLogger(IntegrationStore.class.getName());
 
     private final HashMap<String, HoldingView> activeHoldings = new HashMap<>();
+    private final HashMap<String, TransferInstructionView> pendingTransferInstructions = new HashMap<>();
     private long lastIngestedOffset;
     private String sourceSynchronizerId = null;
     private String lastIngestedRecordTime = null;
@@ -28,7 +31,7 @@ public class IntegrationStore {
     private final String treasuryParty;
     private final ArrayList<TxHistoryEntry> txHistoryLog = new ArrayList<>();
 
-    private class TxParserHoldingStoreImpl implements TransactionParser.HoldingStore {
+    private class UtxoStoreImpl implements TransactionParser.IUtxoStore {
 
         @Override
         public String treasuryPartyId() {
@@ -36,7 +39,34 @@ public class IntegrationStore {
         }
 
         @Override
-        public void ingestCreation(String contractId, HoldingView holding) {
+        public TransferInstructionView getTransferInstruction(String contractId) {
+            return pendingTransferInstructions.get(contractId);
+        }
+
+        @Override
+        public void ingestTransferInstructionCreation(String contractId, TransferInstructionView instruction) {
+            Transfer t = instruction.transfer;
+            if (t.sender.equals(treasuryParty) || t.receiver.equals(treasuryParty)) {
+                log.info("New pending transfer instruction for treasury party: " + contractId + " -> " + instruction.toJson());
+                pendingTransferInstructions.put(contractId, instruction);
+            } else {
+                log.finer(() -> "Ignoring creation of transfer instruction not affecting treasury party: " + contractId + " -> " + instruction.toJson());
+            }
+        }
+
+        @Override
+        public Optional<TransferInstructionView> ingestTransferInstructionArchival(String contractId) {
+            TransferInstructionView instruction = pendingTransferInstructions.remove(contractId);
+            if (instruction != null) {
+                log.info("Archiving pending transfer instruction for treasury party: " + contractId + " -> " + instruction.toJson());
+            } else {
+                log.finer(() -> "Ignoring archival of transfer instruction not affecting treasury party: " + contractId);
+            }
+            return Optional.ofNullable(instruction);
+        }
+
+        @Override
+        public void ingestHoldingCreation(String contractId, HoldingView holding) {
             if (holding.owner.equals(treasuryParty)) {
                 log.info("New active holding for treasury party: " + contractId + " -> " + holding.toJson());
                 activeHoldings.put(contractId, holding);
@@ -46,7 +76,7 @@ public class IntegrationStore {
         }
 
         @Override
-        public Optional<HoldingView> ingestArchival(String contractId) {
+        public Optional<HoldingView> ingestHoldingArchival(String contractId) {
             HoldingView holding = activeHoldings.remove(contractId);
             if (holding != null) {
                 log.info("Archiving active holding for treasury party: " + contractId + " -> " + holding.toJson());
@@ -134,7 +164,7 @@ public class IntegrationStore {
         updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
         assert tx.getEvents() != null;
         TxHistoryEntry.UpdateMetadata updateMetadata = new TxHistoryEntry.UpdateMetadata(tx.getUpdateId(), tx.getRecordTime(), tx.getOffset());
-        TransactionParser parser = new TransactionParser(updateMetadata, new TxParserHoldingStoreImpl(), tx.getEvents().iterator());
+        TransactionParser parser = new TransactionParser(updateMetadata, new UtxoStoreImpl(), tx.getEvents().iterator());
         List<TxHistoryEntry> entries = parser.parse(null);
         txHistoryLog.addAll(entries);
     }

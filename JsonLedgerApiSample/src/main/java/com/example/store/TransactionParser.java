@@ -1,6 +1,7 @@
 package com.example.store;
 
 import com.example.ConversionHelpers;
+import com.example.GsonTypeAdapters.ExtendedJson;
 import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.*;
 import com.example.models.TemplateId;
@@ -12,14 +13,14 @@ import com.google.gson.JsonParser;
 import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
-import splice.api.token.transferinstructionv1.Transfer;
-import splice.api.token.transferinstructionv1.TransferFactory;
-import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
-import splice.api.token.transferinstructionv1.TransferInstructionResult;
+import splice.api.token.transferinstructionv1.*;
 import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Completed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Failed;
+import splice.api.token.transferinstructionv1.transferinstructionresult_output.TransferInstructionResult_Pending;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static com.example.models.TokenStandard.*;
 
@@ -29,22 +30,35 @@ import static com.example.models.TokenStandard.*;
  */
 public class TransactionParser {
 
-    final private HoldingStore holdingStore;
+    private static final Logger log = Logger.getLogger(IntegrationStore.class.getName());
+
+    final private IUtxoStore utxoStore;
     final private TxHistoryEntry.UpdateMetadata updateMetadata;
     private final Iterator<Event> events;
     final private ArrayList<TxHistoryEntry> childEntries = new ArrayList<>();
 
-    public interface HoldingStore {
+    /**
+     * An interface to abstract over the tracking of UTXOs for holdings and transfer instructions.
+     */
+    public interface IUtxoStore {
         String treasuryPartyId();
 
-        void ingestCreation(String contractId, HoldingView holding);
+        TransferInstructionView getTransferInstruction(String contractId);
 
-        Optional<HoldingView> ingestArchival(String contractId);
+        void ingestTransferInstructionCreation(String contractId, TransferInstructionView transferInstruction);
+
+        @Nonnull
+        Optional<TransferInstructionView> ingestTransferInstructionArchival(String contractId);
+
+        void ingestHoldingCreation(String contractId, HoldingView holding);
+
+        @Nonnull
+        Optional<HoldingView> ingestHoldingArchival(String contractId);
     }
 
-    TransactionParser(TxHistoryEntry.UpdateMetadata updateMetadata, HoldingStore holdingStore, @Nonnull Iterator<Event> events) {
+    TransactionParser(TxHistoryEntry.UpdateMetadata updateMetadata, IUtxoStore utxoStore, @Nonnull Iterator<Event> events) {
         this.updateMetadata = updateMetadata;
-        this.holdingStore = holdingStore;
+        this.utxoStore = utxoStore;
         this.events = events;
     }
 
@@ -53,7 +67,10 @@ public class TransactionParser {
         Optional<HoldingView> consumedHolding = Optional.empty();
         if (exercisedEvent != null) {
             if (exercisedEvent.getConsuming()) {
-                consumedHolding = holdingStore.ingestArchival(exercisedEvent.getContractId());
+                consumedHolding = utxoStore.ingestHoldingArchival(exercisedEvent.getContractId());
+                // We currently don't track transfers instruction archivals in the TxLogEntry itself,
+                // which is why we ignore the result here.
+                utxoStore.ingestTransferInstructionArchival(exercisedEvent.getContractId());
             }
         }
         int lastDescendantNodeId = exercisedEvent == null ? Integer.MAX_VALUE : exercisedEvent.getLastDescendantNodeId();
@@ -108,26 +125,22 @@ public class TransactionParser {
             String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
             // Attempt to determine label
-            String treasuryParty = holdingStore.treasuryPartyId();
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, memoTag);
+            String treasuryParty = utxoStore.treasuryPartyId();
+            TransferInstructionResult transferResult =
+                    ConversionHelpers.convertViaJson(
+                            exercisedEvent.getExerciseResult(),
+                            JSON.getGson()::toJson,
+                            TransferInstructionResult::fromJson);
+            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, memoTag, transferResult);
             if (label.isPresent()) {
-                // check that the transfer completed successfully
-                TransferInstructionResult transferResult =
-                        ConversionHelpers.convertViaJson(
-                                exercisedEvent.getExerciseResult(),
-                                JSON.getGson()::toJson,
-                                TransferInstructionResult::fromJson);
-                if (transferResult.output instanceof TransferInstructionResult_Completed) {
-                    TxHistoryEntry entry = new TxHistoryEntry(
-                            updateMetadata,
-                            exercisedEvent.getNodeId(),
-                            label.get(),
-                            holdingChanges,
-                            transactionEvents
-                    );
-                    return List.of(entry);
-                }
-                // TODO: parse pending and failed transfers, which
+                TxHistoryEntry entry = new TxHistoryEntry(
+                        updateMetadata,
+                        exercisedEvent.getNodeId(),
+                        label.get(),
+                        holdingChanges,
+                        transactionEvents
+                );
+                return List.of(entry);
             }
         } else {
             // Attempt to parse the info from a "meta" field in an exerciseResult
@@ -147,7 +160,7 @@ public class TransactionParser {
                     String kind = metadata.get(TRANSFER_KIND_KEY).getAsString();
                     String sender = metadata.get(SENDER_KEY).getAsString();
                     String memoTag = metadata.get(MEMO_KEY).getAsString();
-                    if (kind.equals("transfer") && !sender.equals(holdingStore.treasuryPartyId())) {
+                    if (kind.equals("transfer") && !sender.equals(utxoStore.treasuryPartyId())) {
                         // We only expect incoming transfers to be tagged that way.
                         Balances balances = new Balances();
                         for (TxHistoryEntry.HoldingChange hc : holdingChanges) {
@@ -169,7 +182,7 @@ public class TransactionParser {
                                 TxHistoryEntry entry = new TxHistoryEntry(
                                         updateMetadata,
                                         exercisedEvent.getNodeId(),
-                                        new TxHistoryEntry.TransferIn(sender, memoTag, instrumentId, balanceChange),
+                                        new TxHistoryEntry.TransferIn(sender, memoTag, instrumentId, balanceChange, null),
                                         holdingChanges,
                                         transactionEvents
                                 );
@@ -207,19 +220,43 @@ public class TransactionParser {
         }
     }
 
-    private static Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, String memoTag) {
+    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, String memoTag, TransferInstructionResult result) {
+        // TODO: pending and failed transfers
         if (t.sender.equals(treasuryParty)) {
             if (t.receiver.equals(t.sender)) {
-                return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
+                if (result.output instanceof TransferInstructionResult_Completed) {
+                    return Optional.of(new TxHistoryEntry.SplitMerge(t.instrumentId));
+                } else {
+                    // TODO: consider recording these log messages on the transaction log entry itself
+                    log.warning("Unexpected pending or failed self-transfer.");
+                }
             } else {
-                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount));
+                // parse an outgoing transfer one-step or multi-step
+                TxHistoryEntry.TransferStatus transferStatus = null;
+                TransferInstructionView pendingInstruction = null;
+                if (result.output instanceof TransferInstructionResult_Completed) {
+                    transferStatus = TxHistoryEntry.TransferStatus.COMPLETED;
+                } else if (result.output instanceof TransferInstructionResult_Pending pendingResult) {
+                    pendingInstruction = utxoStore.getTransferInstruction(pendingResult.transferInstructionCid.contractId);
+                    if (pendingInstruction != null) {
+                        transferStatus = TxHistoryEntry.TransferStatus.PENDING;
+                    } else {
+                        log.warning("Unexpectedly failed to find pending transfer instruction: " + pendingResult.transferInstructionCid.contractId);
+                    }
+                } else if (result.output instanceof TransferInstructionResult_Failed) {
+                    transferStatus = TxHistoryEntry.TransferStatus.FAILED;
+                } else {
+                    log.warning("Unrecognized transfer result output:" + ExtendedJson.gson.toJson(result.output));
+                }
+                if (transferStatus != null) {
+                    return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction));
+                }
             }
         } else if (t.receiver.equals(treasuryParty)) {
-            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount));
-        } else {
-            // treasury party is not involved ==> handle via fallback
-            return Optional.empty();
+            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, memoTag, t.instrumentId, t.amount, null));
         }
+        // label could not be determined
+        return Optional.empty();
     }
 
     /**
@@ -244,10 +281,10 @@ public class TransactionParser {
                 if (TemplateId.HOLDING_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
                     String viewJson = JSON.getGson().toJson(view.getViewValue());
                     HoldingView holding = ConversionHelpers.convertFromJson(viewJson, HoldingView::fromJson);
-                    if (holding.owner.equals(holdingStore.treasuryPartyId())) {
+                    if (holding.owner.equals(utxoStore.treasuryPartyId())) {
                         // We only care about created holdings owned by the treasury
                         String cid = createdEvent.getContractId();
-                        holdingStore.ingestCreation(cid, holding);
+                        utxoStore.ingestHoldingCreation(cid, holding);
                         TxHistoryEntry.HoldingChange creation = new TxHistoryEntry.HoldingChange(cid, holding, false);
                         childEntries.add(new TxHistoryEntry(
                                 updateMetadata,
@@ -257,6 +294,14 @@ public class TransactionParser {
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
                                 )));
                     }
+                } else if (TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(view.getInterfaceId())) {
+                    String viewJson = JSON.getGson().toJson(view.getViewValue());
+                    TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
+                    String cid = createdEvent.getContractId();
+                    utxoStore.ingestTransferInstructionCreation(cid, instruction);
+                    // We do not create a log entry for the creation of a pending transfer instruction, as
+                    // we expect all of their changes to come about using one of the four choices on TransferInstruction
+                    // interface: https://github.com/hyperledger-labs/splice/blob/9d1025c0d5016c6040c49981c97d3f61a14edadf/token-standard/splice-api-token-transfer-instruction-v1/daml/Splice/Api/Token/TransferInstructionV1.daml#L123-L168
                 }
             }
         }
@@ -264,7 +309,7 @@ public class TransactionParser {
     }
 
     private int parseExerciseEvent(ExercisedEvent exercisedEvent) {
-        TransactionParser subtransactionParser = new TransactionParser(updateMetadata, holdingStore, events);
+        TransactionParser subtransactionParser = new TransactionParser(updateMetadata, utxoStore, events);
         List<TxHistoryEntry> parsedChildEntries = subtransactionParser.parse(exercisedEvent);
         childEntries.addAll(parsedChildEntries);
         return exercisedEvent.getLastDescendantNodeId();

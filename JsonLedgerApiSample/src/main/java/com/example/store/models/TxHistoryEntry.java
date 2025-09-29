@@ -4,6 +4,8 @@ import com.example.client.ledger.model.Event;
 import jakarta.annotation.Nonnull;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
+import splice.api.token.transferinstructionv1.TransferInstructionStatus;
+import splice.api.token.transferinstructionv1.TransferInstructionView;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,13 +13,13 @@ import java.util.List;
 /**
  * An entry in the transaction history log that explains the reason for a transaction affecting the treasury party's holdings.
  *
- * @param updateMetadata metadata of the update containing the transaction
- * @param exerciseNodeId the root node of the transaction
- * @param kind the kind of transaction, e.g. "TransferIn", "TransferOut", "SplitMerge", "UnrecognizedChoice", "BareCreate"
- * @param details the details parsed from the transaction
+ * @param updateMetadata         metadata of the update containing the transaction
+ * @param exerciseNodeId         the root node of the transaction
+ * @param kind                   the kind of transaction, e.g. "TransferIn", "TransferOut", "SplitMerge", "UnrecognizedChoice", "BareCreate"
+ * @param details                the details parsed from the transaction
  * @param treasuryHoldingChanges the list of holdings created or archived for the treasury party as part of this transaction
- * @param transactionEvents the events of the (sub)transaction, starting with the exercise node event. These are included for debugging only.
- *                          In particular, to understand unrecognized choices; and to get a feel for how the actual transactions look like.
+ * @param transactionEvents      the events of the (sub)transaction, starting with the exercise node event. These are included for debugging only.
+ *                               In particular, to understand unrecognized choices; and to get a feel for how the actual transactions look like.
  */
 public record TxHistoryEntry(
         @Nonnull UpdateMetadata updateMetadata,
@@ -29,6 +31,8 @@ public record TxHistoryEntry(
         @Nonnull List<HoldingChange> treasuryHoldingChanges,
         @Nonnull List<Event> transactionEvents
 ) {
+
+    public enum TransferStatus { COMPLETED, PENDING, FAILED };
 
     public TxHistoryEntry {
         if (treasuryHoldingChanges.isEmpty()) {
@@ -73,7 +77,9 @@ public record TxHistoryEntry(
             @Nonnull
             InstrumentId instrumentId,
             @Nonnull
-            BigDecimal amount) implements Label {
+            BigDecimal amount,
+            // FIXME
+            TransferInstructionStatus pending) implements Label {
         @Override
         public boolean isRecognized() {
             return true;
@@ -86,7 +92,9 @@ public record TxHistoryEntry(
             @Nonnull
             InstrumentId instrumentId,
             @Nonnull
-            BigDecimal amount) implements Label {
+            BigDecimal amount,
+            TransferStatus transferStatus,
+            TransferInstructionView pendingInstruction) implements Label {
         @Override
         public boolean isRecognized() {
             return true;

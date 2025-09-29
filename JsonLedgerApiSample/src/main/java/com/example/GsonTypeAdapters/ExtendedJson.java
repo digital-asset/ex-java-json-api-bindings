@@ -3,6 +3,8 @@ package com.example.GsonTypeAdapters;
 import com.example.client.ledger.invoker.JSON;
 import com.google.gson.Gson;
 import splice.api.token.metadatav1.anyvalue.AV_ContractId;
+import splice.api.token.transferinstructionv1.TransferInstructionStatus;
+import splice.api.token.transferinstructionv1.TransferInstructionView;
 
 import java.security.KeyPair;
 import java.time.Instant;
@@ -18,6 +20,7 @@ public class ExtendedJson {
                     .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
                     .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
                     .registerTypeAdapter(KeyPair.class, new KeyPairTypeAdapter())
+                    .registerTypeAdapter(TransferInstructionStatus.class, new TransferInstructionStatusAdaptor())
                     .create();
 
     public static final Gson gsonPretty = gson.newBuilder().setPrettyPrinting().create();
