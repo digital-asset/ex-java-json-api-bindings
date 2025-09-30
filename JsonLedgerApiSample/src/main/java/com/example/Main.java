@@ -16,6 +16,7 @@
 package com.example;
 
 import com.example.access.ExternalParty;
+import com.example.client.ledger.invoker.JSON;
 import com.example.client.ledger.model.CompletionStreamResponse;
 import com.example.client.ledger.model.JsGetUpdatesResponse;
 import com.example.client.ledger.model.Status;
@@ -27,11 +28,17 @@ import com.example.signing.Keys;
 import com.example.signing.SignatureProvider;
 import com.example.signing.TopologySignatureProvider;
 import com.example.store.IntegrationStore;
+import com.example.testdata.TestFiles;
+import com.example.testdata.TestIdentities;
+import com.example.testdata.WorkflowInfo;
+import com.google.gson.Gson;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -79,45 +86,22 @@ public class Main {
             printStep("Confirm API connectivity");
             wallet.confirmConnectivity();
 
-            String resolvedSynchronizerId = env.synchronizerId()
-                    .orElseGet(() -> findTransferSynchronizerId(wallet));
-
-            String resolvedExchangePartyId = env.exchangePartyId()
-                    .orElseGet(() -> defaultToValidatorParty(wallet));
-
-            // setup sample's parties, keys, etc.
             printStep("Confirm authentication");
             wallet.confirmAuthentication();
 
-            String dsoParty = wallet.getDsoPartyId();
+            printStep("Setup exchange parties (or read from cache)");
+            TestIdentities ids = getOrCreateTestIdentities(env, wallet);
 
-            // Create treasury party jointly with store
-            String offsetBeforeParty = wallet.getLedgerEnd().toString();
-            ExternalParty treasuryParty = env.existingTreasuryParty()
-                    .orElseGet(() -> allocateNewExternalParty(
-                            wallet,
-                            resolvedSynchronizerId,
-                            dsoParty,
-                            resolvedExchangePartyId,
-                            env.treasuryPartyHint()
-                    ));
-            IntegrationStore store = new IntegrationStore(treasuryParty.partyId());
-            // Here we know the the ACS for the newly allocated party is empty.
-            // TODO: also support initialization from an ACS snapshot
-            store.ingestAcs(List.of(), Long.parseLong(offsetBeforeParty));
-
-            ExternalParty testParty = env.existingTestParty()
-                    .orElseGet(() -> allocateNewExternalParty(
-                            wallet,
-                            resolvedSynchronizerId,
-                            dsoParty,
-                            resolvedExchangePartyId,
-                            env.testPartyHint()
-                    ));
-
-            InstrumentId cantonCoinInstrumentId = new InstrumentId(dsoParty, "Amulet");
-
-            List<ExternalParty> allParties = List.of(treasuryParty, testParty);
+            printStep("Initialize integration store");
+            // We intentionally pretend that the ACS is empty at the start of the demo run.
+            // Otherwise, we see the transfers from previous runs of the demo.
+            // In production, we would just start with offset 0 and ingest the full tx history.
+            // TODO: simplify store to not support starting with ingesting the ACS.
+            Long testStartOffset = wallet.getLedgerEnd();
+            IntegrationStore store = new IntegrationStore(ids.treasury().partyId(), testStartOffset);
+            ingestAndParseTransactions(wallet, store);
+            System.out.println("State of local store after initial ingestion");
+            System.out.println(store);
 
             // calculate the first transfer amount
             // sender needs at least enough coins
@@ -126,59 +110,80 @@ public class Main {
             BigDecimal estimatedFees = transferAmount1.multiply(estimatedFeesMultiplier);
             transferAmount1 = transferAmount1.add(estimatedFees);
 
-            printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printTotalHoldings(wallet, ids.all(), ids.cantonCoinId());
 
-            ingestAndParseTransactions(wallet, store, treasuryParty);
-            printStep("State of local store after initial ingestion");
-            System.out.println(store);
 
             // perform a transfer from the local party operator
             transferAsset(
                     wallet,
-                    resolvedSynchronizerId,
-                    resolvedExchangePartyId,
+                    ids.synchronizerId(),
+                    ids.exchangePartyId(),
                     Optional.empty(),
-                    testParty.partyId(),
+                    ids.alice().partyId(),
                     transferAmount1,
-                    cantonCoinInstrumentId,
+                    ids.cantonCoinId(),
                     Optional.empty());
 
-            printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printTotalHoldings(wallet, ids.all(), ids.cantonCoinId());
 
             // calculate transfer amount
             BigDecimal transferAmount2 = env.preferredTransferAmount();
 
             String memoTag = env.memoTag();
 
-            // perform a transfer from the external party sender
+            // Perform a transfer modelling a deposit from alice to the treasury
             transferAsset(
                     wallet,
-                    resolvedSynchronizerId,
-                    testParty.partyId(),
-                    Optional.of(testParty.keyPair()),
-                    treasuryParty.partyId(),
+                    ids.synchronizerId(),
+                    ids.alice().partyId(),
+                    Optional.of(ids.alice().keyPair()),
+                    ids.treasury().partyId(),
                     transferAmount2,
-                    cantonCoinInstrumentId,
+                    ids.cantonCoinId(),
                     Optional.of(memoTag));
 
+            // Perform a transfer modelling a withdrawal of funds from the treasury to alice
+            String withdrawalId = java.util.UUID.randomUUID().toString();
+            transferAssetFromTreasury(
+                    wallet,
+                    ids,
+                    store,
+                    ids.alice().partyId(),
+                    new BigDecimal(20),
+                    ids.cantonCoinId(),
+                    withdrawalId);
+
             printStep("Success!");
-            printTotalHoldings(wallet, allParties, cantonCoinInstrumentId);
+            printTotalHoldings(wallet, ids.all(), ids.cantonCoinId());
 
             // Update IntegrationStore -- this would usually happen in a background process
-            ingestAndParseTransactions(wallet, store, treasuryParty);
+            ingestAndParseTransactions(wallet, store);
             printStep("State of local store after final transfer");
             System.out.println(store);
+
+            // Write out test data for use in automated integration tests if requested via --write-test-data
+            printStep("Write integration test data");
+            if (Arrays.asList(args).contains("--write-test-data")) {
+                WorkflowInfo info = new WorkflowInfo(
+                        memoTag,
+                        withdrawalId
+                );
+                writeIntegrationTestData(wallet, testStartOffset, ids, info);
+            } else {
+                System.out.println("Skipping writing integration test data, pass --write-test-data to enable");
+            }
+
             System.exit(0);
         } catch (Exception ex) {
             handleException(ex);
         }
     }
 
-    private static void ingestAndParseTransactions(Wallet wallet, IntegrationStore store, ExternalParty treasuryParty) {
+    private static void ingestAndParseTransactions(Wallet wallet, IntegrationStore store) {
         long lastIngestedOffset = store.getLastIngestedOffset();
         assert lastIngestedOffset >= 0;
         try {
-            List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(treasuryParty.partyId(), lastIngestedOffset);
+            List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(store.getTreasuryParty(), lastIngestedOffset);
             for (JsGetUpdatesResponse updateResponse : updates) {
                 store.ingestUpdate(updateResponse.getUpdate());
             }
@@ -274,6 +279,76 @@ public class Main {
         }
     }
 
+    private static TestIdentities getOrCreateTestIdentities(Env env, Wallet wallet) throws Exception {
+
+        String dsoParty = wallet.getDsoPartyId();
+
+        String cacheFile = env.identitiesCacheFile();
+        final boolean useCache = !cacheFile.equals("-");
+        if (!useCache) {
+            System.out.println("Not using identities cache as IDENTITIES_CACHE was set to '-'");
+        } else {
+            System.out.println("Attempting to read identities from cache file: " + cacheFile);
+            System.out.println("(use `export IDENTITIES_CACHE=-` to disable cache usage)");
+            try {
+                String json = java.nio.file.Files.readString(java.nio.file.Paths.get(cacheFile));
+                TestIdentities cachedIds = JSON.getGson().fromJson(json, TestIdentities.class);
+                // We use the DSO party as a cache key, which should work as it changes on restarts of LocalNet
+                if (cachedIds.dsoPartyId().equals(dsoParty)) {
+                    System.out.println("Using cached identities: ");
+                    System.out.println("  Synchronizer ID: " + cachedIds.synchronizerId());
+                    System.out.println("  DSO: " + cachedIds.dsoPartyId());
+                    System.out.println("  Exchange: " + cachedIds.exchangePartyId());
+                    System.out.println("  Treasury: " + cachedIds.treasury().partyId());
+                    System.out.println("  Alice: " + cachedIds.alice().partyId());
+
+                    return cachedIds;
+                } else {
+                    System.out.println("DSO party in cache (" + cachedIds.dsoPartyId() + ") does not match current DSO party (" + dsoParty + "), ignoring cache");
+                }
+            } catch (Exception e) {
+                System.out.println("Could not read identities from cache file due to: " + e);
+            }
+        }
+
+        // Cache miss, need to create the parties
+        String resolvedSynchronizerId = env.synchronizerId()
+                .orElseGet(() -> findTransferSynchronizerId(wallet));
+
+        String resolvedExchangePartyId = env.exchangePartyId()
+                .orElseGet(() -> defaultToValidatorParty(wallet));
+
+        ExternalParty treasuryParty = env.existingTreasuryParty()
+                .orElseGet(() -> allocateNewExternalParty(
+                        wallet,
+                        resolvedSynchronizerId,
+                        dsoParty,
+                        resolvedExchangePartyId,
+                        env.treasuryPartyHint()
+                ));
+
+        ExternalParty testParty = env.existingTestParty()
+                .orElseGet(() -> allocateNewExternalParty(
+                        wallet,
+                        resolvedSynchronizerId,
+                        dsoParty,
+                        resolvedExchangePartyId,
+                        env.testPartyHint()
+                ));
+
+        TestIdentities ids = new TestIdentities(resolvedSynchronizerId, dsoParty, resolvedExchangePartyId, treasuryParty, testParty);
+
+        if (useCache) {
+            System.out.println("Writing identities to cache file: " + cacheFile);
+            try {
+                java.nio.file.Files.writeString(java.nio.file.Paths.get(cacheFile), JSON.getGson().toJson(ids));
+            } catch (Exception e) {
+                System.out.println("Could not write identities to cache file due to: " + e);
+            }
+        }
+        return ids;
+    }
+
     private static void validateHoldings(BigDecimal amount, List<ContractAndId<HoldingView>> holdings) {
         if (holdings == null) {
             System.err.println("Insufficient holdings to transfer " + amount + " units");
@@ -299,17 +374,57 @@ public class Main {
 
         List<ContractAndId<HoldingView>> holdings = wallet.selectHoldingsForTransfer(senderPartyId, instrumentId, amount);
         validateHoldings(amount, holdings);
+        List<String> holdingContractIds = holdings.stream().map(ContractAndId::contractId).toList();
 
         String commandId = java.util.UUID.randomUUID().toString();
 
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
-        boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdings, true);
+        boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdingContractIds, true);
         if (!transferWasSubmitted) {
             throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
         }
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
+
+        System.out.println("Transfer complete");
+    }
+
+    /**
+     * Transfer asset from the treasury, using the IntegrationStore to select holdings.
+     * <p>
+     * Using the IntegrationStore is important to avoid getting confusing by earlier runs with the same cached
+     * treasury party.
+     */
+    private static void transferAssetFromTreasury(
+            Wallet wallet,
+            TestIdentities ids,
+            IntegrationStore store,
+            String receiverPartyId,
+            BigDecimal amount,
+            InstrumentId instrumentId,
+            String transferId) throws Exception {
+        printStep("Transfer " + amount + " from treasury (" + ids.treasury().partyId() + ") to " + receiverPartyId);
+
+        // Update integration store to ensure we have the latest holdings
+        ingestAndParseTransactions(wallet, store);
+        List<String> holdings = store.selectHoldingsForWithdrawal(instrumentId, amount).orElseGet(
+                () -> {
+                    throw new RuntimeException("Insufficient holdings in treasury to transfer " + amount + " units");
+                }
+        );
+
+        String commandId = java.util.UUID.randomUUID().toString();
+
+        Long offsetBeforeTransfer = wallet.getLedgerEnd();
+        boolean transferWasSubmitted =
+                wallet.transferHoldings(ids.synchronizerId(), commandId, ids.treasury().partyId(), Optional.of(ids.treasury().keyPair()), receiverPartyId, instrumentId, Optional.of(transferId), new HashMap<>(), amount, holdings, true);
+        if (!transferWasSubmitted) {
+            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
+        }
+
+        System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);
+        expectSuccessfulCompletion(wallet, ids.treasury().partyId(), commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
     }
@@ -340,7 +455,21 @@ public class Main {
         System.exit(1);
     }
 
+    private static void writeIntegrationTestData(Wallet wallet, Long startOffset, TestIdentities ids, WorkflowInfo info) {
+        Gson gson = JSON.getGson().newBuilder().setPrettyPrinting().create();
+        try {
+            java.nio.file.Files.writeString(TestFiles.IDENTITIES_FILE, gson.toJson(ids));
+            java.nio.file.Files.writeString(TestFiles.WORKFLOW_INFO_FILE, gson.toJson(info));
+            List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(ids.treasury().partyId(), startOffset);
+            java.nio.file.Files.writeString(TestFiles.TREASURY_UPDATES_FILE, gson.toJson(updates));
+        } catch (Exception e) {
+            System.out.println("Could not write integration test data to file due to: " + e);
+        }
+        System.out.println("Wrote integration test data to '" + TestFiles.DATA_DIR + "'");
+    }
+
     private interface WaitLoopCheck {
         boolean getAsBoolean() throws Exception;
     }
+
 }

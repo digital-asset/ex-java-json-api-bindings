@@ -16,10 +16,7 @@
 package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
-import com.example.GsonTypeAdapters.AvContractIdTypeAdapter;
-import com.example.GsonTypeAdapters.ContractIdTypeAdapterFactory;
-import com.example.GsonTypeAdapters.InstantTypeAdapter;
-import com.example.GsonTypeAdapters.OptionalTypeAdapterFactory;
+import com.example.GsonTypeAdapters.*;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -34,22 +31,14 @@ import com.example.signing.TopologyHashBuilder;
 import com.example.signing.TransactionHashBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
-import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 import java.security.*;
-import java.time.Instant;
 import java.util.*;
 
 public class Ledger {
 
     static {
-        JSON.setGson(
-                JSON.getGson().newBuilder()
-                        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
-                        .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
-                        .registerTypeAdapter(AV_ContractId.class, new AvContractIdTypeAdapter())
-                        .registerTypeAdapterFactory(new ContractIdTypeAdapterFactory())
-                        .create());
+        JSON.setGson(ExtendedJson.gson);
     }
 
     private final DefaultApi ledgerApi;

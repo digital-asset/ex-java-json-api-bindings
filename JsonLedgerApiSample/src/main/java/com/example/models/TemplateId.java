@@ -20,6 +20,7 @@ public record TemplateId(
         String moduleName,
         String typeName
 ) {
+    // TODO(#27): use codegen provided values like `TransferFactory.INTERFACE_ID`
     public static final TemplateId TRANSFER_PREAPPROVAL_ID = new TemplateId("#splice-amulet", "Splice.AmuletRules", "TransferPreapproval");
     public static final TemplateId TRANSFER_PREAPPROVAL_PROPOSAL_ID = new TemplateId("#splice-wallet", "Splice.Wallet.TransferPreapproval", "TransferPreapprovalProposal");
     public static final TemplateId HOLDING_INTERFACE_ID = new TemplateId("#splice-api-token-holding-v1", "Splice.Api.Token.HoldingV1", "Holding");
