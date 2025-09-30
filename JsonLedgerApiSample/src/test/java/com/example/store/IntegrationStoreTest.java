@@ -36,7 +36,7 @@ class IntegrationStoreTest {
         }
     }
 
-    private static final Logger log = Logger.getLogger(IntegrationStore.class.getName());
+    private static final Logger log = Logger.getLogger(IntegrationStoreTest.class.getName());
 
     private <T> T readTestJson(Path path, TypeToken<T> typeToken) {
         try {

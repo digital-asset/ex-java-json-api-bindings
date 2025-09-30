@@ -63,9 +63,9 @@ public class Main {
 
             Env env = Env.validate();
 
-            SignatureProvider signatureProvider = Ledger::sign;
-
             // using this SignatureProvider visualises transactions during transaction signing
+            // SignatureProvider signatureProvider = Ledger::sign;
+            SignatureProvider signatureProvider = Ledger::verifyAndSign;
             // SignatureProvider signatureProvider = Ledger::printAndSign;
 
             Wallet wallet = new Wallet(
@@ -256,7 +256,7 @@ public class Main {
             String commandId = java.util.UUID.randomUUID().toString();
             wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty.partyId(), externalParty.keyPair());
 
-            System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s%n", commandId);
+            System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s)%n", commandId);
             expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
 
             System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");

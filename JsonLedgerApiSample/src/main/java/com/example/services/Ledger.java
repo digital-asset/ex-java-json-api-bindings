@@ -28,12 +28,14 @@ import com.example.client.ledger.model.Signature;
 import com.example.models.TemplateId;
 import com.example.signing.Encode;
 import com.example.signing.Keys;
+import com.example.signing.TransactionHashBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
 import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 import java.security.*;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -215,6 +217,22 @@ public class Ledger {
                 .signature(Keys.signBase64(keyPair.getPrivate(), hashedPayload))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+    }
+
+    public static Signature verifyAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
+
+        InteractiveSubmissionServiceOuterClass.PreparedTransaction preparedTransaction = parseTransaction(base64EncodedPayload);
+
+        byte[] transactionHash = new TransactionHashBuilder(preparedTransaction).hash();
+        byte[] rawProvidedHash = Encode.fromBase64String(hashedPayload);
+
+        if (!Arrays.equals(transactionHash, rawProvidedHash)) {
+            String base64ComputedHash = Encode.toBase64String(transactionHash);
+            throw new IllegalStateException("Transaction hash mismatch: %s (provided) vs %s (computed) for transaction %s\nraw: %s"
+                    .formatted(hashedPayload, base64ComputedHash, base64EncodedPayload, preparedTransaction.toString()));
+        }
+
+        return sign(keyPair, base64EncodedPayload, hashedPayload);
     }
 
     public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
