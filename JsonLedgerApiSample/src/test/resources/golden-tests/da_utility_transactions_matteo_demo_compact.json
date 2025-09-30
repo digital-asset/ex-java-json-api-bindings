@@ -1,0 +1,875 @@
+{
+  "lastIngestedOffset": 7027,
+  "sourceSynchronizerId": "global-domain::1220dcb3d94765ff95e60b2524603f9cca70cafd8363718fb7762a0b7111bd94e9c5",
+  "lastIngestedRecordTime": "2025-09-30T12:53:51.001375Z",
+  "treasuryParty": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+  "activeHoldings": {
+    "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3": {
+      "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+      "instrumentId": {
+        "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "id": "LIMBERTO"
+      },
+      "amount": 50.0000000000,
+      "meta": {
+        "values": {
+          "utility.digitalasset.com/holding-label": "\"\""
+        }
+      }
+    }
+  },
+  "pendingTransferInstructions": {},
+  "txHistoryLog": [
+    {
+      "updateMetadata": {
+        "updateId": "1220adddc83798f06391ec6f1879d7513de0993413561761a23c3a16c2adad7888de",
+        "recordTime": "2025-09-30T12:45:43.152090Z",
+        "offset": 6956
+      },
+      "exerciseNodeId": 5,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "AcceptedMint_Execute",
+          "packageName": "utility-registry-v0",
+          "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Mint:AcceptedMint"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 100.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12203895a79b9371928b8e684ec42b27f63d81d164d545e64dc56e704b19c37f8f36",
+        "recordTime": "2025-09-30T12:46:59.243642Z",
+        "offset": 6975
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "pendingInstructionCid": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 100.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": ""
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:46:58.190Z",
+              "executeBefore": "2025-10-03T12:46:58.190Z",
+              "inputHoldingCids": [
+                "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12202af7c2aa156822a097bbda679dbc8ac1e75290550686083922cdff06ac483b81",
+        "recordTime": "2025-09-30T12:47:03.128417Z",
+        "offset": 6978
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": ""
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:46:58.190Z",
+              "executeBefore": "2025-10-03T12:46:58.190Z",
+              "inputHoldingCids": [
+                "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206c0140ce3ba43ea5c4d579fc990cc46fb33114850fb856b168e0d4b83ca1f287",
+        "recordTime": "2025-09-30T12:47:19.264640Z",
+        "offset": 6981
+      },
+      "exerciseNodeId": 6,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 10.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "pendingInstructionCid": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 10.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:47:20.509Z",
+              "executeBefore": "2025-10-03T12:47:20.509Z",
+              "inputHoldingCids": [
+                "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "1220bbeffc5b6caf8b378b721cd10ad109e789c9e504ffd0e618e65b0cdb31ba15f9",
+        "recordTime": "2025-09-30T12:47:28.901118Z",
+        "offset": 6984
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 10.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 10.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 10.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:47:20.509Z",
+              "executeBefore": "2025-10-03T12:47:20.509Z",
+              "inputHoldingCids": [
+                "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 7,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "Holding_Merge",
+          "packageName": "utility-registry-holding-v0",
+          "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 10.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 60.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 14,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "Holding_Split",
+          "packageName": "utility-registry-holding-v0",
+          "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 60.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 20,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "AcceptedBurn_Execute",
+          "packageName": "utility-registry-v0",
+          "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Burn:AcceptedBurn"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12209b8098a85212f4c87b25dcb579754f368b48423ca64025ef88e4430b02ac3bcf",
+        "recordTime": "2025-09-30T12:48:34.854656Z",
+        "offset": 6999
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "example-reference-123",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 30.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "pendingInstructionCid": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": "example-reference-123"
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 30.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:48:36.655Z",
+              "executeBefore": "2025-10-03T12:48:36.655Z",
+              "inputHoldingCids": [
+                "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12209bc5f376652e32bcd9cfb754ea8fba4351b784cdc438712d0c218fe25181187d",
+        "recordTime": "2025-09-30T12:48:43.304563Z",
+        "offset": 7002
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "example-reference-123",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 30.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": "example-reference-123"
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 30.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:48:36.655Z",
+              "executeBefore": "2025-10-03T12:48:36.655Z",
+              "inputHoldingCids": [
+                "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12200bd093babae234b632a73bdebadcc2c005239ef9f93e9f6ece754b6865d8f239",
+        "recordTime": "2025-09-30T12:49:01.245723Z",
+        "offset": 7005
+      },
+      "exerciseNodeId": 8,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "pendingInstructionCid": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:49:00.608Z",
+              "executeBefore": "2025-10-03T12:49:00.608Z",
+              "inputHoldingCids": [
+                "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "1220417cc8175517836e0083c81f357223d381e10df78c48a06409a4c4d997315a44",
+        "recordTime": "2025-09-30T12:49:01.779143Z",
+        "offset": 7008
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "example-reference-456",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:49:00.608Z",
+              "executeBefore": "2025-10-03T12:49:00.608Z",
+              "inputHoldingCids": [
+                "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    }
+  ]
+}
