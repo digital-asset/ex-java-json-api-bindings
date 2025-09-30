@@ -17,7 +17,6 @@ package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.example.GsonTypeAdapters.*;
-import com.daml.ledger.javaapi.data.TransactionShape;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.api.DefaultApi;
 import com.example.client.ledger.invoker.ApiClient;
@@ -28,17 +27,13 @@ import com.example.client.ledger.model.Signature;
 import com.example.models.TemplateId;
 import com.example.signing.Encode;
 import com.example.signing.Keys;
+import com.example.signing.TopologyHashBuilder;
 import com.example.signing.TransactionHashBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
-import splice.api.token.metadatav1.anyvalue.AV_ContractId;
 
 import java.security.*;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Ledger {
 
@@ -193,9 +188,7 @@ public class Ledger {
     }
 
     public static InteractiveSubmissionServiceOuterClass.PreparedTransaction parseTransaction(String base64EncodedPayload) throws InvalidProtocolBufferException {
-
         byte[] transactionBytes = Encode.fromBase64String(base64EncodedPayload);
-
         return InteractiveSubmissionServiceOuterClass.PreparedTransaction.parseFrom(transactionBytes);
     }
 
@@ -208,7 +201,7 @@ public class Ledger {
         return sign(keyPair, base64EncodedPayload, hashedPayload);
     }
 
-    public static Signature sign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static Signature sign(KeyPair keyPair, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
 
@@ -217,6 +210,10 @@ public class Ledger {
                 .signature(Keys.signBase64(keyPair.getPrivate(), hashedPayload))
                 .signedBy(fingerprint)
                 .signingAlgorithmSpec("SIGNING_ALGORITHM_SPEC_ED25519");
+    }
+
+    public static Signature sign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        return sign(keyPair, hashedPayload);
     }
 
     public static Signature verifyAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
@@ -228,18 +225,29 @@ public class Ledger {
 
         if (!Arrays.equals(transactionHash, rawProvidedHash)) {
             String base64ComputedHash = Encode.toBase64String(transactionHash);
-            throw new IllegalStateException("Transaction hash mismatch: %s (provided) vs %s (computed) for transaction %s\nraw: %s"
+            throw new IllegalStateException("Transaction hash mismatch: %s (provided) vs %s (computed) for transaction %s%nraw: %s"
                     .formatted(hashedPayload, base64ComputedHash, base64EncodedPayload, preparedTransaction.toString()));
         }
 
-        return sign(keyPair, base64EncodedPayload, hashedPayload);
+        return sign(keyPair, hashedPayload);
     }
 
-    public static SinglePartySignatures makeSingleSignature(JsPrepareSubmissionResponse prepareSubmissionResponse, String partyId, KeyPair keyPair) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static Signature signTopology(KeyPair keyPair, List<String> transactions, String transactionMultiHash) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+        return sign(keyPair, transactionMultiHash);
+    }
 
-        return new SinglePartySignatures()
-                .party(partyId)
-                .signatures(List.of());
+    public static Signature verifyAndSignTopology(KeyPair keyPair, List<String> transactionsBase64, String transactionMultiHash) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
+
+        byte[] topologyHash = new TopologyHashBuilder(transactionsBase64).hash();
+        byte[] rawProvidedHash = Encode.fromBase64String(transactionMultiHash);
+
+        if (!Arrays.equals(topologyHash, rawProvidedHash)) {
+            String base64ComputedHash = Encode.toBase64String(topologyHash);
+            throw new IllegalStateException("Topology hash mismatch: %s (provided) vs %s (computed) for topology transactions [%s]"
+                    .formatted(transactionMultiHash, base64ComputedHash, String.join(", ", transactionsBase64)));
+        }
+
+        return sign(keyPair, transactionMultiHash);
     }
 
     public static Right makeCanReadAsAnyRight() {
