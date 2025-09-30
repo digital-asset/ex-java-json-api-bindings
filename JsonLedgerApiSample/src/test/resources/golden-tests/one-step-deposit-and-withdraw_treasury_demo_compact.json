@@ -1,4 +1,9 @@
 {
+  "lastIngestedOffset": 1137,
+  "sourceSynchronizerId": "global-domain::12209431d07c316412c8f76bb30f1c75bd0b6b05ff5b69fd7975b139a8e03ee18c36",
+  "lastIngestedRecordTime": "2025-09-26T09:42:57.319156Z",
+  "lastIngestedUpdateId": "1220dabd444a0c2de9db10e5002d8e51f0faebb5a94f22267658a1ec20eb136bda53",
+  "treasuryParty": "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8",
   "activeHoldings": {
     "00dd6f9b3b0d8091468fac5f88631e6226e67c26571786a658dabf7bd35271ad2bca111220c81ba96430066b75a10a5d364f028c2f015b35620be0466ddfc16e40c98c11a2": {
       "owner": "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8",
@@ -16,11 +21,6 @@
     }
   },
   "pendingTransferInstructions": {},
-  "lastIngestedOffset": 1137,
-  "sourceSynchronizerId": "global-domain::12209431d07c316412c8f76bb30f1c75bd0b6b05ff5b69fd7975b139a8e03ee18c36",
-  "lastIngestedRecordTime": "2025-09-26T09:42:57.319156Z",
-  "lastIngestedUpdateId": "1220dabd444a0c2de9db10e5002d8e51f0faebb5a94f22267658a1ec20eb136bda53",
-  "treasuryParty": "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8",
   "txHistoryLog": [
     {
       "updateMetadata": {

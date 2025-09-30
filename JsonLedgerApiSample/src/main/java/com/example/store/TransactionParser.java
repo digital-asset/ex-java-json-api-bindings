@@ -33,7 +33,7 @@ public class TransactionParser {
 
     final private IUtxoStore utxoStore;
     final private TxHistoryEntry.UpdateMetadata updateMetadata;
-    private final Iterator<Event> events;
+    private final ArrayList<Event> subtransactionEvents = new ArrayList<>();
     final private ArrayList<TxHistoryEntry> childEntries = new ArrayList<>();
 
     /**
@@ -53,10 +53,9 @@ public class TransactionParser {
         Optional<HoldingView> ingestHoldingArchival(String contractId);
     }
 
-    TransactionParser(TxHistoryEntry.UpdateMetadata updateMetadata, IUtxoStore utxoStore, @Nonnull Iterator<Event> events) {
+    TransactionParser(TxHistoryEntry.UpdateMetadata updateMetadata, IUtxoStore utxoStore) {
         this.updateMetadata = updateMetadata;
         this.utxoStore = utxoStore;
-        this.events = events;
     }
 
     /**
@@ -67,7 +66,7 @@ public class TransactionParser {
      * <p>
      * Must be called at most once per TransactionParser instance.
      */
-    List<TxHistoryEntry> parse(ExercisedEvent exercisedEvent) {
+    List<TxHistoryEntry> parse(ExercisedEvent exercisedEvent, Collection<Event> transactionEvents) {
         // Shared values
         String treasuryParty = utxoStore.treasuryPartyId();
 
@@ -80,12 +79,31 @@ public class TransactionParser {
                 consumedTransferInstruction = utxoStore.ingestTransferInstructionArchival(exercisedEvent.getContractId());
             }
         }
-        int lastDescendantNodeId = exercisedEvent == null ? Integer.MAX_VALUE : exercisedEvent.getLastDescendantNodeId();
 
-        // parse all child events
-        int nodeId = exercisedEvent == null ? -1 : exercisedEvent.getNodeId();
-        while (events.hasNext() && nodeId < lastDescendantNodeId) {
-            nodeId = parseEvent(events.next());
+        // Extract events of subtransaction rooted at exercisedEvent
+        if (exercisedEvent == null) {
+            subtransactionEvents.addAll(transactionEvents);
+        } else {
+            subtransactionEvents.add(new Event(new EventOneOf2().exercisedEvent(exercisedEvent)));
+            int exerciseNodeId = exercisedEvent.getNodeId();
+            int lastDescendantNodeId = exercisedEvent.getLastDescendantNodeId();
+            for (Event e : transactionEvents) {
+                int nodeId = getEventNodeId(e);
+                if (nodeId > lastDescendantNodeId)
+                    break;
+                if (exerciseNodeId < nodeId)
+                    subtransactionEvents.add(e);
+            }
+        }
+
+        // parse all child events of this subtransaction
+        int lastParsedEventId = exercisedEvent != null ?  exercisedEvent.getNodeId() : Integer.MIN_VALUE;
+        for (Event e : subtransactionEvents) {
+            int nodeId = getEventNodeId(e);
+            // skip events that were already parsed as part of a child transaction
+            if (lastParsedEventId < nodeId) {
+                lastParsedEventId = parseEvent(e);
+            }
         }
 
         // compute changes to treasury holdings
@@ -114,16 +132,6 @@ public class TransactionParser {
         }
         for (TxHistoryEntry entry : childEntries) {
             instructionChanges.addAll(entry.pendingTransferInstructionChanges());
-        }
-
-        // FIXME: gather them from input list of events
-        // gather events that form subtransaction
-        List<Event> transactionEvents = new ArrayList<>();
-        if (exercisedEvent != null) {
-            transactionEvents.add(new Event(new EventOneOf2().exercisedEvent(exercisedEvent)));
-        }
-        for (TxHistoryEntry entry : childEntries) {
-            transactionEvents.addAll(entry.transactionEvents());
         }
 
         // Determine log entries to return
@@ -160,7 +168,7 @@ public class TransactionParser {
                         null,
                         holdingChanges,
                         instructionChanges,
-                        transactionEvents
+                        subtransactionEvents
                 );
                 return List.of(entry);
             }
@@ -185,7 +193,7 @@ public class TransactionParser {
                         null,
                         holdingChanges,
                         instructionChanges,
-                        transactionEvents
+                        subtransactionEvents
                 );
                 return List.of(entry);
             }
@@ -247,7 +255,7 @@ public class TransactionParser {
                                         null,
                                         holdingChanges,
                                         instructionChanges,
-                                        transactionEvents
+                                        subtransactionEvents
                                 );
                                 return List.of(entry);
                             }
@@ -275,7 +283,7 @@ public class TransactionParser {
                 unrecognized,
                 holdingChanges,
                 instructionChanges,
-                transactionEvents
+                subtransactionEvents
         );
         if (consumedHolding.isPresent()) {
             // This is a non-standard choice consuming a holding
@@ -286,6 +294,16 @@ public class TransactionParser {
         } else {
             // There were some recognized transfers ==> return them together with unrecognized ones
             return childEntries;
+        }
+    }
+
+    private int getEventNodeId(Event event) {
+        if (event.getActualInstance() instanceof EventOneOf1 createdEvent) {
+            return createdEvent.getCreatedEvent().getNodeId();
+        } else if (event.getActualInstance() instanceof EventOneOf2 exercisedEvent) {
+            return exercisedEvent.getExercisedEvent().getNodeId();
+        } else {
+            throw new UnsupportedOperationException("Did not expect archive event as we are subscribing using LEDGER_EFFECTS: " + event.toJson());
         }
     }
 
@@ -332,9 +350,6 @@ public class TransactionParser {
         }
     }
 
-    /**
-     * @return the node ID of the last event parsed.
-     */
     private int parseEvent(Event event0) {
         if (event0.getActualInstance() instanceof EventOneOf event) {
             throw new UnsupportedOperationException("Did not expect archive event as we are subscribing using LEDGER_EFFECTS: " + event.toJson());
@@ -408,8 +423,8 @@ public class TransactionParser {
     }
 
     private int parseExerciseEvent(ExercisedEvent exercisedEvent) {
-        TransactionParser subtransactionParser = new TransactionParser(updateMetadata, utxoStore, events);
-        List<TxHistoryEntry> parsedChildEntries = subtransactionParser.parse(exercisedEvent);
+        TransactionParser subtransactionParser = new TransactionParser(updateMetadata, utxoStore);
+        List<TxHistoryEntry> parsedChildEntries = subtransactionParser.parse(exercisedEvent, subtransactionEvents);
         childEntries.addAll(parsedChildEntries);
         return exercisedEvent.getLastDescendantNodeId();
     }

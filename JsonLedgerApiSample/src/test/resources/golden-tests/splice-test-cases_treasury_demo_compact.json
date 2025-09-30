@@ -1,4 +1,9 @@
 {
+  "lastIngestedOffset": 30,
+  "sourceSynchronizerId": "sync::normalized",
+  "lastIngestedRecordTime": "1971-01-01T00:00:30Z",
+  "lastIngestedUpdateId": "update-30",
+  "treasuryParty": "treasury::normalized",
   "activeHoldings": {
     "0": {
       "owner": "treasury::normalized",
@@ -138,11 +143,6 @@
       }
     }
   },
-  "lastIngestedOffset": 30,
-  "sourceSynchronizerId": "sync::normalized",
-  "lastIngestedRecordTime": "1971-01-01T00:00:30Z",
-  "lastIngestedUpdateId": "update-30",
-  "treasuryParty": "treasury::normalized",
   "txHistoryLog": [
     {
       "updateMetadata": {

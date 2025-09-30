@@ -31,12 +31,6 @@ public class IntegrationStore {
 
     private static final Logger log = Logger.getLogger(IntegrationStore.class.getName());
 
-    private final String treasuryParty;
-
-    private final HashMap<String, HoldingView> activeHoldings = new HashMap<>();
-    private final HashMap<String, TransferInstructionView> pendingTransferInstructions = new HashMap<>();
-    private final ArrayList<TxHistoryEntry> txHistoryLog = new ArrayList<>();
-
     private long lastIngestedOffset;
     private String sourceSynchronizerId = null;
     private String lastIngestedRecordTime = null;
@@ -44,6 +38,11 @@ public class IntegrationStore {
     // Might be lagging behind lastIngestedOffset if an offset checkpoint was ingested last
     private String lastIngestedUpdateId = null;
 
+    private final String treasuryParty;
+
+    private final HashMap<String, HoldingView> activeHoldings = new HashMap<>();
+    private final HashMap<String, TransferInstructionView> pendingTransferInstructions = new HashMap<>();
+    private final ArrayList<TxHistoryEntry> txHistoryLog = new ArrayList<>();
 
     public IntegrationStore(String treasuryParty, Long startingOffset) {
         this.treasuryParty = treasuryParty;
@@ -153,8 +152,8 @@ public class IntegrationStore {
         updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
         assert tx.getEvents() != null;
         TxHistoryEntry.UpdateMetadata updateMetadata = new TxHistoryEntry.UpdateMetadata(tx.getUpdateId(), tx.getRecordTime(), tx.getOffset());
-        TransactionParser parser = new TransactionParser(updateMetadata, new UtxoStoreImpl(), tx.getEvents().iterator());
-        List<TxHistoryEntry> entries = parser.parse(null);
+        TransactionParser parser = new TransactionParser(updateMetadata, new UtxoStoreImpl());
+        List<TxHistoryEntry> entries = parser.parse(null, tx.getEvents());
         txHistoryLog.addAll(entries);
     }
 
