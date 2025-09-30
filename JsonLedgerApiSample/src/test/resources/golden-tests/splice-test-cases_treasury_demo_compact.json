@@ -1,0 +1,2065 @@
+{
+  "activeHoldings": {
+    "0": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "dso::normalized",
+        "id": "Amulet"
+      },
+      "amount": 1064.0304414400,
+      "lock": {
+        "holders": [
+          "dso::normalized"
+        ],
+        "expiresAt": "2025-06-18T00:00:00Z",
+        "context": "transfer to \u0027bob::normalized\u0027"
+      },
+      "meta": {
+        "values": {
+          "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+          "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+        }
+      }
+    },
+    "2": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "dso::normalized",
+        "id": "Amulet"
+      },
+      "amount": 1.0000000000,
+      "meta": {
+        "values": {
+          "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+          "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+        }
+      }
+    },
+    "3": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "dso::normalized",
+        "id": "Amulet"
+      },
+      "amount": 4100.8695585600,
+      "meta": {
+        "values": {
+          "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+          "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+        }
+      }
+    },
+    "4": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "dso::normalized",
+        "id": "Amulet"
+      },
+      "amount": 489.0000000000,
+      "meta": {
+        "values": {
+          "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+          "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+        }
+      }
+    },
+    "5": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "treasury::normalized",
+        "id": "DummyHolding"
+      },
+      "amount": 30.0000000000,
+      "meta": {
+        "values": {
+          "test": "test"
+        }
+      }
+    },
+    "6": {
+      "owner": "treasury::normalized",
+      "instrumentId": {
+        "admin": "treasury::normalized",
+        "id": "DummyHolding"
+      },
+      "amount": 40.0000000000,
+      "meta": {
+        "values": {
+          "test": "test"
+        }
+      }
+    }
+  },
+  "pendingTransferInstructions": {
+    "52": {
+      "transfer": {
+        "sender": "treasury::normalized",
+        "receiver": "bob::normalized",
+        "amount": 1000.0000000000,
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "requestedAt": "2025-06-18T00:00:00Z",
+        "executeBefore": "2025-06-18T00:00:00Z",
+        "inputHoldingCids": [
+          "0"
+        ],
+        "meta": {
+          "values": {}
+        }
+      },
+      "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+      "meta": {
+        "values": {}
+      }
+    },
+    "69": {
+      "transfer": {
+        "sender": "bob::normalized",
+        "receiver": "treasury::normalized",
+        "amount": 200.0000000000,
+        "instrumentId": {
+          "admin": "dso::normalized",
+          "id": "Amulet"
+        },
+        "requestedAt": "2025-06-18T00:00:00Z",
+        "executeBefore": "2025-06-18T00:00:00Z",
+        "inputHoldingCids": [
+          "70"
+        ],
+        "meta": {
+          "values": {}
+        }
+      },
+      "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+      "meta": {
+        "values": {}
+      }
+    }
+  },
+  "lastIngestedOffset": 30,
+  "sourceSynchronizerId": "sync::normalized",
+  "lastIngestedRecordTime": "1971-01-01T00:00:30Z",
+  "lastIngestedUpdateId": "update-30",
+  "treasuryParty": "treasury::normalized",
+  "txHistoryLog": [
+    {
+      "updateMetadata": {
+        "updateId": "update-4",
+        "recordTime": "1971-01-01T00:00:04Z",
+        "offset": 4
+      },
+      "exerciseNodeId": 4,
+      "transfer": {
+        "senderPartyId": "aliceValidator::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "token-standard-transfer-description",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "COMPLETED"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "17",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 200.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-5",
+        "recordTime": "1971-01-01T00:00:05Z",
+        "offset": 5
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "aliceValidator::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 100.0000000000,
+          "transferStatus": "COMPLETED"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "17",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 200.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "24",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 87.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-6",
+        "recordTime": "1971-01-01T00:00:06Z",
+        "offset": 6
+      },
+      "exerciseNodeId": 0,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "WalletAppInstall_ExecuteBatch",
+          "packageName": "splice-wallet",
+          "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "24",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 87.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "27",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 64.9000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-7",
+        "recordTime": "1971-01-01T00:00:07Z",
+        "offset": 7
+      },
+      "exerciseNodeId": 0,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "WalletAppInstall_ExecuteBatch",
+          "packageName": "splice-wallet",
+          "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "31",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 6000.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-8",
+        "recordTime": "1971-01-01T00:00:08Z",
+        "offset": 8
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "32",
+          "pendingInstructionCid": "32"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "27",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 64.9000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "31",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 6000.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "34",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "33",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 4987.8984779200,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "32",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "34"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-9",
+        "recordTime": "1971-01-01T00:00:09Z",
+        "offset": 9
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "37",
+          "pendingInstructionCid": "37"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "33",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 4987.8984779200,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "39",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "38",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 3910.8969558400,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "37",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "39"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-10",
+        "recordTime": "1971-01-01T00:00:10Z",
+        "offset": 10
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "42",
+          "pendingInstructionCid": "42"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "38",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 3910.8969558400,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "44",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "43",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 2833.8954337600,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "42",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "44"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-11",
+        "recordTime": "1971-01-01T00:00:11Z",
+        "offset": 11
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "47",
+          "pendingInstructionCid": "47"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "43",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 2833.8954337600,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "49",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "48",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1756.8939116800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "47",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "49"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-12",
+        "recordTime": "1971-01-01T00:00:12Z",
+        "offset": 12
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "52",
+          "pendingInstructionCid": "52"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "48",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1756.8939116800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "0",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0304414400,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "53",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 679.8634702400,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "52",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "0"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-13",
+        "recordTime": "1971-01-01T00:00:13Z",
+        "offset": 13
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "COMPLETED",
+          "transferCorrelationId": "32"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "34",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "58",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "58",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "57",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 42.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "32",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "34"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-14",
+        "recordTime": "1971-01-01T00:00:14Z",
+        "offset": 14
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "37"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "39",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "61",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "37",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "39"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-15",
+        "recordTime": "1971-01-01T00:00:15Z",
+        "offset": 15
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "WITHDRAWN",
+          "transferCorrelationId": "42"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "44",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "62",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "42",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "44"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-17",
+        "recordTime": "1971-01-01T00:00:17Z",
+        "offset": 17
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "63",
+          "pendingInstructionCid": "63"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "63",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "64"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-18",
+        "recordTime": "1971-01-01T00:00:18Z",
+        "offset": 18
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "65",
+          "pendingInstructionCid": "65"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "65",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "66"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-19",
+        "recordTime": "1971-01-01T00:00:19Z",
+        "offset": 19
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "67",
+          "pendingInstructionCid": "67"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "67",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "68"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-20",
+        "recordTime": "1971-01-01T00:00:20Z",
+        "offset": 20
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "PENDING",
+          "transferCorrelationId": "69",
+          "pendingInstructionCid": "69"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "69",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "70"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-21",
+        "recordTime": "1971-01-01T00:00:21Z",
+        "offset": 21
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "COMPLETED",
+          "transferCorrelationId": "63"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "71",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 200.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [
+        {
+          "contractId": "63",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "64"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-22",
+        "recordTime": "1971-01-01T00:00:22Z",
+        "offset": 22
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "65"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "65",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "66"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-23",
+        "recordTime": "1971-01-01T00:00:23Z",
+        "offset": 23
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 200.0000000000,
+          "transferStatus": "WITHDRAWN",
+          "transferCorrelationId": "67"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "67",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "bob::normalized",
+              "receiver": "treasury::normalized",
+              "amount": 200.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "68"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-24",
+        "recordTime": "1971-01-01T00:00:24Z",
+        "offset": 24
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "SPLIT_MERGE",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1.0000000000,
+          "transferStatus": "COMPLETED"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "49",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "lock": {
+              "holders": [
+                "dso::normalized"
+              ],
+              "expiresAt": "2025-06-18T00:00:00Z",
+              "context": "transfer to \u0027bob::normalized\u0027"
+            },
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "78",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "78",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "53",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 679.8634702400,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "57",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 42.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "61",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "62",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1064.0015220800,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "71",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 200.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "2",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 1.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "3",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 4100.8695585600,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-25",
+        "recordTime": "1971-01-01T00:00:25Z",
+        "offset": 25
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1000.0000000000,
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "47"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "transferInstructionChanges": [
+        {
+          "contractId": "47",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "treasury::normalized",
+              "receiver": "bob::normalized",
+              "amount": 1000.0000000000,
+              "instrumentId": {
+                "admin": "dso::normalized",
+                "id": "Amulet"
+              },
+              "requestedAt": "2025-06-18T00:00:00Z",
+              "executeBefore": "2025-06-18T00:00:00Z",
+              "inputHoldingCids": [
+                "49"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-28",
+        "recordTime": "1971-01-01T00:00:28Z",
+        "offset": 28
+      },
+      "exerciseNodeId": 1,
+      "transfer": {
+        "senderPartyId": "charlie::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "non-ts-transfer",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 489.0000000000,
+          "transferStatus": "COMPLETED"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "4",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "dso::normalized",
+              "id": "Amulet"
+            },
+            "amount": 489.0000000000,
+            "meta": {
+              "values": {
+                "amulet.splice.lfdecentralizedtrust.org/created-in-round": "1",
+                "amulet.splice.lfdecentralizedtrust.org/rate-per-round": "0.00380518"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-29",
+        "recordTime": "1971-01-01T00:00:29Z",
+        "offset": 29
+      },
+      "exerciseNodeId": 0,
+      "unrecognized": {
+        "kind": "BARE_CREATE",
+        "details": {
+          "packageName": "splice-token-test-dummy-holding",
+          "templateId": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "5",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "treasury::normalized",
+              "id": "DummyHolding"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "test": "test"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    },
+    {
+      "updateMetadata": {
+        "updateId": "update-30",
+        "recordTime": "1971-01-01T00:00:30Z",
+        "offset": 30
+      },
+      "exerciseNodeId": 0,
+      "unrecognized": {
+        "kind": "BARE_CREATE",
+        "details": {
+          "packageName": "splice-token-test-dummy-holding",
+          "templateId": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "6",
+          "holding": {
+            "owner": "treasury::normalized",
+            "instrumentId": {
+              "admin": "treasury::normalized",
+              "id": "DummyHolding"
+            },
+            "amount": 40.0000000000,
+            "meta": {
+              "values": {
+                "test": "test"
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transferInstructionChanges": [],
+      "transactionEvents": []
+    }
+  ]
+}

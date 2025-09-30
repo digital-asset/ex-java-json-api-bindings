@@ -92,6 +92,28 @@ public class IntegrationStore {
         this.lastIngestedOffset = startingOffset;
     }
 
+    static public IntegrationStore copyWithoutTransactionEvents(IntegrationStore other) {
+        IntegrationStore copy = new IntegrationStore(other.treasuryParty, other.lastIngestedOffset);
+        copy.sourceSynchronizerId = other.sourceSynchronizerId;
+        copy.lastIngestedRecordTime = other.lastIngestedRecordTime;
+        copy.lastIngestedUpdateId = other.lastIngestedUpdateId;
+        copy.activeHoldings.putAll(other.activeHoldings);
+        copy.pendingTransferInstructions.putAll(other.pendingTransferInstructions);
+        for (TxHistoryEntry entry : other.txHistoryLog) {
+            TxHistoryEntry entryCopy = new TxHistoryEntry(
+                    entry.updateMetadata(),
+                    entry.exerciseNodeId(),
+                    entry.transfer(),
+                    entry.unrecognized(),
+                    entry.treasuryHoldingChanges(),
+                    entry.transferInstructionChanges(),
+                    List.of()
+            );
+            copy.txHistoryLog.add(entryCopy);
+        }
+        return copy;
+    }
+
     @Override
     public String toString() {
         return ExtendedJson.gsonPretty.toJson(this);

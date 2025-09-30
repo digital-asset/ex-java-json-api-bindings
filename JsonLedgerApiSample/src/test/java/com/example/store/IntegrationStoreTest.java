@@ -143,11 +143,15 @@ class IntegrationStoreTest {
         Path updatesFile = TestFiles.GOLDEN_TEST_DIR.resolve(baseName + ".json");
         Path expectedStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_expected.json");
         Path actualStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_actual.json");
+        Path demoStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_demo_compact.json");
 
         System.out.println("running golden test with Ledger API updates list from: " + updatesFile);
         System.out.println("  treasury party: " + treasuryPartyId);
         System.out.println("  expected: " + expectedStoreFile);
         System.out.println("  actual:   " + actualStoreFile);
+
+        // Write this compact file to make it easier to understand the actual kind of tx log being parsed
+        System.out.println("  demo (without original transaction events):   " + demoStoreFile);
 
         // ingest all updates
         List<JsGetUpdatesResponse> updates = readTestJson(updatesFile, new TypeToken<>() {
@@ -155,6 +159,29 @@ class IntegrationStoreTest {
         IntegrationStore store = new IntegrationStore(treasuryPartyId, 0L);
         for (JsGetUpdatesResponse updateResponse : updates) {
             store.ingestUpdate(updateResponse.getUpdate());
+        }
+
+        // update demo file without transaction events
+        IntegrationStore compactStore = IntegrationStore.copyWithoutTransactionEvents(store);
+        boolean didUpdateDemoFile = false;
+        if (Files.exists(demoStoreFile)) {
+            try {
+                String existingDemoJson = Files.readString(demoStoreFile);
+                String compactJson = compactStore.toString();
+                if (!existingDemoJson.equals(compactJson)) {
+                    didUpdateDemoFile = true;
+                    Files.writeString(demoStoreFile, compactJson);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            didUpdateDemoFile = true;
+            try {
+                Files.writeString(demoStoreFile, compactStore.toString());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // write and compare test files
@@ -179,6 +206,10 @@ class IntegrationStoreTest {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        if (didUpdateDemoFile) {
+            fail("The demo compact store file at " + demoStoreFile + " was updated. Please verify that the changes are expected.");
         }
     }
 
