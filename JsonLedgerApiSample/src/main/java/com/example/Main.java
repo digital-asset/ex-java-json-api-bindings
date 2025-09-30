@@ -91,7 +91,6 @@ public class Main {
             // We intentionally pretend that the ACS is empty at the start of the demo run.
             // Otherwise, we see the transfers from previous runs of the demo.
             // In production, we would just start with offset 0 and ingest the full tx history.
-            // TODO: simplify store to not support starting with ingesting the ACS.
             Long testStartOffset = wallet.getLedgerEnd();
             IntegrationStore store = new IntegrationStore(ids.treasury().partyId(), testStartOffset);
             ingestAndParseTransactions(wallet, store);

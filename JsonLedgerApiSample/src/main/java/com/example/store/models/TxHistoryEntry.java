@@ -32,7 +32,6 @@ public record TxHistoryEntry(
         Unrecognized unrecognized,
         @Nonnull List<HoldingChange> treasuryHoldingChanges,
         @Nonnull List<TransferInstructionChange> pendingTransferInstructionChanges,
-        // FIXME: capture full list events, switch parsing to not use iterators
         @Nonnull List<Event> transactionEvents
 ) {
 
