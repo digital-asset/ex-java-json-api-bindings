@@ -120,7 +120,28 @@ class IntegrationStoreTest {
         // the token standard parsing reference implementation copied from
         // https://github.com/hyperledger-labs/splice/blob/fa489964c2b37e1b5d0adad66eabe7315eef473b/token-standard/cli/__tests__/mocks/data/txs.json
         // and then modified using search-and-replace to replace "alice::normalized" with "treasury::normalized".
-        testGolden("splice-test-cases", "treasury::normalized");
+        IntegrationStore store = testGolden("splice-test-cases", "treasury::normalized");
+
+        // Check there are no unexpected unrecognized entries in the tx history log
+        for (TxHistoryEntry entry : store.getTxHistoryLog()) {
+            if (entry.unrecognized() != null) {
+                switch (entry.unrecognized().kind()) {
+                    case BARE_CREATE -> {
+                      String templateId = entry.unrecognized().details().get("templateId");
+                        if (!templateId.endsWith("DummyHolding")) {
+                            fail("Only dummy holdings should be bare-created: " + ExtendedJson.gsonPretty.toJson(entry));
+                        }
+                    }
+                    case UNRECOGNIZED_CHOICE -> {
+                        String choiceName = entry.unrecognized().details().get("choiceName");
+                        if (!choiceName.startsWith("WalletAppInstall_ExecuteBatch")) {
+                            fail("Only Splice.Wallet choices should be unrecognized, but found: " + ExtendedJson.gsonPretty.toJson(entry));
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     @Test
@@ -136,9 +157,7 @@ class IntegrationStoreTest {
                 "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8");
     }
 
-    // TODO: test parsing of a merge, and make it store a memoTag as well
-
-    private void testGolden(String baseName, String treasuryPartyId) {
+    private IntegrationStore testGolden(String baseName, String treasuryPartyId) {
         String treasuryHint = treasuryPartyId.substring(0, treasuryPartyId.indexOf(':'));
         Path updatesFile = TestFiles.GOLDEN_TEST_DIR.resolve(baseName + ".json");
         Path expectedStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_expected.json");
@@ -211,6 +230,8 @@ class IntegrationStoreTest {
         if (didUpdateDemoFile) {
             fail("The demo compact store file at " + demoStoreFile + " was updated. Please verify that the changes are expected.");
         }
+
+        return store;
     }
 
     static private BigDecimal damlDecimal(long val) {
