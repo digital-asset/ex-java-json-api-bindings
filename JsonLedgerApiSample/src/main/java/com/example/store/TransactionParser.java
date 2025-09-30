@@ -36,8 +36,6 @@ public class TransactionParser {
     final private TxHistoryEntry.UpdateMetadata updateMetadata;
     private final Iterator<Event> events;
     final private ArrayList<TxHistoryEntry> childEntries = new ArrayList<>();
-    // FIXME: populate from warnings
-    final private ArrayList<String> validationErrors = new ArrayList<>();
 
     /**
      * An interface to abstract over the tracking of UTXOs for holdings and transfer instructions.
@@ -155,7 +153,7 @@ public class TransactionParser {
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
-                        validationErrors,
+                        null,
                         holdingChanges,
                         instructionChanges,
                         transactionEvents
@@ -179,7 +177,7 @@ public class TransactionParser {
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
-                        validationErrors,
+                        null,
                         holdingChanges,
                         instructionChanges,
                         transactionEvents
@@ -234,7 +232,7 @@ public class TransactionParser {
                                         updateMetadata,
                                         exercisedEvent.getNodeId(),
                                         label,
-                                        validationErrors,
+                                        null,
                                         holdingChanges,
                                         instructionChanges,
                                         transactionEvents
@@ -250,12 +248,19 @@ public class TransactionParser {
         }
 
         // Fallback case
-        validationErrors.add("UNRECOGNIZED_CHOICE: " + exercisedEvent.getChoice() + " on " + exercisedEvent.getTemplateId() + " in " + exercisedEvent.getPackageName());
+        TxHistoryEntry.Unrecognized unrecognized = new TxHistoryEntry.Unrecognized(
+                TxHistoryEntry.UnrecognizedKind.UNRECOGNIZED_CHOICE,
+                new TreeMap<>(Map.of(
+                        "packageName", exercisedEvent.getPackageName(),
+                        "templateId", exercisedEvent.getTemplateId(),
+                        "choiceName", exercisedEvent.getChoice()
+                ))
+        );
         TxHistoryEntry entry = new TxHistoryEntry(
                 updateMetadata,
                 exercisedEvent.getNodeId(),
                 null,
-                validationErrors,
+                unrecognized,
                 holdingChanges,
                 instructionChanges,
                 transactionEvents
@@ -331,11 +336,18 @@ public class TransactionParser {
                         String cid = createdEvent.getContractId();
                         utxoStore.ingestHoldingCreation(cid, holding);
                         TxHistoryEntry.HoldingChange creation = new TxHistoryEntry.HoldingChange(cid, holding, false);
+                        TxHistoryEntry.Unrecognized unrecognized = new TxHistoryEntry.Unrecognized(
+                                TxHistoryEntry.UnrecognizedKind.BARE_CREATE,
+                                new TreeMap<>(Map.of(
+                                        "templateId", createdEvent.getTemplateId(),
+                                        "packageName", createdEvent.getPackageName()
+                                ))
+                        );
                         childEntries.add(new TxHistoryEntry(
                                 updateMetadata,
                                 createdEvent.getNodeId(),
                                 null,
-                                List.of("BARE CREATE OF HOLDING: " + createdEvent.getTemplateId()),
+                                unrecognized,
                                 List.of(creation),
                                 List.of(),
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
@@ -356,7 +368,7 @@ public class TransactionParser {
                                 updateMetadata,
                                 createdEvent.getNodeId(),
                                 label.get(),
-                                List.of(),
+                                null,
                                 List.of(),
                                 List.of(creation),
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))

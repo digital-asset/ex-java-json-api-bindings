@@ -10,6 +10,7 @@ import splice.api.token.transferinstructionv1.TransferInstructionView;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedMap;
 
 // FIXME: docs
 
@@ -28,7 +29,7 @@ public record TxHistoryEntry(
         @Nonnull UpdateMetadata updateMetadata,
         @Nonnull long exerciseNodeId,
         Transfer transfer,
-        List<String> validationErrors,
+        Unrecognized unrecognized,
         @Nonnull List<HoldingChange> treasuryHoldingChanges,
         // FIXME: pendingTransferInstructionChanges would be a better name
         @Nonnull List<TransferInstructionChange> transferInstructionChanges,
@@ -36,52 +37,17 @@ public record TxHistoryEntry(
         @Nonnull List<Event> transactionEvents
 ) {
 
-    public static Optional<Transfer> tryMkTransfer(
-            @Nonnull String treasuryPartyId,
-            @Nonnull String senderPartyId,
-            @Nonnull String receiverPartyId,
-            @Nonnull TransferDetails details) {
-        TransferKind kind = null;
-        if (senderPartyId.equals(treasuryPartyId)) {
-            if (receiverPartyId.equals(treasuryPartyId)) {
-                kind = TransferKind.SPLIT_MERGE;
-            } else {
-                kind = TransferKind.TRANSFER_OUT;
-            }
-        } else if (receiverPartyId.equals(treasuryPartyId)) {
-            kind = TransferKind.TRANSFER_IN;
-        }
-        if (kind == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new Transfer(senderPartyId, receiverPartyId, kind, details));
-        }
-    }
-
     public enum TransferStatus {COMPLETED, PENDING, REJECTED, WITHDRAWN, FAILED_OTHER}
 
     public enum TransferKind {TRANSFER_IN, TRANSFER_OUT, SPLIT_MERGE}
 
-    public TxHistoryEntry(
-            @Nonnull UpdateMetadata updateMetadata,
-            @Nonnull long exerciseNodeId,
-            Transfer transfer,
-            List<String> validationErrors,
-            @Nonnull List<HoldingChange> treasuryHoldingChanges,
-            @Nonnull List<TransferInstructionChange> transferInstructionChanges,
-            @Nonnull List<Event> transactionEvents)  {
+    public enum UnrecognizedKind {BARE_CREATE, UNRECOGNIZED_CHOICE}
+
+    public TxHistoryEntry {
         if (treasuryHoldingChanges.isEmpty() && transferInstructionChanges.isEmpty()) {
             throw new IllegalArgumentException("Not both of treasuryHoldingChanges and transferInstructionChanges can be empty");
         }
-        this.updateMetadata = updateMetadata;
-        this.exerciseNodeId = exerciseNodeId;
-        this.transfer = transfer;
-        this.validationErrors = validationErrors.isEmpty() ? null : validationErrors;
-        this.treasuryHoldingChanges = treasuryHoldingChanges;
-        this.transferInstructionChanges = transferInstructionChanges;
-        this.transactionEvents = transactionEvents;
     }
-
 
     public record UpdateMetadata(
             @Nonnull
@@ -114,6 +80,12 @@ public record TxHistoryEntry(
     ) {
     }
 
+    public record Unrecognized(
+            @Nonnull UnrecognizedKind kind,
+            @Nonnull SortedMap<String, String> details
+    ) {
+    }
+
     public record HoldingChange(
             @Nonnull String contractId,
             @Nonnull HoldingView holding,
@@ -131,4 +103,25 @@ public record TxHistoryEntry(
     ) {
     }
 
+    public static Optional<Transfer> tryMkTransfer(
+            @Nonnull String treasuryPartyId,
+            @Nonnull String senderPartyId,
+            @Nonnull String receiverPartyId,
+            @Nonnull TransferDetails details) {
+        TransferKind kind = null;
+        if (senderPartyId.equals(treasuryPartyId)) {
+            if (receiverPartyId.equals(treasuryPartyId)) {
+                kind = TransferKind.SPLIT_MERGE;
+            } else {
+                kind = TransferKind.TRANSFER_OUT;
+            }
+        } else if (receiverPartyId.equals(treasuryPartyId)) {
+            kind = TransferKind.TRANSFER_IN;
+        }
+        if (kind == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new Transfer(senderPartyId, receiverPartyId, kind, details));
+        }
+    }
 }

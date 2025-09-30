@@ -107,7 +107,7 @@ class IntegrationStoreTest {
                 ids.treasury().partyId(),
                 ids.alice().partyId(),
                 TxHistoryEntry.TransferKind.TRANSFER_OUT,
-                transferDetails1);
+                transferDetails2);
         assertEquals(label2, entry2.transfer());
     }
 

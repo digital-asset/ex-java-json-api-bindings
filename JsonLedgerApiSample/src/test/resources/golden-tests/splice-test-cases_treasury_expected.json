@@ -844,11 +844,13 @@
         "offset": 6
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
-      "details": {
-        "packageName": "splice-wallet",
-        "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall",
-        "choiceName": "WalletAppInstall_ExecuteBatch"
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "WalletAppInstall_ExecuteBatch",
+          "packageName": "splice-wallet",
+          "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -1217,11 +1219,13 @@
         "offset": 7
       },
       "exerciseNodeId": 0,
-      "kind": "UnrecognizedChoice",
-      "details": {
-        "packageName": "splice-wallet",
-        "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall",
-        "choiceName": "WalletAppInstall_ExecuteBatch"
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "WalletAppInstall_ExecuteBatch",
+          "packageName": "splice-wallet",
+          "templateId": "#package-name:Splice.Wallet.Install:WalletAppInstall"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -1436,9 +1440,10 @@
         "offset": 8
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -2036,9 +2041,10 @@
         "offset": 9
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -2589,9 +2595,10 @@
         "offset": 10
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -3142,9 +3149,10 @@
         "offset": 11
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -3695,9 +3703,10 @@
         "offset": 12
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -4248,9 +4257,10 @@
         "offset": 13
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -4715,9 +4725,10 @@
         "offset": 14
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -4965,9 +4976,10 @@
         "offset": 15
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -5215,9 +5227,10 @@
         "offset": 17
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -5346,9 +5359,10 @@
         "offset": 18
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -5477,9 +5491,10 @@
         "offset": 19
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -5608,9 +5623,10 @@
         "offset": 20
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -5739,9 +5755,10 @@
         "offset": 21
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -6025,9 +6042,10 @@
         "offset": 22
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -6135,9 +6153,10 @@
         "offset": 23
       },
       "exerciseNodeId": 0,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "bob::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -6245,11 +6264,18 @@
         "offset": 24
       },
       "exerciseNodeId": 0,
-      "kind": "SplitMerge",
-      "details": {
-        "instrumentId": {
-          "admin": "dso::normalized",
-          "id": "Amulet"
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "SPLIT_MERGE",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "dso::normalized",
+            "id": "Amulet"
+          },
+          "amount": 1.0000000000,
+          "transferStatus": "COMPLETED"
         }
       },
       "treasuryHoldingChanges": [
@@ -6989,9 +7015,10 @@
         "offset": 25
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "bob::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -7089,9 +7116,10 @@
         "offset": 28
       },
       "exerciseNodeId": 1,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "charlie::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "non-ts-transfer",
           "instrumentId": {
@@ -7374,9 +7402,12 @@
         "offset": 29
       },
       "exerciseNodeId": 0,
-      "kind": "BareCreate",
-      "details": {
-        "templateName": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+      "unrecognized": {
+        "kind": "BARE_CREATE",
+        "details": {
+          "packageName": "splice-token-test-dummy-holding",
+          "templateId": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+        }
       },
       "treasuryHoldingChanges": [
         {
@@ -7454,9 +7485,12 @@
         "offset": 30
       },
       "exerciseNodeId": 0,
-      "kind": "BareCreate",
-      "details": {
-        "templateName": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+      "unrecognized": {
+        "kind": "BARE_CREATE",
+        "details": {
+          "packageName": "splice-token-test-dummy-holding",
+          "templateId": "#package-name:Splice.Api.Token.Test.DummyHolding:DummyHolding"
+        }
       },
       "treasuryHoldingChanges": [
         {
