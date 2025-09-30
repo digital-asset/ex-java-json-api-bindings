@@ -217,13 +217,13 @@ public class Wallet {
             Optional<String> memoTag,
             Map<String, String> otherTransferMetadata,
             BigDecimal amount,
-            List<ContractAndId<HoldingView>> holdings,
+            List<String> holdingContractIds,
             boolean preventMultiStep
     ) throws Exception {
         Instant requestDate = Instant.now();
         Instant requestExpiresDate = requestDate.plusSeconds(24 * 60 * 60);
 
-        TransferFactory_Transfer proposedTransfer = TokenStandard.makeProposedTransfer(senderPartyId, receiverPartyId, amount, instrumentId, memoTag, otherTransferMetadata, requestDate, requestExpiresDate, holdings);
+        TransferFactory_Transfer proposedTransfer = TokenStandard.makeProposedTransfer(senderPartyId, receiverPartyId, amount, instrumentId, memoTag, otherTransferMetadata, requestDate, requestExpiresDate, holdingContractIds);
         TransferFactoryWithChoiceContext transferFactoryWithChoiceContext = this.transferInstructionApi.getTransferFactory(proposedTransfer);
 
         TransferFactoryWithChoiceContext.TransferKindEnum kind = transferFactoryWithChoiceContext.getTransferKind();
