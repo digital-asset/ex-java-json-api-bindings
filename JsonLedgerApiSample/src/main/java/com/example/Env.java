@@ -25,6 +25,7 @@ import java.util.Optional;
 
 public record Env(
         LedgerUser adminUser,
+        LedgerUser exchangeUser,
         Optional<ExternalParty> existingTreasuryParty,
         Optional<ExternalParty> existingTestParty,
         String ledgerApiUrl,
@@ -41,9 +42,11 @@ public record Env(
         String identitiesCacheFile
 ) {
     public final static String ADMIN_USER_TOKEN_KEY = "VALIDATOR_TOKEN";
+    public final static String EXCHANGE_USER_TOKEN_KEY = "EXCHANGE_USER_TOKEN";
 
     public static Env validate() throws Exception {
         LedgerUser adminUser = readAdminUser();
+        LedgerUser exchangeUser = readExchangeUser(adminUser);
         Optional<ExternalParty> existingTreasuryParty = readExternalParty("TREASURY");
         Optional<ExternalParty> existingTestParty = readExternalParty("TEST");
 
@@ -70,6 +73,7 @@ public record Env(
 
         return new Env(
                 adminUser,
+                exchangeUser,
                 existingTreasuryParty,
                 existingTestParty,
                 ledgerApiUrl,
@@ -149,6 +153,18 @@ public record Env(
         String identityProviderId = getenv("IDENTITY_PROVIDER_ID", "");
 
         return LedgerUser.validateUserToken(rawAdminUserToken, identityProviderId);
+    }
+
+    private static LedgerUser readExchangeUser(LedgerUser defaultUser) throws IllegalArgumentException {
+        String rawExchangeUserToken = System.getenv(EXCHANGE_USER_TOKEN_KEY);
+
+        if (rawExchangeUserToken == null || rawExchangeUserToken.isBlank()) {
+            System.out.printf("Environment variable %s was not set. Using '%s' as the exchange user.%n", EXCHANGE_USER_TOKEN_KEY, defaultUser.userId());
+            return defaultUser;
+        }
+
+        String identityProviderId = getenv("IDENTITY_PROVIDER_ID", "");
+        return LedgerUser.validateUserToken(rawExchangeUserToken, identityProviderId);
     }
 
     private static Optional<ExternalParty> readExternalParty(String environmentPrefix) throws Exception {
