@@ -19,9 +19,7 @@ import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass
 import com.example.ConversionHelpers;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
-import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.model.*;
-import com.example.client.scanProxy.model.ContractWithState;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.models.ContractAndId;
@@ -48,7 +46,7 @@ public class Wallet {
     public Validator validatorApi;
 
     // authorized APIs
-    public LedgerUser managingUser;
+    public LedgerUser adminUser;
     public Ledger ledgerApi;
     public ScanProxy scanProxyApi;
 
@@ -56,7 +54,7 @@ public class Wallet {
     public SignatureProvider signatureProvider;
 
     public Wallet(
-            LedgerUser managingUser,
+            LedgerUser adminUser,
             String scanApiUrl,
             String tokenStandardUrl,
             String ledgerApiUrl,
@@ -71,10 +69,10 @@ public class Wallet {
         this.tokenMetadataApi = new TokenMetadata(tokenStandardUrl);
 
         // authorized APIs
-        this.managingUser = managingUser;
-        this.ledgerApi = new Ledger(ledgerApiUrl, managingUser);
-        this.validatorApi = new Validator(validatorApiUrl, managingUser);
-        this.scanProxyApi = new ScanProxy(scanProxyApiUrl, managingUser);
+        this.adminUser = adminUser;
+        this.ledgerApi = new Ledger(ledgerApiUrl, adminUser);
+        this.validatorApi = new Validator(validatorApiUrl, adminUser);
+        this.scanProxyApi = new ScanProxy(scanProxyApiUrl, adminUser);
 
         this.signatureProvider = signatureProvider;
     }
@@ -126,7 +124,7 @@ public class Wallet {
         Signature multiHashSignature = Ledger.sign(externalPartyKeyPair, generateStepResponse.getMultiHash(), generateStepResponse.getMultiHash());
         this.ledgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
 
-        this.ledgerApi.grantUserRights(this.managingUser.userId(), List.of(
+        this.ledgerApi.grantUserRights(this.adminUser.userId(), List.of(
                 Ledger.makeCanReadAsRight(partyId),
                 Ledger.makeCanExecuteAsRight(partyId)
         ));
