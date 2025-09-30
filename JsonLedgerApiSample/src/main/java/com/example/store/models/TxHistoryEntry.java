@@ -64,8 +64,8 @@ public record TxHistoryEntry(
             InstrumentId instrumentId,
             @Nonnull
             BigDecimal amount,
-            // FIXME: track on-ledger correlation id
             TransferStatus transferStatus,
+            String transferCorrelationId,
             TransferInstruction.ContractId pendingInstructionCid) {
     }
 

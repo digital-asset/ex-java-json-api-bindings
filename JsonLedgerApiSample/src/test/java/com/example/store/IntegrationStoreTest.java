@@ -86,6 +86,7 @@ class IntegrationStoreTest {
                 info.aliceDepositId(),
                 ids.cantonCoinId(), damlDecimal(100),
                 TxHistoryEntry.TransferStatus.COMPLETED,
+                null,
                 null
         );
         TxHistoryEntry.Transfer label1 = new TxHistoryEntry.Transfer(
@@ -100,6 +101,7 @@ class IntegrationStoreTest {
                 info.aliceWithdrawalId(),
                 ids.cantonCoinId(), damlDecimal(20),
                 TxHistoryEntry.TransferStatus.COMPLETED,
+                null,
                 null
         );
 

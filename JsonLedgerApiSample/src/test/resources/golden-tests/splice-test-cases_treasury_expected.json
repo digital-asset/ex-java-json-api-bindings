@@ -1452,6 +1452,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "32",
           "pendingInstructionCid": "32"
         }
       },
@@ -2053,6 +2054,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "37",
           "pendingInstructionCid": "37"
         }
       },
@@ -2607,6 +2609,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "42",
           "pendingInstructionCid": "42"
         }
       },
@@ -3161,6 +3164,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "47",
           "pendingInstructionCid": "47"
         }
       },
@@ -3715,6 +3719,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "52",
           "pendingInstructionCid": "52"
         }
       },
@@ -4268,7 +4273,8 @@
             "id": "Amulet"
           },
           "amount": 1000.0000000000,
-          "transferStatus": "COMPLETED"
+          "transferStatus": "COMPLETED",
+          "transferCorrelationId": "32"
         }
       },
       "treasuryHoldingChanges": [
@@ -4736,7 +4742,8 @@
             "id": "Amulet"
           },
           "amount": 1000.0000000000,
-          "transferStatus": "REJECTED"
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "37"
         }
       },
       "treasuryHoldingChanges": [
@@ -4987,7 +4994,8 @@
             "id": "Amulet"
           },
           "amount": 1000.0000000000,
-          "transferStatus": "WITHDRAWN"
+          "transferStatus": "WITHDRAWN",
+          "transferCorrelationId": "42"
         }
       },
       "treasuryHoldingChanges": [
@@ -5239,6 +5247,7 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "63",
           "pendingInstructionCid": "63"
         }
       },
@@ -5371,6 +5380,7 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "65",
           "pendingInstructionCid": "65"
         }
       },
@@ -5503,6 +5513,7 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "67",
           "pendingInstructionCid": "67"
         }
       },
@@ -5635,6 +5646,7 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
+          "transferCorrelationId": "69",
           "pendingInstructionCid": "69"
         }
       },
@@ -5766,7 +5778,8 @@
             "id": "Amulet"
           },
           "amount": 200.0000000000,
-          "transferStatus": "COMPLETED"
+          "transferStatus": "COMPLETED",
+          "transferCorrelationId": "63"
         }
       },
       "treasuryHoldingChanges": [
@@ -6053,7 +6066,8 @@
             "id": "Amulet"
           },
           "amount": 200.0000000000,
-          "transferStatus": "REJECTED"
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "65"
         }
       },
       "treasuryHoldingChanges": [],
@@ -6164,7 +6178,8 @@
             "id": "Amulet"
           },
           "amount": 200.0000000000,
-          "transferStatus": "WITHDRAWN"
+          "transferStatus": "WITHDRAWN",
+          "transferCorrelationId": "67"
         }
       },
       "treasuryHoldingChanges": [],
@@ -7026,7 +7041,8 @@
             "id": "Amulet"
           },
           "amount": 1000.0000000000,
-          "transferStatus": "REJECTED"
+          "transferStatus": "REJECTED",
+          "transferCorrelationId": "47"
         }
       },
       "treasuryHoldingChanges": [],

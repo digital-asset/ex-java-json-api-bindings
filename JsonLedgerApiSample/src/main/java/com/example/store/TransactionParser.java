@@ -147,7 +147,7 @@ public class TransactionParser {
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
             // FIXME: search and replace Label
-            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
+            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult, null);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
@@ -164,6 +164,7 @@ public class TransactionParser {
                 && TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID.matchesModuleAndTypeName(exercisedEvent.getInterfaceId())) {
             // we are parsing TransferInstruction choice ==> determine kind of transfer
             Transfer t = consumedTransferInstruction.get().transfer;
+            String transferCorrelationId = getTransferCorrelationId(exercisedEvent.getContractId(), consumedTransferInstruction.get());
 
             // Attempt to determine label
             TransferInstructionResult transferResult =
@@ -171,7 +172,7 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
+            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult, transferCorrelationId);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
@@ -226,6 +227,7 @@ public class TransactionParser {
                                         instrumentId,
                                         balanceChange,
                                         TxHistoryEntry.TransferStatus.COMPLETED,
+                                        null,
                                         null);
                                 TxHistoryEntry.Transfer label = new TxHistoryEntry.Transfer(sender, treasuryParty, TxHistoryEntry.TransferKind.TRANSFER_IN, details);
                                 TxHistoryEntry entry = new TxHistoryEntry(
@@ -277,17 +279,28 @@ public class TransactionParser {
         }
     }
 
-    private Optional<TxHistoryEntry.Transfer> parseTransfer(Transfer t, String treasuryParty, String choiceName, TransferInstructionResult result) {
+    private String getTransferCorrelationId(String instructionCid, TransferInstructionView transferInstructionView) {
+        if (transferInstructionView.originalInstructionCid.isPresent()) {
+            return transferInstructionView.originalInstructionCid.get().contractId;
+        } else
+            return instructionCid;
+    }
+
+    private Optional<TxHistoryEntry.Transfer> parseTransfer(Transfer t, String treasuryParty, String choiceName, TransferInstructionResult result, String transferCorrelationId) {
         String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
         // parse status of transfer
         TxHistoryEntry.TransferStatus transferStatus = null;
-        TransferInstruction.ContractId pendingInstruction = null;
+        TransferInstruction.ContractId pendingInstructionCid = null;
+        String actualCorrelationId = transferCorrelationId;
         if (result.output instanceof TransferInstructionResult_Completed) {
             transferStatus = TxHistoryEntry.TransferStatus.COMPLETED;
         } else if (result.output instanceof TransferInstructionResult_Pending pendingResult) {
-            pendingInstruction = new TransferInstruction.ContractId(pendingResult.transferInstructionCid.contractId);
+            String pendingCid = pendingResult.transferInstructionCid.contractId;
+            pendingInstructionCid = new TransferInstruction.ContractId(pendingCid);
             transferStatus = TxHistoryEntry.TransferStatus.PENDING;
+            // If no correlation ID is known yet, then the contract-id of the new pending instruction serves as the correlation ID
+            actualCorrelationId = actualCorrelationId == null ? pendingCid : actualCorrelationId;
         } else if (result.output instanceof TransferInstructionResult_Failed) {
             if (choiceName.equals(TransferInstruction.CHOICE_TransferInstruction_Reject.name)) {
                 transferStatus = TxHistoryEntry.TransferStatus.REJECTED;
@@ -302,7 +315,7 @@ public class TransactionParser {
 
         // if status is determined, then determine direction of transfer
         if (transferStatus != null) {
-            TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails(memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction);
+            TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails(memoTag, t.instrumentId, t.amount, transferStatus, actualCorrelationId, pendingInstructionCid);
             return TxHistoryEntry.tryMkTransfer(treasuryParty, t.sender, t.receiver, details);
         } else {
             return Optional.empty();
@@ -358,7 +371,8 @@ public class TransactionParser {
                     TransferInstruction.ContractId pendingInstructionCid = new TransferInstruction.ContractId(createdEvent.getContractId());
                     TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
                     Transfer t = instruction.transfer;
-                    TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails("", t.instrumentId, t.amount, TxHistoryEntry.TransferStatus.PENDING, pendingInstructionCid);
+                    String transferCorrelationId = getTransferCorrelationId(createdEvent.getContractId(), instruction);
+                    TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails("", t.instrumentId, t.amount, TxHistoryEntry.TransferStatus.PENDING, transferCorrelationId, pendingInstructionCid);
                     Optional<TxHistoryEntry.Transfer> label = TxHistoryEntry.tryMkTransfer(utxoStore.treasuryPartyId(), t.sender, t.receiver, details);
                     if (label.isPresent()) {
                         String cid = createdEvent.getContractId();
