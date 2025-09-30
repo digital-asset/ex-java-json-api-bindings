@@ -88,13 +88,12 @@ public class Main {
             TestIdentities ids = getOrCreateTestIdentities(env, wallet);
 
             printStep("Initialize integration store");
-            IntegrationStore store = new IntegrationStore(ids.treasury().partyId());
             // We intentionally pretend that the ACS is empty at the start of the demo run.
             // Otherwise, we see the transfers from previous runs of the demo.
             // In production, we would just start with offset 0 and ingest the full tx history.
             // TODO: simplify store to not support starting with ingesting the ACS.
             Long testStartOffset = wallet.getLedgerEnd();
-            store.ingestAcs(List.of(), testStartOffset);
+            IntegrationStore store = new IntegrationStore(ids.treasury().partyId(), testStartOffset);
             ingestAndParseTransactions(wallet, store);
             System.out.println("State of local store after initial ingestion");
             System.out.println(store);
