@@ -297,7 +297,7 @@ public class TransactionParser {
         }
     }
 
-    private int getEventNodeId(Event event) {
+    private static int getEventNodeId(Event event) {
         if (event.getActualInstance() instanceof EventOneOf1 createdEvent) {
             return createdEvent.getCreatedEvent().getNodeId();
         } else if (event.getActualInstance() instanceof EventOneOf2 exercisedEvent) {

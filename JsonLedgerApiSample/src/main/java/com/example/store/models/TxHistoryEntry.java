@@ -142,11 +142,9 @@ public record TxHistoryEntry(
             }
         } else if (receiverPartyId.equals(treasuryPartyId)) {
             kind = TransferKind.TRANSFER_IN;
-        }
-        if (kind == null) {
-            return Optional.empty();
         } else {
-            return Optional.of(new Transfer(senderPartyId, receiverPartyId, kind, details));
+            return Optional.empty();
         }
+        return Optional.of(new Transfer(senderPartyId, receiverPartyId, kind, details));
     }
 }
