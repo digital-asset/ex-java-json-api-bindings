@@ -88,8 +88,12 @@ class IntegrationStoreTest {
                 TxHistoryEntry.TransferStatus.COMPLETED,
                 null
         );
-        TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(ids.alice().partyId(), transferDetails1);
-        assertEquals(label1, entry1.details());
+        TxHistoryEntry.Transfer label1 = new TxHistoryEntry.Transfer(
+                ids.alice().partyId(),
+                ids.treasury().partyId(),
+                TxHistoryEntry.TransferKind.TRANSFER_IN,
+                transferDetails1);
+        assertEquals(label1, entry1.transfer());
 
         TxHistoryEntry entry2 = history.get(1);
         TxHistoryEntry.TransferDetails transferDetails2 = new TxHistoryEntry.TransferDetails(
@@ -99,8 +103,12 @@ class IntegrationStoreTest {
                 null
         );
 
-        TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(ids.alice().partyId(), transferDetails2);
-        assertEquals(label2, entry2.details());
+        TxHistoryEntry.Transfer label2 = new TxHistoryEntry.Transfer(
+                ids.treasury().partyId(),
+                ids.alice().partyId(),
+                TxHistoryEntry.TransferKind.TRANSFER_OUT,
+                transferDetails1);
+        assertEquals(label2, entry2.transfer());
     }
 
     @Test

@@ -151,9 +151,10 @@
         "offset": 4
       },
       "exerciseNodeId": 4,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "aliceValidator::normalized",
+        "receiverPartyId": "treasury::normalized",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "token-standard-transfer-description",
           "instrumentId": {
@@ -437,9 +438,10 @@
         "offset": 5
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::normalized",
         "receiverPartyId": "aliceValidator::normalized",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "",
           "instrumentId": {

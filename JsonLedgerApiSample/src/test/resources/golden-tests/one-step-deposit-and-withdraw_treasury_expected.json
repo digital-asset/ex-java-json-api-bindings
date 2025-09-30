@@ -29,9 +29,10 @@
         "offset": 1134
       },
       "exerciseNodeId": 5,
-      "kind": "TransferIn",
-      "details": {
+      "transfer": {
         "senderPartyId": "alice::122080fa98b3301de1c1421405c1dae5ef2435a6bd2a80a0e42860abfab66394ed07",
+        "receiverPartyId": "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8",
+        "kind": "TRANSFER_IN",
         "details": {
           "memoTag": "fd53f70c-5c3e-4324-b678-bc6ca90f7325",
           "instrumentId": {
@@ -322,9 +323,10 @@
         "offset": 1137
       },
       "exerciseNodeId": 0,
-      "kind": "TransferOut",
-      "details": {
+      "transfer": {
+        "senderPartyId": "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8",
         "receiverPartyId": "alice::122080fa98b3301de1c1421405c1dae5ef2435a6bd2a80a0e42860abfab66394ed07",
+        "kind": "TRANSFER_OUT",
         "details": {
           "memoTag": "4331c77f-ee16-4303-830c-78e3f10f1692",
           "instrumentId": {

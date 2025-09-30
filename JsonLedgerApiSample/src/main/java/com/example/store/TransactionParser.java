@@ -36,6 +36,8 @@ public class TransactionParser {
     final private TxHistoryEntry.UpdateMetadata updateMetadata;
     private final Iterator<Event> events;
     final private ArrayList<TxHistoryEntry> childEntries = new ArrayList<>();
+    // FIXME: populate from warnings
+    final private ArrayList<String> validationErrors = new ArrayList<>();
 
     /**
      * An interface to abstract over the tracking of UTXOs for holdings and transfer instructions.
@@ -43,6 +45,7 @@ public class TransactionParser {
     public interface IUtxoStore {
         String treasuryPartyId();
 
+        // FIXME: remove if really unused
         TransferInstructionView getTransferInstruction(String contractId);
 
         void ingestTransferInstructionCreation(String contractId, TransferInstructionView transferInstruction);
@@ -145,12 +148,14 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
+            // FIXME: search and replace Label
+            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
+                        validationErrors,
                         holdingChanges,
                         instructionChanges,
                         transactionEvents
@@ -168,12 +173,13 @@ public class TransactionParser {
                             exercisedEvent.getExerciseResult(),
                             JSON.getGson()::toJson,
                             TransferInstructionResult::fromJson);
-            Optional<TxHistoryEntry.Label> label = parseTransferLabel(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
+            Optional<TxHistoryEntry.Transfer> label = parseTransfer(t, treasuryParty, exercisedEvent.getChoice(), transferResult);
             if (label.isPresent()) {
                 TxHistoryEntry entry = new TxHistoryEntry(
                         updateMetadata,
                         exercisedEvent.getNodeId(),
                         label.get(),
+                        validationErrors,
                         holdingChanges,
                         instructionChanges,
                         transactionEvents
@@ -223,11 +229,12 @@ public class TransactionParser {
                                         balanceChange,
                                         TxHistoryEntry.TransferStatus.COMPLETED,
                                         null);
-                                TxHistoryEntry.TransferIn label = new TxHistoryEntry.TransferIn(sender, details);
+                                TxHistoryEntry.Transfer label = new TxHistoryEntry.Transfer(sender, treasuryParty, TxHistoryEntry.TransferKind.TRANSFER_IN, details);
                                 TxHistoryEntry entry = new TxHistoryEntry(
                                         updateMetadata,
                                         exercisedEvent.getNodeId(),
                                         label,
+                                        validationErrors,
                                         holdingChanges,
                                         instructionChanges,
                                         transactionEvents
@@ -243,14 +250,12 @@ public class TransactionParser {
         }
 
         // Fallback case
-        TxHistoryEntry.Label label = new TxHistoryEntry.UnrecognizedChoice(
-                exercisedEvent.getPackageName(),
-                exercisedEvent.getTemplateId(),
-                exercisedEvent.getChoice());
+        validationErrors.add("UNRECOGNIZED_CHOICE: " + exercisedEvent.getChoice() + " on " + exercisedEvent.getTemplateId() + " in " + exercisedEvent.getPackageName());
         TxHistoryEntry entry = new TxHistoryEntry(
                 updateMetadata,
                 exercisedEvent.getNodeId(),
-                label,
+                null,
+                validationErrors,
                 holdingChanges,
                 instructionChanges,
                 transactionEvents
@@ -258,16 +263,16 @@ public class TransactionParser {
         if (consumedHolding.isPresent()) {
             // This is a non-standard choice consuming a holding
             return List.of(entry);
-        } else if (childEntries.stream().noneMatch(e -> e.details().isRecognized())) {
-            // No child entry uses a recognized label ==> explain them succinctly via this exercise node
+        } else if (childEntries.stream().allMatch(e -> e.transfer() == null)) {
+            // No child entry represents a transfer ==> explain them succinctly via this exercise node
             return List.of(entry);
         } else {
-            // There were some recognized child entries ==> return them together with unrecognized ones
+            // There were some recognized transfers ==> return them together with unrecognized ones
             return childEntries;
         }
     }
 
-    private Optional<TxHistoryEntry.Label> parseTransferLabel(Transfer t, String treasuryParty, String choiceName, TransferInstructionResult result) {
+    private Optional<TxHistoryEntry.Transfer> parseTransfer(Transfer t, String treasuryParty, String choiceName, TransferInstructionResult result) {
         String memoTag = t.meta.values.getOrDefault(MEMO_KEY, "");
 
         // parse status of transfer
@@ -293,22 +298,7 @@ public class TransactionParser {
         // if status is determined, then determine direction of transfer
         if (transferStatus != null) {
             TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails(memoTag, t.instrumentId, t.amount, transferStatus, pendingInstruction);
-            return mkTransferLabel(t, treasuryParty, details);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    @Nonnull
-    private static Optional<TxHistoryEntry.Label> mkTransferLabel(Transfer t, String treasuryParty, TxHistoryEntry.TransferDetails details) {
-        if (t.sender.equals(treasuryParty)) {
-            if (t.receiver.equals(t.sender)) {
-                return Optional.of(new TxHistoryEntry.SplitMerge(details));
-            } else {
-                return Optional.of(new TxHistoryEntry.TransferOut(t.receiver, details));
-            }
-        } else if (t.receiver.equals(treasuryParty)) {
-            return Optional.of(new TxHistoryEntry.TransferIn(t.sender, details));
+            return TxHistoryEntry.tryMkTransfer(treasuryParty, t.sender, t.receiver, details);
         } else {
             return Optional.empty();
         }
@@ -344,7 +334,8 @@ public class TransactionParser {
                         childEntries.add(new TxHistoryEntry(
                                 updateMetadata,
                                 createdEvent.getNodeId(),
-                                new TxHistoryEntry.BareCreate(createdEvent.getTemplateId()),
+                                null,
+                                List.of("BARE CREATE OF HOLDING: " + createdEvent.getTemplateId()),
                                 List.of(creation),
                                 List.of(),
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
@@ -356,7 +347,7 @@ public class TransactionParser {
                     TransferInstructionView instruction = ConversionHelpers.convertFromJson(viewJson, TransferInstructionView::fromJson);
                     Transfer t = instruction.transfer;
                     TxHistoryEntry.TransferDetails details = new TxHistoryEntry.TransferDetails("", t.instrumentId, t.amount, TxHistoryEntry.TransferStatus.PENDING, pendingInstructionCid);
-                    Optional<TxHistoryEntry.Label> label = mkTransferLabel(t, utxoStore.treasuryPartyId(), details);
+                    Optional<TxHistoryEntry.Transfer> label = TxHistoryEntry.tryMkTransfer(utxoStore.treasuryPartyId(), t.sender, t.receiver, details);
                     if (label.isPresent()) {
                         String cid = createdEvent.getContractId();
                         TxHistoryEntry.TransferInstructionChange creation = new TxHistoryEntry.TransferInstructionChange(cid, instruction, false);
@@ -365,6 +356,7 @@ public class TransactionParser {
                                 updateMetadata,
                                 createdEvent.getNodeId(),
                                 label.get(),
+                                List.of(),
                                 List.of(),
                                 List.of(creation),
                                 List.of(new Event(new EventOneOf1().createdEvent(createdEvent))
