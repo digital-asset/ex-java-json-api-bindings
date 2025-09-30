@@ -185,7 +185,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -490,7 +490,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -890,7 +890,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -1247,7 +1247,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -1452,7 +1452,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "32",
+          "multiStepCorrelationId": "32",
           "pendingInstructionCid": "32"
         }
       },
@@ -1537,7 +1537,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "32",
           "transferInstruction": {
@@ -2054,7 +2054,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "37",
+          "multiStepCorrelationId": "37",
           "pendingInstructionCid": "37"
         }
       },
@@ -2121,7 +2121,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "37",
           "transferInstruction": {
@@ -2609,7 +2609,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "42",
+          "multiStepCorrelationId": "42",
           "pendingInstructionCid": "42"
         }
       },
@@ -2676,7 +2676,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "42",
           "transferInstruction": {
@@ -3164,7 +3164,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "47",
+          "multiStepCorrelationId": "47",
           "pendingInstructionCid": "47"
         }
       },
@@ -3231,7 +3231,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "47",
           "transferInstruction": {
@@ -3719,7 +3719,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "52",
+          "multiStepCorrelationId": "52",
           "pendingInstructionCid": "52"
         }
       },
@@ -3786,7 +3786,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "52",
           "transferInstruction": {
@@ -4274,7 +4274,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "COMPLETED",
-          "transferCorrelationId": "32"
+          "multiStepCorrelationId": "32"
         }
       },
       "treasuryHoldingChanges": [
@@ -4358,7 +4358,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "32",
           "transferInstruction": {
@@ -4743,7 +4743,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "REJECTED",
-          "transferCorrelationId": "37"
+          "multiStepCorrelationId": "37"
         }
       },
       "treasuryHoldingChanges": [
@@ -4791,7 +4791,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "37",
           "transferInstruction": {
@@ -4995,7 +4995,7 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "WITHDRAWN",
-          "transferCorrelationId": "42"
+          "multiStepCorrelationId": "42"
         }
       },
       "treasuryHoldingChanges": [
@@ -5043,7 +5043,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "42",
           "transferInstruction": {
@@ -5247,12 +5247,12 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "63",
+          "multiStepCorrelationId": "63",
           "pendingInstructionCid": "63"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "63",
           "transferInstruction": {
@@ -5380,12 +5380,12 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "65",
+          "multiStepCorrelationId": "65",
           "pendingInstructionCid": "65"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "65",
           "transferInstruction": {
@@ -5513,12 +5513,12 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "67",
+          "multiStepCorrelationId": "67",
           "pendingInstructionCid": "67"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "67",
           "transferInstruction": {
@@ -5646,12 +5646,12 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "PENDING",
-          "transferCorrelationId": "69",
+          "multiStepCorrelationId": "69",
           "pendingInstructionCid": "69"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "69",
           "transferInstruction": {
@@ -5779,7 +5779,7 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "COMPLETED",
-          "transferCorrelationId": "63"
+          "multiStepCorrelationId": "63"
         }
       },
       "treasuryHoldingChanges": [
@@ -5802,7 +5802,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "63",
           "transferInstruction": {
@@ -6067,11 +6067,11 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "REJECTED",
-          "transferCorrelationId": "65"
+          "multiStepCorrelationId": "65"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "65",
           "transferInstruction": {
@@ -6179,11 +6179,11 @@
           },
           "amount": 200.0000000000,
           "transferStatus": "WITHDRAWN",
-          "transferCorrelationId": "67"
+          "multiStepCorrelationId": "67"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "67",
           "transferInstruction": {
@@ -6282,7 +6282,7 @@
       "transfer": {
         "senderPartyId": "treasury::normalized",
         "receiverPartyId": "treasury::normalized",
-        "kind": "SPLIT_MERGE",
+        "kind": "TRANSFER_SELF",
         "details": {
           "memoTag": "",
           "instrumentId": {
@@ -6482,7 +6482,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -7042,11 +7042,11 @@
           },
           "amount": 1000.0000000000,
           "transferStatus": "REJECTED",
-          "transferCorrelationId": "47"
+          "multiStepCorrelationId": "47"
         }
       },
       "treasuryHoldingChanges": [],
-      "transferInstructionChanges": [
+      "pendingTransferInstructionChanges": [
         {
           "contractId": "47",
           "transferInstruction": {
@@ -7166,7 +7166,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "ExercisedEvent": {
@@ -7444,7 +7444,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "CreatedEvent": {
@@ -7527,7 +7527,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": [
         {
           "CreatedEvent": {

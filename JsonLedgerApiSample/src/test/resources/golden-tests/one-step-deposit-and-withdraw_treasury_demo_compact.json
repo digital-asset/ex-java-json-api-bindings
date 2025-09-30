@@ -63,7 +63,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": []
     },
     {
@@ -125,7 +125,7 @@
           "archived": false
         }
       ],
-      "transferInstructionChanges": [],
+      "pendingTransferInstructionChanges": [],
       "transactionEvents": []
     }
   ]
