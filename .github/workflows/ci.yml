@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DAML_SDK_VERSION: 3.3.0-snapshot.20250417.0
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: JsonLedgerApiSample
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('JsonLedgerApiSample/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Cache Daml SDK
+        id: daml-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.daml
+          key: ${{ runner.os }}-daml-${{ env.DAML_SDK_VERSION }}
+
+      - name: Install Daml SDK
+        if: steps.daml-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://get.daml.com | sh -s $DAML_SDK_VERSION
+
+      - name: Add Daml to PATH
+        run: echo "$HOME/.daml/bin" >> $GITHUB_PATH
+
+      - name: Run tests
+        run: mvn -B clean test
+
+      # TODO: start localnet and run main class
+      # - name: Run main class
+      #   run: mvn -q exec:java -Dexec.mainClass="com.example.Main"
