@@ -12,11 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class TransactionHashBuilder extends HashWriter {
-
-    private interface EncodeCallback<T> {
-        void call(T item);
-    }
+public class TransactionHashBuilder extends CantonHashBuilder {
 
     private static final byte[] PREPARED_TRANSACTION_HASH_PURPOSE = {
             0x00, 0x00, 0x00, 0x30,
@@ -46,55 +42,10 @@ public class TransactionHashBuilder extends HashWriter {
         }
     }
 
-    private void encode(byte[] bytes) {
-        append(bytes.length);
-        append(bytes);
-    }
-
-    private void encode(String s) {
-        encode(s.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private void encodeHex(String s) {
-        encode(Encode.fromHexString(s));
-    }
-
-    private <T> void encode(Optional<T> opt, EncodeCallback<T> callback) {
-        if (opt.isEmpty()) {
-            append((byte)0);
-        } else {
-            append((byte)1);
-            callback.call(opt.get());
-        }
-    }
-
-    private <T> void encode(List<T> list, EncodeCallback<T> callback) {
-        append(list.size());
-        for (T item : list) {
-            callback.call(item);
-        }
-    }
-
-    private <T> void encode(T[] array, EncodeCallback<T> callback) {
-        append(array.length);
-        for (T item : array) {
-            callback.call(item);
-        }
-    }
-
     private void encodeIdentifier(ValueOuterClass.Identifier identifier) {
         encode(identifier.getPackageId());
         encode(identifier.getModuleName().split("\\."), this::encode);
         encode(identifier.getEntityName().split("\\."), this::encode);
-    }
-
-    private <T> void encodeProtoOptional(boolean isPresent, Supplier<T> getValue, EncodeCallback<T> callback) {
-        if (isPresent) {
-            append((byte)1);
-            callback.call(getValue.get());
-        } else {
-            append((byte)0);
-        }
     }
 
     private void encodeMetadata(InteractiveSubmissionServiceOuterClass.Metadata metadata) {
@@ -113,7 +64,7 @@ public class TransactionHashBuilder extends HashWriter {
         encode(metadata.getInputContractsList(), this::encodeInputContract);
     }
 
-    private void encodeCreatedNode(InteractiveSubmissionDataOuterClass.Create create, Optional<ByteString> nodeSeed) {
+    private void encodeCreateNode(InteractiveSubmissionDataOuterClass.Create create, Optional<ByteString> nodeSeed) {
         append(NODE_ENCODING_VERSION);
         encode(create.getLfVersion());
         append((byte)0); // 'create' node tag
@@ -185,7 +136,7 @@ public class TransactionHashBuilder extends HashWriter {
                 break;
             case TIMESTAMP:
                 append((byte)0x04);
-                encode(value.getTimestamp() + ""); // TODO: check why this is converted to a string before encoding
+                append(value.getTimestamp());
                 break;
             case DATE:
                 append((byte)0x05);
@@ -261,7 +212,7 @@ public class TransactionHashBuilder extends HashWriter {
 
     private void encodeInputContract(InteractiveSubmissionServiceOuterClass.Metadata.InputContract inputContract) {
         append(inputContract.getCreatedAt());
-        hashed(() -> encodeCreatedNode(inputContract.getV1(), Optional.empty()));
+        hashed(() -> encodeCreateNode(inputContract.getV1(), Optional.empty()));
     }
 
     private void encodeNodeById(String id) {
@@ -277,12 +228,13 @@ public class TransactionHashBuilder extends HashWriter {
     }
 
     private void encodeNode(InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node) {
+        assert node.hasV1();
         var v1 = node.getV1();
 
         var seed = this.nodeSeedsById.get(node.getNodeId());
         switch (v1.getNodeTypeCase()) {
             case CREATE:
-                encodeCreatedNode(v1.getCreate(), Optional.ofNullable(seed)
+                encodeCreateNode(v1.getCreate(), Optional.ofNullable(seed)
                     .map(InteractiveSubmissionServiceOuterClass.DamlTransaction.NodeSeed::getSeed));
                 break;
             case FETCH:
@@ -300,6 +252,7 @@ public class TransactionHashBuilder extends HashWriter {
         }
     }
 
+    @Override
     public byte[] hash() {
         hashed(() -> {
             append(PREPARED_TRANSACTION_HASH_PURPOSE);

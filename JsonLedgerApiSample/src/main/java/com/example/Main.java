@@ -25,6 +25,7 @@ import com.example.services.Ledger;
 import com.example.services.Wallet;
 import com.example.signing.Keys;
 import com.example.signing.SignatureProvider;
+import com.example.signing.TopologySignatureProvider;
 import com.example.store.IntegrationStore;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -57,9 +58,12 @@ public class Main {
             Env env = Env.validate();
 
             // using this SignatureProvider visualises transactions during transaction signing
-            SignatureProvider signatureProvider = Ledger::sign;
-            // SignatureProvider signatureProvider = Ledger::verifyAndSign;
+            // SignatureProvider signatureProvider = Ledger::sign;
+            SignatureProvider signatureProvider = Ledger::verifyAndSign;
             // SignatureProvider signatureProvider = Ledger::printAndSign;
+
+            // TopologySignatureProvider topologySignatureProvider = Ledger::signTopology;
+            TopologySignatureProvider topologySignatureProvider = Ledger::verifyAndSignTopology;
 
             Wallet wallet = new Wallet(
                     env.managingUser(),
@@ -68,7 +72,8 @@ public class Main {
                     env.ledgerApiUrl(),
                     env.validatorApiUrl(),
                     env.scanProxyApiUrl(),
-                    signatureProvider
+                    signatureProvider,
+                    topologySignatureProvider
             );
 
             printStep("Confirm API connectivity");
@@ -238,7 +243,7 @@ public class Main {
             KeyPair externalPartyKeyPair = Keys.generate();
 
             System.out.printf("Allocating new external party with hint: %s%n", partyHint);
-            ExternalParty externalParty = wallet.allocateExternalPartyNew(synchronizerId, partyHint, externalPartyKeyPair);
+            ExternalParty externalParty = wallet.allocateExternalParty(synchronizerId, partyHint, externalPartyKeyPair);
 
             System.out.println("Allocated party: " + externalParty.partyId());
             Keys.printKeyPairSummary(partyHint, externalPartyKeyPair);
@@ -251,7 +256,7 @@ public class Main {
             String commandId = java.util.UUID.randomUUID().toString();
             wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty.partyId(), externalParty.keyPair());
 
-            System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s%n", commandId);
+            System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s)%n", commandId);
             expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
 
             System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
@@ -331,7 +336,6 @@ public class Main {
     }
 
     private static void handleException(Exception ex) {
-        System.err.println(ex.getMessage());
         ex.printStackTrace();
         System.exit(1);
     }
