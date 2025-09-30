@@ -70,6 +70,7 @@ public class Main {
 
             Wallet wallet = new Wallet(
                     env.adminUser(),
+                    env.exchangeUser(),
                     env.scanApiUrl(),
                     env.tokenStandardUrl(),
                     env.ledgerApiUrl(),

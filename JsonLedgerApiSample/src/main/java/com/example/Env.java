@@ -135,7 +135,7 @@ public record Env(
         String rawAdminUserToken = System.getenv(ADMIN_USER_TOKEN_KEY);
         if (rawAdminUserToken == null || rawAdminUserToken.isBlank()) {
             System.out.printf("""
-                    This application needs a current JWT for the participant admin (a user with participant_admin rights).
+                    This application needs a current JWT for a user with the ParticipantAdmin right.
                     
                     For most use cases, this means a current JWT for the validator's ledger-api-user user ID.
                     
