@@ -1,0 +1,9 @@
+{
+  "activeHoldings": {},
+  "lastIngestedOffset": 30,
+  "sourceSynchronizerId": "sync::normalized",
+  "lastIngestedRecordTime": "1971-01-01T00:00:30Z",
+  "lastIngestedUpdateId": "update-30",
+  "treasuryParty": "dummy::normalized",
+  "txHistoryLog": []
+}

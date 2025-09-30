@@ -4,11 +4,25 @@ import splice.api.token.holdingv1.InstrumentId;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Balances {
-    private HashMap<InstrumentId, BigDecimal> balances = new HashMap<>();
+    final private HashMap<InstrumentId, BigDecimal> balances = new HashMap<>();
 
-    public Balances() {};
+    public Balances() {
+    };
+
+    public Map<InstrumentId, BigDecimal> getBalanceMap() {
+        removeZeroBalances();
+        return balances;
+    }
+
+    public void add(Balances other) {
+        for (var entry : other.balances.entrySet()) {
+            balances.put(entry.getKey(),
+                    balances.getOrDefault(entry.getKey(), BigDecimal.ZERO).add(entry.getValue()));
+        }
+    }
 
     public void credit(InstrumentId instrumentId, BigDecimal amount) {
         this.balances.put(instrumentId, this.balances.getOrDefault(instrumentId, BigDecimal.ZERO).add(amount));
@@ -31,5 +45,9 @@ public class Balances {
         );
         sb.append("}}");
         return sb.toString();
+    }
+
+    private void removeZeroBalances() {
+        balances.entrySet().removeIf(entry -> entry.getValue().equals(BigDecimal.ZERO));
     }
 }
