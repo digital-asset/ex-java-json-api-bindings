@@ -252,22 +252,13 @@ public class Ledger {
         byte[] topologyHash = new TopologyHashBuilder(transactionsBase64).hash();
         byte[] rawProvidedHash = Encode.fromBase64String(transactionMultiHash);
 
-        String base64ComputedHash = Encode.toBase64String(topologyHash);
-        System.out.printf("Topology hash comparison: %s (provided) vs %s (computed) for topology transactions [%s]",
-                transactionMultiHash, base64ComputedHash, String.join(", ", transactionsBase64));
-
         if (!Arrays.equals(topologyHash, rawProvidedHash)) {
+            String base64ComputedHash = Encode.toBase64String(topologyHash);
             throw new IllegalStateException("Topology hash mismatch: %s (provided) vs %s (computed) for topology transactions [%s]"
                     .formatted(transactionMultiHash, base64ComputedHash, String.join(", ", transactionsBase64)));
         }
 
         return sign(keyPair, transactionMultiHash);
-    }
-
-    public static SignedTransaction makeSignedTransaction(String transaction, List<Signature> signatures) {
-        return new SignedTransaction()
-                .transaction(transaction)
-                .signatures(signatures);
     }
 
     public static Right makeCanReadAsAnyRight() {
@@ -401,18 +392,6 @@ public class Ledger {
         // System.out.println("\ngenerate external party topology response: " + response.toJson() + "\n");
 
         return response;
-    }
-
-    public void allocateExternalParty(String synchronizerId, List<SignedTransaction> signedTransactions) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-
-        AllocateExternalPartyRequest request = new AllocateExternalPartyRequest()
-                .synchronizer(synchronizerId)
-                .onboardingTransactions(signedTransactions)
-                .identityProviderId(user.identityProviderId());
-
-        // System.out.println("\ngenerate external party topology request: " + request.toJson() + "\n");
-        AllocateExternalPartyResponse response = this.ledgerApi.postV2PartiesExternalAllocate(request);
-        // System.out.println("\ngenerate external party topology response: " + response.toJson() + "\n");
     }
 
     public void allocateExternalParty(String synchronizerId, List<String> transactions, Signature multiHashSignature) throws ApiException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
