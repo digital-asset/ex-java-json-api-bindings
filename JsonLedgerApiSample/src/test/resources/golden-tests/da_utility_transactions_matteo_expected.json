@@ -1,0 +1,3211 @@
+{
+  "lastIngestedOffset": 7027,
+  "sourceSynchronizerId": "global-domain::1220dcb3d94765ff95e60b2524603f9cca70cafd8363718fb7762a0b7111bd94e9c5",
+  "lastIngestedRecordTime": "2025-09-30T12:53:51.001375Z",
+  "treasuryParty": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+  "activeHoldings": {
+    "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3": {
+      "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+      "instrumentId": {
+        "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "id": "LIMBERTO"
+      },
+      "amount": 50.0000000000,
+      "meta": {
+        "values": {
+          "utility.digitalasset.com/holding-label": "\"\""
+        }
+      }
+    }
+  },
+  "pendingTransferInstructions": {},
+  "txHistoryLog": [
+    {
+      "updateMetadata": {
+        "updateId": "1220adddc83798f06391ec6f1879d7513de0993413561761a23c3a16c2adad7888de",
+        "recordTime": "2025-09-30T12:45:43.152090Z",
+        "offset": 6956
+      },
+      "exerciseNodeId": 5,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "AcceptedMint_Execute",
+          "packageName": "utility-registry-v0",
+          "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Mint:AcceptedMint"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 100.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6956,
+            "nodeId": 5,
+            "contractId": "00c980f0e4bf093fdc0177622b72b9a33de831977abc8a37583de77adfb5c2e2c4ca111220c9181cac7161a2b5f4a9268e20c18149ac2b32382ad1518d570cc531bc7a93cb",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Mint:AcceptedMint",
+            "choice": "AcceptedMint_Execute",
+            "choiceArgument": {
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "credentialCids": []
+            },
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 8,
+            "exerciseResult": {
+              "holdingCid": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+              "executedMintCid": "00a678e07a1d5e237ba6f2fc6ab1ef2d2e39bb4a4e1081588006c0a135a353367cca111220f37abdeea1103172b26fcb892cccc1ac2cc2c9177f5767a7287f39ddec28db3e",
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "",
+                  "splice.lfdecentralizedtrust.org/tx-kind": "mint"
+                }
+              }
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6956,
+            "nodeId": 7,
+            "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "100.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "100.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:45:46.036920Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6956,
+            "nodeId": 8,
+            "contractId": "00a678e07a1d5e237ba6f2fc6ab1ef2d2e39bb4a4e1081588006c0a135a353367cca111220f37abdeea1103172b26fcb892cccc1ac2cc2c9177f5767a7287f39ddec28db3e",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Mint:ExecutedMint",
+            "createArgument": {
+              "mint": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "100.0000000000",
+                "holder": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "reference": "",
+                "batch": {
+                  "id": "420b2281-0d46-4d3d-bc5b-e17b482533d0",
+                  "size": "1"
+                }
+              },
+              "holdingLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:45:46.036920Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12203895a79b9371928b8e684ec42b27f63d81d164d545e64dc56e704b19c37f8f36",
+        "recordTime": "2025-09-30T12:46:59.243642Z",
+        "offset": 6975
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "pendingInstructionCid": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 100.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": ""
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:46:58.190Z",
+              "executeBefore": "2025-10-03T12:46:58.190Z",
+              "inputHoldingCids": [
+                "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6975,
+            "nodeId": 0,
+            "contractId": "00c17fa6d86f4248876829216cda924222f204795d4e4f6d9f8fe180b497b4485eca1112203c37c8c4a291b58778872e5315cca1dea344562f7f0e7b46c47b8bbc13d70a2d",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Service.AllocationFactory:AllocationFactory",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferFactory",
+            "choice": "TransferFactory_Transfer",
+            "choiceArgument": {
+              "expectedAdmin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "50.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:46:58.19Z",
+                "executeBefore": "2025-10-03T12:46:58.19Z",
+                "inputHoldingCids": [
+                  "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": ""
+                  }
+                }
+              },
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 6,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Pending",
+                "value": {
+                  "transferInstructionCid": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb"
+                }
+              },
+              "senderChangeCids": [
+                "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd"
+              ],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6975,
+            "nodeId": 3,
+            "contractId": "005bce2c5deb1c0b0f798b098bbac25069f02b78330001dd583f7b5262be444f1fca111220fddd0c38308e1761f835f58e8288d5f28bd836399f5bf2fec267cbd9998378c8",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 3,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6975,
+            "nodeId": 4,
+            "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "50.0000000000",
+              "lock": {
+                "lockers": {
+                  "map": [
+                    [
+                      "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      {}
+                    ]
+                  ]
+                },
+                "context": "",
+                "observers": {
+                  "map": [
+                    [
+                      "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      {}
+                    ]
+                  ]
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "50.0000000000",
+                  "lock": {
+                    "holders": [
+                      "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+                    ],
+                    "context": ""
+                  },
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:46:59.441950Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6975,
+            "nodeId": 5,
+            "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "50.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "50.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:46:59.441950Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6975,
+            "nodeId": 6,
+            "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "50.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:46:58.19Z",
+                "executeBefore": "2025-10-03T12:46:58.19Z",
+                "inputHoldingCids": [
+                  "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": ""
+                  }
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "transfer": {
+                    "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "amount": "50.0000000000",
+                    "instrumentId": {
+                      "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      "id": "LIMBERTO"
+                    },
+                    "requestedAt": "2025-09-30T12:46:58.19Z",
+                    "executeBefore": "2025-10-03T12:46:58.19Z",
+                    "inputHoldingCids": [
+                      "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+                    ],
+                    "meta": {
+                      "values": {
+                        "splice.lfdecentralizedtrust.org/reason": ""
+                      }
+                    }
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "meta": {
+                    "values": {}
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:46:59.441950Z",
+            "packageName": "utility-registry-app-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12202af7c2aa156822a097bbda679dbc8ac1e75290550686083922cdff06ac483b81",
+        "recordTime": "2025-09-30T12:47:03.128417Z",
+        "offset": 6978
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": ""
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:46:58.190Z",
+              "executeBefore": "2025-10-03T12:46:58.190Z",
+              "inputHoldingCids": [
+                "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6978,
+            "nodeId": 0,
+            "contractId": "00fef61fa8fb6de22f85562d7d55170b72bff9f46908133bcfb6b825bb79ec6c92ca111220c1563da9e44df9b3e87daf6dccd9a427c715fdda01609102ef55b15977d263fb",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Accept",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    },
+                    "utility.digitalasset.com/app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 7,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Completed",
+                "value": {
+                  "receiverHoldingCids": [
+                    "004cf8023cfd5ccd2ea55c9d882682edf8adc404129e592441ea838b6d85cb514fca1112208f3b433abf6270cf972e724709a983d2979ef9390a36eaba9e97433e1b3b4b2e"
+                  ]
+                }
+              },
+              "senderChangeCids": [],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": [
+              "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6978,
+            "nodeId": 2,
+            "contractId": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Rule.Transfer:TransferRule",
+            "choice": "TransferRule_Transfer",
+            "choiceArgument": {
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "50.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:46:58.19Z",
+                "executeBefore": "2025-10-03T12:46:58.19Z",
+                "inputHoldingCids": [
+                  "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": ""
+                  }
+                }
+              },
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "senderCredentialCids": [],
+              "receiverCredentialCids": [],
+              "appRewardConfigurationCid": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 6,
+            "exerciseResult": {
+              "receiverHoldingCid": "004cf8023cfd5ccd2ea55c9d882682edf8adc404129e592441ea838b6d85cb514fca1112208f3b433abf6270cf972e724709a983d2979ef9390a36eaba9e97433e1b3b4b2e"
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6978,
+            "nodeId": 5,
+            "contractId": "00380c22166d2960c9fccaec014944a6050760e89e558a4da24eb811083c5e535cca11122029124d83021fec11904362511bc02ccd27da730ba2b86216e271c6106865b2b3",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 5,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6978,
+            "nodeId": 6,
+            "contractId": "004cf8023cfd5ccd2ea55c9d882682edf8adc404129e592441ea838b6d85cb514fca1112208f3b433abf6270cf972e724709a983d2979ef9390a36eaba9e97433e1b3b4b2e",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "50.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "50.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:47:06.309072Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6978,
+            "nodeId": 7,
+            "contractId": "003040d5bae7f6c6baa598b171b9cc7e18aaacab1b11e07deaf42e9ec294dcc5c6ca111220c5a3c4538234511c565e46e40e3fb4b737d1bb87a0c7cb35d633533e0272fd9c",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Transfer:ExecutedTransfer",
+            "createArgument": {
+              "transfer": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "50.0000000000",
+                "reference": "",
+                "batch": {
+                  "id": "",
+                  "size": "1"
+                }
+              },
+              "senderLabel": "",
+              "receiverLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:47:06.309072Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206c0140ce3ba43ea5c4d579fc990cc46fb33114850fb856b168e0d4b83ca1f287",
+        "recordTime": "2025-09-30T12:47:19.264640Z",
+        "offset": 6981
+      },
+      "exerciseNodeId": 6,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 10.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "pendingInstructionCid": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 10.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:47:20.509Z",
+              "executeBefore": "2025-10-03T12:47:20.509Z",
+              "inputHoldingCids": [
+                "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 6981,
+            "nodeId": 6,
+            "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "10.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:47:20.509Z",
+                "executeBefore": "2025-10-03T12:47:20.509Z",
+                "inputHoldingCids": [
+                  "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": ""
+                  }
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "transfer": {
+                    "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "amount": "10.0000000000",
+                    "instrumentId": {
+                      "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      "id": "LIMBERTO"
+                    },
+                    "requestedAt": "2025-09-30T12:47:20.509Z",
+                    "executeBefore": "2025-10-03T12:47:20.509Z",
+                    "inputHoldingCids": [
+                      "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+                    ],
+                    "meta": {
+                      "values": {
+                        "splice.lfdecentralizedtrust.org/reason": ""
+                      }
+                    }
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "meta": {
+                    "values": {}
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:47:21.616660Z",
+            "packageName": "utility-registry-app-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "1220bbeffc5b6caf8b378b721cd10ad109e789c9e504ffd0e618e65b0cdb31ba15f9",
+        "recordTime": "2025-09-30T12:47:28.901118Z",
+        "offset": 6984
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 10.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 10.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 10.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:47:20.509Z",
+              "executeBefore": "2025-10-03T12:47:20.509Z",
+              "inputHoldingCids": [
+                "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": ""
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6984,
+            "nodeId": 0,
+            "contractId": "0016deff85c3d298a6a7625980d2a9935865437a4118d882ed0150ba5dc93be9f4ca1112205785b11b1ffc6f443254ae7cf01d10e6951754d0c5db237495d0b6244b73b0c5",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Accept",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    },
+                    "utility.digitalasset.com/app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 7,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Completed",
+                "value": {
+                  "receiverHoldingCids": [
+                    "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa"
+                  ]
+                }
+              },
+              "senderChangeCids": [],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": [
+              "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6984,
+            "nodeId": 2,
+            "contractId": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Rule.Transfer:TransferRule",
+            "choice": "TransferRule_Transfer",
+            "choiceArgument": {
+              "transfer": {
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "10.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:47:20.509Z",
+                "executeBefore": "2025-10-03T12:47:20.509Z",
+                "inputHoldingCids": [
+                  "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": ""
+                  }
+                }
+              },
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "senderCredentialCids": [],
+              "receiverCredentialCids": [],
+              "appRewardConfigurationCid": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 6,
+            "exerciseResult": {
+              "receiverHoldingCid": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa"
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6984,
+            "nodeId": 5,
+            "contractId": "00ea5f5499000431784ead46eae7b955f8bf44cea7ff30f0071dd4fbd544c0bef0ca1112200d2194b9b761570d047f27f66e775dcd4f7289a3bbae5fe72f0a292f8e8a90b5",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 5,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6984,
+            "nodeId": 6,
+            "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "10.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "10.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:47:32.159185Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6984,
+            "nodeId": 7,
+            "contractId": "00eb1db10ac789e60d6d6c5d44da834cc9eebe1d96a9b11627c6d4771a7a06e52aca111220ebf4a8745652a2c22dceaab30bad68c787bab5159ccbc4766c710cee4baa730d",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Transfer:ExecutedTransfer",
+            "createArgument": {
+              "transfer": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "10.0000000000",
+                "reference": "",
+                "batch": {
+                  "id": "",
+                  "size": "1"
+                }
+              },
+              "senderLabel": "",
+              "receiverLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:47:32.159185Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 7,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "Holding_Merge",
+          "packageName": "utility-registry-holding-v0",
+          "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 10.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 60.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6996,
+            "nodeId": 7,
+            "contractId": "005890242bf202e6918264468e01739b133a16971c6fe3da99b2558e6637a703c8ca111220385a125b8bcb6d45069d305ccae92f9cf8925a468cdbfa13b34e7feab2c7b6fa",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Holding_Merge",
+            "choiceArgument": {
+              "holdingCids": [
+                "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd"
+              ]
+            },
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 10,
+            "exerciseResult": {
+              "holdingCid": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/tx-kind": "merge-split"
+                }
+              }
+            },
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6996,
+            "nodeId": 9,
+            "contractId": "00911de0dcc5732f2337681ef741c36ef2f4deac121de4a46e623d0a6480b2182aca111220543a30b8dbb2106e961c626f5aa4742ca818dc2777fd6ca7cc3a90220981f8cd",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 9,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6996,
+            "nodeId": 10,
+            "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "60.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "60.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:07.256314Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 14,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "Holding_Split",
+          "packageName": "utility-registry-holding-v0",
+          "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 60.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        },
+        {
+          "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6996,
+            "nodeId": 14,
+            "contractId": "00f714474677854913ca2c58a5bae9bb5a22cfe25e10ec35ab63111e2595036507ca11122082bad82f19272870e95d26ba343abc8ff8d9cec2d7b8db70b75b02e2be90a0b1",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Holding_Split",
+            "choiceArgument": {
+              "amounts": [
+                "30.0000000000"
+              ]
+            },
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 16,
+            "exerciseResult": {
+              "splitCids": [
+                "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd"
+              ],
+              "remaining": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/tx-kind": "merge-split"
+                }
+              }
+            },
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6996,
+            "nodeId": 15,
+            "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "30.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "30.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:07.256314Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6996,
+            "nodeId": 16,
+            "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "30.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "30.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:07.256314Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12206da6b112319037a71f18a18f8146b05c1dddcb690cb40855b111bf14fa464302",
+        "recordTime": "2025-09-30T12:48:07.150023Z",
+        "offset": 6996
+      },
+      "exerciseNodeId": 20,
+      "unrecognized": {
+        "kind": "UNRECOGNIZED_CHOICE",
+        "details": {
+          "choiceName": "AcceptedBurn_Execute",
+          "packageName": "utility-registry-v0",
+          "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Burn:AcceptedBurn"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6996,
+            "nodeId": 20,
+            "contractId": "00bd9c82be5d534b37c7b098fd188e3dbb93eb0b649952d147221c685c0de07044ca111220134cf498c45849e0320d85378065ae8e505809c111921a3f2833c8f283706be4",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Burn:AcceptedBurn",
+            "choice": "AcceptedBurn_Execute",
+            "choiceArgument": {
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "credentialCids": [],
+              "holdingCid": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd"
+            },
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 24,
+            "exerciseResult": {
+              "executedBurnCid": "0077feff0e6e5bff79d2eed87f38972f5f89eedc1086027bc5159f0a6acf466c3cca1112200221bb17b53e20c31ad85a2e70ffaf8ca23e4bda68340e3fec3d9661d1a6bbbe",
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/burned": "30.0",
+                  "splice.lfdecentralizedtrust.org/reason": "burn",
+                  "splice.lfdecentralizedtrust.org/tx-kind": "burn"
+                }
+              }
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6996,
+            "nodeId": 23,
+            "contractId": "00dfb2a8cf4aeb1f073d72b9ebce3c3689166b84f1195875ac3b8242726bd622c9ca11122085a6c7e7095fa320f694ebd9e7951291dbcae91447cd4d7ac72425a28b18b9bd",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 23,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6996,
+            "nodeId": 24,
+            "contractId": "0077feff0e6e5bff79d2eed87f38972f5f89eedc1086027bc5159f0a6acf466c3cca1112200221bb17b53e20c31ad85a2e70ffaf8ca23e4bda68340e3fec3d9661d1a6bbbe",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Burn:ExecutedBurn",
+            "createArgument": {
+              "burn": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "30.0000000000",
+                "holder": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "reference": "burn",
+                "batch": {
+                  "id": "8923d7e5-ee9a-4831-92fa-c22f9822bc18",
+                  "size": "1"
+                }
+              },
+              "holdingLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:07.256314Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12209b8098a85212f4c87b25dcb579754f368b48423ca64025ef88e4430b02ac3bcf",
+        "recordTime": "2025-09-30T12:48:34.854656Z",
+        "offset": 6999
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "example-reference-123",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 30.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "pendingInstructionCid": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        },
+        {
+          "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": "example-reference-123"
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 30.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:48:36.655Z",
+              "executeBefore": "2025-10-03T12:48:36.655Z",
+              "inputHoldingCids": [
+                "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 6999,
+            "nodeId": 0,
+            "contractId": "00c17fa6d86f4248876829216cda924222f204795d4e4f6d9f8fe180b497b4485eca1112203c37c8c4a291b58778872e5315cca1dea344562f7f0e7b46c47b8bbc13d70a2d",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Service.AllocationFactory:AllocationFactory",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferFactory",
+            "choice": "TransferFactory_Transfer",
+            "choiceArgument": {
+              "expectedAdmin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "30.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:48:36.655Z",
+                "executeBefore": "2025-10-03T12:48:36.655Z",
+                "inputHoldingCids": [
+                  "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                  }
+                }
+              },
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 5,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Pending",
+                "value": {
+                  "transferInstructionCid": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5"
+                }
+              },
+              "senderChangeCids": [],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 6999,
+            "nodeId": 3,
+            "contractId": "0026af18f8cbf78cd940dc57c4cb7395705d29b0539b55c727e5dd41ccccfb1bb2ca11122031f4a3f279a2b78249e4893f7bcc0531bbfd6a6302e263d060ced2831c8157f1",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 3,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6999,
+            "nodeId": 4,
+            "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "30.0000000000",
+              "lock": {
+                "lockers": {
+                  "map": [
+                    [
+                      "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      {}
+                    ]
+                  ]
+                },
+                "context": "example-reference-123",
+                "observers": {
+                  "map": [
+                    [
+                      "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      {}
+                    ]
+                  ]
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "30.0000000000",
+                  "lock": {
+                    "holders": [
+                      "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+                    ],
+                    "context": "example-reference-123"
+                  },
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:38.020383Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 6999,
+            "nodeId": 5,
+            "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "30.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:48:36.655Z",
+                "executeBefore": "2025-10-03T12:48:36.655Z",
+                "inputHoldingCids": [
+                  "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                  }
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "transfer": {
+                    "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "amount": "30.0000000000",
+                    "instrumentId": {
+                      "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      "id": "LIMBERTO"
+                    },
+                    "requestedAt": "2025-09-30T12:48:36.655Z",
+                    "executeBefore": "2025-10-03T12:48:36.655Z",
+                    "inputHoldingCids": [
+                      "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+                    ],
+                    "meta": {
+                      "values": {
+                        "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                      }
+                    }
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "meta": {
+                    "values": {}
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:38.020383Z",
+            "packageName": "utility-registry-app-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12209bc5f376652e32bcd9cfb754ea8fba4351b784cdc438712d0c218fe25181187d",
+        "recordTime": "2025-09-30T12:48:43.304563Z",
+        "offset": 7002
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_OUT",
+        "details": {
+          "memoTag": "example-reference-123",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 30.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 30.0000000000,
+            "lock": {
+              "holders": [
+                "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+              ],
+              "context": "example-reference-123"
+            },
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": true
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 30.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:48:36.655Z",
+              "executeBefore": "2025-10-03T12:48:36.655Z",
+              "inputHoldingCids": [
+                "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 7002,
+            "nodeId": 0,
+            "contractId": "00475b34495d9365b3455896cc69a71a91ffafca225355f3dd9adf192636be5e87ca1112202176fe99b5f359b774e5fad3e94affb83d4f599713b7e4cdd53eec93b19566c5",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Accept",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    },
+                    "utility.digitalasset.com/app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 7,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Completed",
+                "value": {
+                  "receiverHoldingCids": [
+                    "005842bc0d73d256bd5a641148274c8418e2a620198f742208c9845dcc0bf834ccca111220e70ed14c5895c70ac49de4ddb91fbbb62184d2402c8d99093b4123afabef95a1"
+                  ]
+                }
+              },
+              "senderChangeCids": [],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": [
+              "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 7002,
+            "nodeId": 2,
+            "contractId": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Rule.Transfer:TransferRule",
+            "choice": "TransferRule_Transfer",
+            "choiceArgument": {
+              "transfer": {
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "30.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:48:36.655Z",
+                "executeBefore": "2025-10-03T12:48:36.655Z",
+                "inputHoldingCids": [
+                  "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": "example-reference-123"
+                  }
+                }
+              },
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "senderCredentialCids": [],
+              "receiverCredentialCids": [],
+              "appRewardConfigurationCid": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 6,
+            "exerciseResult": {
+              "receiverHoldingCid": "005842bc0d73d256bd5a641148274c8418e2a620198f742208c9845dcc0bf834ccca111220e70ed14c5895c70ac49de4ddb91fbbb62184d2402c8d99093b4123afabef95a1"
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 7002,
+            "nodeId": 5,
+            "contractId": "00dce63092ce8b91076236966fa62726e118a8ad5ed286addbe0420e1faba20d49ca111220bf1338b073dfb94fc2fc17619ac1121d5b3b864b8431bbb8a15d6234480f0d2e",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 5,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 7002,
+            "nodeId": 6,
+            "contractId": "005842bc0d73d256bd5a641148274c8418e2a620198f742208c9845dcc0bf834ccca111220e70ed14c5895c70ac49de4ddb91fbbb62184d2402c8d99093b4123afabef95a1",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "30.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "30.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:43.830700Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 7002,
+            "nodeId": 7,
+            "contractId": "003190bfe952fbcfcec01c8a1f9994c2a7120aa3ac515030f4eaa1b278a7326de8ca111220f9164adf57559a3a12adc41abefe21e63f98c1837edad05cbb731b0d90df345e",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Transfer:ExecutedTransfer",
+            "createArgument": {
+              "transfer": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "sender": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "30.0000000000",
+                "reference": "example-reference-123",
+                "batch": {
+                  "id": "",
+                  "size": "1"
+                }
+              },
+              "senderLabel": "",
+              "receiverLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:48:43.830700Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "12200bd093babae234b632a73bdebadcc2c005239ef9f93e9f6ece754b6865d8f239",
+        "recordTime": "2025-09-30T12:49:01.245723Z",
+        "offset": 7005
+      },
+      "exerciseNodeId": 8,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "PENDING",
+          "multiStepCorrelationId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "pendingInstructionCid": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2"
+        }
+      },
+      "treasuryHoldingChanges": [],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:49:00.608Z",
+              "executeBefore": "2025-10-03T12:49:00.608Z",
+              "inputHoldingCids": [
+                "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": false
+        }
+      ],
+      "transactionEvents": [
+        {
+          "CreatedEvent": {
+            "offset": 7005,
+            "nodeId": 8,
+            "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "transfer": {
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "50.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:49:00.608Z",
+                "executeBefore": "2025-10-03T12:49:00.608Z",
+                "inputHoldingCids": [
+                  "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                  }
+                }
+              }
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "transfer": {
+                    "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "amount": "50.0000000000",
+                    "instrumentId": {
+                      "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                      "id": "LIMBERTO"
+                    },
+                    "requestedAt": "2025-09-30T12:49:00.608Z",
+                    "executeBefore": "2025-10-03T12:49:00.608Z",
+                    "inputHoldingCids": [
+                      "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+                    ],
+                    "meta": {
+                      "values": {
+                        "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                      }
+                    }
+                  },
+                  "status": {
+                    "tag": "TransferPendingReceiverAcceptance",
+                    "value": {}
+                  },
+                  "meta": {
+                    "values": {}
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:49:01.509063Z",
+            "packageName": "utility-registry-app-v0"
+          }
+        }
+      ]
+    },
+    {
+      "updateMetadata": {
+        "updateId": "1220417cc8175517836e0083c81f357223d381e10df78c48a06409a4c4d997315a44",
+        "recordTime": "2025-09-30T12:49:01.779143Z",
+        "offset": 7008
+      },
+      "exerciseNodeId": 0,
+      "transfer": {
+        "senderPartyId": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "receiverPartyId": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+        "kind": "TRANSFER_IN",
+        "details": {
+          "memoTag": "example-reference-456",
+          "instrumentId": {
+            "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "id": "LIMBERTO"
+          },
+          "amount": 50.0000000000,
+          "transferStatus": "COMPLETED",
+          "multiStepCorrelationId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2"
+        }
+      },
+      "treasuryHoldingChanges": [
+        {
+          "contractId": "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3",
+          "holding": {
+            "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+            "instrumentId": {
+              "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "id": "LIMBERTO"
+            },
+            "amount": 50.0000000000,
+            "meta": {
+              "values": {
+                "utility.digitalasset.com/holding-label": "\"\""
+              }
+            }
+          },
+          "archived": false
+        }
+      ],
+      "pendingTransferInstructionChanges": [
+        {
+          "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+          "transferInstruction": {
+            "transfer": {
+              "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "amount": 50.0000000000,
+              "instrumentId": {
+                "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO"
+              },
+              "requestedAt": "2025-09-30T12:49:00.608Z",
+              "executeBefore": "2025-10-03T12:49:00.608Z",
+              "inputHoldingCids": [
+                "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+              ],
+              "meta": {
+                "values": {
+                  "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                }
+              }
+            },
+            "status": {"tag": "TransferPendingReceiverAcceptance", "value": {}},
+            "meta": {
+              "values": {}
+            }
+          },
+          "archived": true
+        }
+      ],
+      "transactionEvents": [
+        {
+          "ExercisedEvent": {
+            "offset": 7008,
+            "nodeId": 0,
+            "contractId": "00046ed3b25622236971ca15266fd9c0853f0e48ab9a4aed010a5113d9502468daca1112201454945c4c404d11b573a0d4b4a4ed94ed488d8ca1b36aeed39786ed3be6e8f2",
+            "templateId": "7214b863006d33a218ffc935142e8298be2fa6705fdcb6b77e9f33f5825e77fb:Utility.Registry.App.V0.Model.Transfer:TransferOffer",
+            "interfaceId": "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction",
+            "choice": "TransferInstruction_Accept",
+            "choiceArgument": {
+              "extraArgs": {
+                "context": {
+                  "values": {
+                    "app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    },
+                    "utility.digitalasset.com/app-reward-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+                    },
+                    "utility.digitalasset.com/instrument-configuration": {
+                      "tag": "AV_ContractId",
+                      "value": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6"
+                    },
+                    "utility.digitalasset.com/receiver-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/sender-credentials": {
+                      "tag": "AV_List",
+                      "value": []
+                    },
+                    "utility.digitalasset.com/transfer-rule": {
+                      "tag": "AV_ContractId",
+                      "value": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b"
+                    }
+                  }
+                },
+                "meta": {
+                  "values": {}
+                }
+              }
+            },
+            "actingParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 7,
+            "exerciseResult": {
+              "output": {
+                "tag": "TransferInstructionResult_Completed",
+                "value": {
+                  "receiverHoldingCids": [
+                    "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3"
+                  ]
+                }
+              },
+              "senderChangeCids": [],
+              "meta": {
+                "values": {}
+              }
+            },
+            "packageName": "utility-registry-app-v0",
+            "implementedInterfaces": [
+              "55ba4deb0ad4662c4168b39859738a0e91388d252286480c7331b3f71a517281:Splice.Api.Token.TransferInstructionV1:TransferInstruction"
+            ]
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 7008,
+            "nodeId": 2,
+            "contractId": "00cfe175e82e57b401f7bb801db2b340e705309d6fbcc37f1dddb55ae7fb364aa6ca1112201d238fe86d441962cd69eaf562d7c5eb857c9e6ee917b8fe4194b6b0dc54268b",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Rule.Transfer:TransferRule",
+            "choice": "TransferRule_Transfer",
+            "choiceArgument": {
+              "transfer": {
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "amount": "50.0000000000",
+                "instrumentId": {
+                  "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO"
+                },
+                "requestedAt": "2025-09-30T12:49:00.608Z",
+                "executeBefore": "2025-10-03T12:49:00.608Z",
+                "inputHoldingCids": [
+                  "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af"
+                ],
+                "meta": {
+                  "values": {
+                    "splice.lfdecentralizedtrust.org/reason": "example-reference-456"
+                  }
+                }
+              },
+              "instrumentConfigurationCid": "004d4d9fdadc5015a10282e4aac659bc1416f331ca5ff6c22ff48feed1def17aa3ca111220780c5cea1db8c54c648c92b15f0a625e2cad8d4bb9d9f5695f3d03b7f8ae2fa6",
+              "senderCredentialCids": [],
+              "receiverCredentialCids": [],
+              "appRewardConfigurationCid": "00b4d9c5bc5b1e2bf3780f1f4ed63ad0b3144c3869665d6f0ad2f0d400f61c7b73ca1112208b7e4e6d9464b509ac55aef766160100fb90ce4fa9bda77d0013af8c324fbfc4"
+            },
+            "actingParties": [
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": false,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 6,
+            "exerciseResult": {
+              "receiverHoldingCid": "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3"
+            },
+            "packageName": "utility-registry-v0",
+            "implementedInterfaces": []
+          }
+        },
+        {
+          "ExercisedEvent": {
+            "offset": 7008,
+            "nodeId": 5,
+            "contractId": "0056339c742526fb7bbc795abc846bbc0077f108d0408f4558b24e9d4a12790c61ca111220bfa800d6743a981b5f56768aeb1cb005eb5d49d4ed0d14ca865e2ce3ad8457af",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "choice": "Archive",
+            "choiceArgument": {},
+            "actingParties": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "consuming": true,
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "lastDescendantNodeId": 5,
+            "exerciseResult": {},
+            "packageName": "utility-registry-holding-v0",
+            "implementedInterfaces": [
+              "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding"
+            ]
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 7008,
+            "nodeId": 6,
+            "contractId": "0004b3b07f30cf9d9e73c9c704a149f5267561e4cd91a6f1b3c77d28de7d50ca68ca111220b46e7cbb1d88ea834c8ac00a3fdc005141367ce617272c613838b587dc7e84d3",
+            "templateId": "87006466081c022513f7a1e6c73d8506f929cf22a16670a7b836c8a31c2b98ee:Utility.Registry.Holding.V0.Holding:Holding",
+            "createArgument": {
+              "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+              "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "instrument": {
+                "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "id": "LIMBERTO",
+                "scheme": "RegistrarInternalScheme"
+              },
+              "label": "",
+              "amount": "50.0000000000"
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [
+              {
+                "interfaceId": "718a0f77e505a8de22f188bd4c87fe74101274e9d4cb1bfac7d09aec7158d35b:Splice.Api.Token.HoldingV1:Holding",
+                "viewStatus": {
+                  "code": 0,
+                  "message": "",
+                  "details": []
+                },
+                "viewValue": {
+                  "owner": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "instrumentId": {
+                    "admin": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                    "id": "LIMBERTO"
+                  },
+                  "amount": "50.0000000000",
+                  "meta": {
+                    "values": {
+                      "utility.digitalasset.com/holding-label": "\"\""
+                    }
+                  }
+                }
+              }
+            ],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:49:06.499827Z",
+            "packageName": "utility-registry-holding-v0"
+          }
+        },
+        {
+          "CreatedEvent": {
+            "offset": 7008,
+            "nodeId": 7,
+            "contractId": "007abf92044ac7a7b83188654fc583e49b9f0dde1b7e625ccdbfea37d595f21d34ca111220fde891fc5dda5845b2abe6680c259ca81a30da0ac165b003fef1702ea9cc5b12",
+            "templateId": "1247ec844be91a283a30b30fd565d0b4d6e37eced2b6ecfbbf6a364dbc63861a:Utility.Registry.V0.Holding.Transfer:ExecutedTransfer",
+            "createArgument": {
+              "transfer": {
+                "operator": "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5",
+                "provider": "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "registrar": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "sender": "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "receiver": "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                "instrumentIdentifier": {
+                  "source": "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+                  "id": "LIMBERTO",
+                  "scheme": "RegistrarInternalScheme"
+                },
+                "amount": "50.0000000000",
+                "reference": "example-reference-456",
+                "batch": {
+                  "id": "",
+                  "size": "1"
+                }
+              },
+              "senderLabel": "",
+              "receiverLabel": ""
+            },
+            "createdEventBlob": "",
+            "interfaceViews": [],
+            "witnessParties": [
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "signatories": [
+              "chun2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36"
+            ],
+            "observers": [
+              "chun1::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo2::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36",
+              "utility-operator::12206fefcaf90a4b1ed9b155bffcb7db12edf60c543b7c41d5f1f04e47cdebdb1fe5"
+            ],
+            "createdAt": "2025-09-30T12:49:06.499827Z",
+            "packageName": "utility-registry-v0"
+          }
+        }
+      ]
+    }
+  ]
+}
