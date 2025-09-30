@@ -113,7 +113,7 @@ public class TransactionHashBuilder extends HashWriter {
         encode(metadata.getInputContractsList(), this::encodeInputContract);
     }
 
-    private void encodeCreatedNode(InteractiveSubmissionDataOuterClass.Create create, Optional<ByteString> nodeSeed) {
+    private void encodeCreateNode(InteractiveSubmissionDataOuterClass.Create create, Optional<ByteString> nodeSeed) {
         append(NODE_ENCODING_VERSION);
         encode(create.getLfVersion());
         append((byte)0); // 'create' node tag
@@ -185,7 +185,7 @@ public class TransactionHashBuilder extends HashWriter {
                 break;
             case TIMESTAMP:
                 append((byte)0x04);
-                encode(value.getTimestamp() + ""); // TODO: check why this is converted to a string before encoding
+                append(value.getTimestamp());
                 break;
             case DATE:
                 append((byte)0x05);
@@ -261,7 +261,7 @@ public class TransactionHashBuilder extends HashWriter {
 
     private void encodeInputContract(InteractiveSubmissionServiceOuterClass.Metadata.InputContract inputContract) {
         append(inputContract.getCreatedAt());
-        hashed(() -> encodeCreatedNode(inputContract.getV1(), Optional.empty()));
+        hashed(() -> encodeCreateNode(inputContract.getV1(), Optional.empty()));
     }
 
     private void encodeNodeById(String id) {
@@ -277,12 +277,13 @@ public class TransactionHashBuilder extends HashWriter {
     }
 
     private void encodeNode(InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node) {
+        assert node.hasV1();
         var v1 = node.getV1();
 
         var seed = this.nodeSeedsById.get(node.getNodeId());
         switch (v1.getNodeTypeCase()) {
             case CREATE:
-                encodeCreatedNode(v1.getCreate(), Optional.ofNullable(seed)
+                encodeCreateNode(v1.getCreate(), Optional.ofNullable(seed)
                     .map(InteractiveSubmissionServiceOuterClass.DamlTransaction.NodeSeed::getSeed));
                 break;
             case FETCH:
