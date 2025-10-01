@@ -69,7 +69,8 @@ public class Main {
             // SignatureProvider signatureProvider = Ledger::printAndSign;
 
             Wallet wallet = new Wallet(
-                    env.managingUser(),
+                    env.adminUser(),
+                    env.exchangeUser(),
                     env.scanApiUrl(),
                     env.tokenStandardUrl(),
                     env.ledgerApiUrl(),

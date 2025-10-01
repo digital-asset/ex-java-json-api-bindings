@@ -24,7 +24,8 @@ import java.security.KeyPair;
 import java.util.Optional;
 
 public record Env(
-        LedgerUser managingUser,
+        LedgerUser adminUser,
+        LedgerUser exchangeUser,
         Optional<ExternalParty> existingTreasuryParty,
         Optional<ExternalParty> existingTestParty,
         String ledgerApiUrl,
@@ -40,10 +41,12 @@ public record Env(
         String testPartyHint,
         String identitiesCacheFile
 ) {
-    public final static String MANAGING_USER_TOKEN_KEY = "VALIDATOR_TOKEN";
+    public final static String ADMIN_USER_TOKEN_KEY = "VALIDATOR_TOKEN";
+    public final static String EXCHANGE_USER_TOKEN_KEY = "EXCHANGE_USER_TOKEN";
 
     public static Env validate() throws Exception {
-        LedgerUser managingUser = readManagingUser();
+        LedgerUser adminUser = readAdminUser();
+        LedgerUser exchangeUser = readExchangeUser(adminUser);
         Optional<ExternalParty> existingTreasuryParty = readExternalParty("TREASURY");
         Optional<ExternalParty> existingTestParty = readExternalParty("TEST");
 
@@ -69,7 +72,8 @@ public record Env(
         String identitiesCacheFile = getenv("IDENTITIES_CACHE", "identities-cache.json");
 
         return new Env(
-                managingUser,
+                adminUser,
+                exchangeUser,
                 existingTreasuryParty,
                 existingTestParty,
                 ledgerApiUrl,
@@ -127,11 +131,11 @@ public record Env(
         }
     }
 
-    private static LedgerUser readManagingUser() throws IllegalArgumentException {
-        String rawManagingUserToken = System.getenv(MANAGING_USER_TOKEN_KEY);
-        if (rawManagingUserToken == null || rawManagingUserToken.isBlank()) {
+    private static LedgerUser readAdminUser() throws IllegalArgumentException {
+        String rawAdminUserToken = System.getenv(ADMIN_USER_TOKEN_KEY);
+        if (rawAdminUserToken == null || rawAdminUserToken.isBlank()) {
             System.out.printf("""
-                    This application needs a current JWT for the participant admin (a user with participant_admin rights).
+                    This application needs a current JWT for a user with the ParticipantAdmin right.
                     
                     For most use cases, this means a current JWT for the validator's ledger-api-user user ID.
                     
@@ -140,15 +144,27 @@ public record Env(
                     Please refer to the exchange integration guide for more information: https://docs.digitalasset.com/integrate/devnet/exchange-integration/node-operations.html#setup-ledger-api-users
                     
                     In the meantime, this application will try to 'guess' a valid token based on LocalNet default auth configuration.
-                    %n""", rawManagingUserToken);
+                    %n""", rawAdminUserToken);
 
             // this is a dummy auth token for LocalNet
-            rawManagingUserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc";
+            rawAdminUserToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc";
         }
 
         String identityProviderId = getenv("IDENTITY_PROVIDER_ID", "");
 
-        return LedgerUser.validateUserToken(rawManagingUserToken, identityProviderId);
+        return LedgerUser.validateUserToken(rawAdminUserToken, identityProviderId);
+    }
+
+    private static LedgerUser readExchangeUser(LedgerUser defaultUser) throws IllegalArgumentException {
+        String rawExchangeUserToken = System.getenv(EXCHANGE_USER_TOKEN_KEY);
+
+        if (rawExchangeUserToken == null || rawExchangeUserToken.isBlank()) {
+            System.out.printf("Environment variable %s was not set. Using '%s' as the exchange user.%n", EXCHANGE_USER_TOKEN_KEY, defaultUser.userId());
+            return defaultUser;
+        }
+
+        String identityProviderId = getenv("IDENTITY_PROVIDER_ID", "");
+        return LedgerUser.validateUserToken(rawExchangeUserToken, identityProviderId);
     }
 
     private static Optional<ExternalParty> readExternalParty(String environmentPrefix) throws Exception {
