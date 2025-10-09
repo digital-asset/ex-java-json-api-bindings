@@ -423,7 +423,7 @@ public class Main {
             throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
         }
 
-        System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);
+        System.out.printf("Awaiting completion of treasury transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);
         expectSuccessfulCompletion(wallet, ids.treasury().partyId(), commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
