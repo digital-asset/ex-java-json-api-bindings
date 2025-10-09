@@ -90,6 +90,9 @@ public class Main {
             printStep("Confirm authentication");
             wallet.confirmAuthentication();
 
+            printStep("Confirm authorization");
+            wallet.confirmAuthorization(env);
+
             printStep("Setup exchange parties (or read from cache)");
             TestIdentities ids = getOrCreateTestIdentities(env, wallet);
 

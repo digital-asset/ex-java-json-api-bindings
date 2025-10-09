@@ -17,6 +17,7 @@ package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.example.ConversionHelpers;
+import com.example.Env;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.model.*;
@@ -113,6 +114,38 @@ public class Wallet {
             System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the exchange token.");
             throw ex;
         }
+    }
+
+    public void confirmAuthorization(Env env) throws Exception {
+
+        // users must exist
+        User managingUser = this.managingLedgerApi.getUser(env.managingUser().userId())
+                .orElseThrow(() -> new IllegalArgumentException("The user " + env.managingUser().userId() + " does not exist."));
+        System.out.println("User " + env.managingUser().userId() + " exists.");
+
+        User exchangeUser = this.managingLedgerApi.getUser(env.exchangeUser().userId())
+                .orElseThrow(() -> new IllegalArgumentException("The user " + env.exchangeUser().userId() + " does not exist."));
+        System.out.println("User " + env.exchangeUser().userId() + " exists.");
+
+        // managing user rights
+        this.managingLedgerApi.getUserRights(env.managingUser().userId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf7)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + managingUser.getId() + " does not have ProviderAdmin"));
+        System.out.println("User " + env.managingUser().userId() + " has ProviderAdmin rights.");
+
+        // exchange user rights
+        this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf2)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanExecuteAsAnyParty"));
+        System.out.println("User " + env.exchangeUser().userId() + " has CanExecuteAsAnyParty rights.");
+
+        this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf4)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanReadAsAnyParty"));
+        System.out.println("User " + env.exchangeUser().userId() + " has CanReadAsAnyParty rights.");
     }
 
     public String getDsoPartyId() throws Exception {
