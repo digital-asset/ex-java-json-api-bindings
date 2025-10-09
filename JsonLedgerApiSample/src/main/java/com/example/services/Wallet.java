@@ -131,20 +131,20 @@ public class Wallet {
         this.managingLedgerApi.getUserRights(env.managingUser().userId()).stream()
                 .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf7)
                 .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("User " + managingUser.getId() + " does not have ProviderAdmin"));
+                        new IllegalArgumentException("User " + managingUser.getId() + " does not have ProviderAdmin. See the README."));
         System.out.println("User " + env.managingUser().userId() + " has ProviderAdmin rights.");
 
         // exchange user rights
         this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
                 .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf2)
                 .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanExecuteAsAnyParty"));
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanExecuteAsAnyParty. See the README."));
         System.out.println("User " + env.exchangeUser().userId() + " has CanExecuteAsAnyParty rights.");
 
         this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
                 .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf4)
                 .findFirst().orElseThrow(() ->
-                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanReadAsAnyParty"));
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanReadAsAnyParty. See the README."));
         System.out.println("User " + env.exchangeUser().userId() + " has CanReadAsAnyParty rights.");
     }
 
