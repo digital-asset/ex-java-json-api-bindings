@@ -142,11 +142,6 @@ public class Wallet {
         Signature multiHashSignature = topologySignatureProvider.sign(externalPartyKeyPair, transactionsToSign, generateStepResponse.getMultiHash());
         this.managingLedgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
 
-        this.managingLedgerApi.grantUserRights(this.managingUser.userId(), List.of(
-                Ledger.makeCanReadAsRight(partyId),
-                Ledger.makeCanExecuteAsRight(partyId)
-        ));
-
         return new ExternalParty(partyId, externalPartyKeyPair);
     }
 
