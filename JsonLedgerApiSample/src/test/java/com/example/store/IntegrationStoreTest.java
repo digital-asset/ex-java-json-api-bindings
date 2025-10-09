@@ -16,6 +16,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +53,7 @@ class IntegrationStoreTest {
      * Generate test data by running the `Main` program with `--write-test-data`.
      */
     @Test
-    void testOneDepositAndWithdrawal() {
+    void testOneDepositAndWithdrawAndCompareLog() {
         TestIdentities ids = readTestJson(TestFiles.IDENTITIES_FILE, new TypeToken<>() {
         });
         WorkflowInfo info = readTestJson(TestFiles.WORKFLOW_INFO_FILE, new TypeToken<>() {
@@ -82,20 +83,35 @@ class IntegrationStoreTest {
         assertEquals(2, history.size());
 
         TxHistoryEntry entry1 = history.get(0);
-        TxHistoryEntry.TransferIn label1 = new TxHistoryEntry.TransferIn(
-                ids.alice().partyId(),
+        TxHistoryEntry.TransferDetails transferDetails1 = new TxHistoryEntry.TransferDetails(
                 info.aliceDepositId(),
-                ids.cantonCoinId(), damlDecimal(100)
+                ids.cantonCoinId(), damlDecimal(100),
+                TxHistoryEntry.TransferStatus.COMPLETED,
+                null,
+                null
         );
-        assertEquals(label1, entry1.details());
+        TxHistoryEntry.Transfer transfer1 = new TxHistoryEntry.Transfer(
+                ids.alice().partyId(),
+                ids.treasury().partyId(),
+                TxHistoryEntry.TransferKind.TRANSFER_IN,
+                transferDetails1);
+        assertEquals(transfer1, entry1.transfer());
 
         TxHistoryEntry entry2 = history.get(1);
-        TxHistoryEntry.TransferOut label2 = new TxHistoryEntry.TransferOut(
-                ids.alice().partyId(),
+        TxHistoryEntry.TransferDetails transferDetails2 = new TxHistoryEntry.TransferDetails(
                 info.aliceWithdrawalId(),
-                ids.cantonCoinId(), damlDecimal(20)
+                ids.cantonCoinId(), damlDecimal(20),
+                TxHistoryEntry.TransferStatus.COMPLETED,
+                null,
+                null
         );
-        assertEquals(label2, entry2.details());
+
+        TxHistoryEntry.Transfer transfer2 = new TxHistoryEntry.Transfer(
+                ids.treasury().partyId(),
+                ids.alice().partyId(),
+                TxHistoryEntry.TransferKind.TRANSFER_OUT,
+                transferDetails2);
+        assertEquals(transfer2, entry2.transfer());
     }
 
     @Test
@@ -104,8 +120,29 @@ class IntegrationStoreTest {
         // used in the https://github.com/hyperledger-labs/splice repo as part of
         // the token standard parsing reference implementation copied from
         // https://github.com/hyperledger-labs/splice/blob/fa489964c2b37e1b5d0adad66eabe7315eef473b/token-standard/cli/__tests__/mocks/data/txs.json
-         // and then modified using search-and-replace to replace "alice::normalized" with "treasury::normalized".
-        testGolden("splice-test-cases", "treasury::normalized");
+        // and then modified using search-and-replace to replace "alice::normalized" with "treasury::normalized".
+        IntegrationStore store = testGolden("splice-test-cases", "treasury::normalized");
+
+        // Check there are no unexpected unrecognized entries in the tx history log
+        for (TxHistoryEntry entry : store.getTxHistoryLog()) {
+            if (entry.unrecognized() != null) {
+                switch (entry.unrecognized().kind()) {
+                    case BARE_CREATE -> {
+                        String templateId = entry.unrecognized().details().get("templateId");
+                        if (!templateId.endsWith("DummyHolding")) {
+                            fail("Only dummy holdings should be bare-created: " + ExtendedJson.gsonPretty.toJson(entry));
+                        }
+                    }
+                    case UNRECOGNIZED_CHOICE -> {
+                        String choiceName = entry.unrecognized().details().get("choiceName");
+                        if (!choiceName.startsWith("WalletAppInstall_ExecuteBatch")) {
+                            fail("Only Splice.Wallet choices should be unrecognized, but found: " + ExtendedJson.gsonPretty.toJson(entry));
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     @Test
@@ -115,22 +152,60 @@ class IntegrationStoreTest {
     }
 
     @Test
-    void testOneStepDepositAndWithdraw() {
+    void testGoldenOneStepDepositAndWithdraw() {
         // Parse the same data as in the test above, but with a party that would not be the treasury.
         testGolden("one-step-deposit-and-withdraw",
                 "treasury::1220bada55b12697a660ade92a1c920b2cd9d9bed0e854c17fb3697119c46b29c5e8");
     }
 
-    private void testGolden(String baseName, String treasuryPartyId) {
+    @Test
+    void testDaUtilityTransactions() {
+        // Parse transactions generated by the DA Utility, https://docs.digitalasset.com/utilities/mainnet/index.html
+        IntegrationStore store = testGolden("da_utility_transactions",
+                "matteo::12207df51d7324dc93aea211bdd38ffc23d63a20db7a9cc06f2fac89339657f50b36");
+
+        // Check there are no unexpected unrecognized entries in the tx history log
+        // We are OK with them not being recognized, as they do not represent transfers, and
+        // just updating the set of holdings of the treasury party is sufficient.
+        Set<String> expectedUnrecognized = Set.of(
+                "utility-registry-v0:AcceptedMint_Execute",
+                "utility-registry-v0:AcceptedBurn_Execute",
+                "utility-registry-holding-v0:Holding_Merge",
+                "utility-registry-holding-v0:Holding_Split"
+        );
+        for (TxHistoryEntry entry : store.getTxHistoryLog()) {
+            if (entry.unrecognized() != null) {
+                switch (entry.unrecognized().kind()) {
+                    case BARE_CREATE ->
+                            fail("DA Utility transactions should not contain bare creates: " + ExtendedJson.gsonPretty.toJson(entry));
+                    case UNRECOGNIZED_CHOICE -> {
+                        String choiceName = entry.unrecognized().details().get("choiceName");
+                        String packageName = entry.unrecognized().details().get("packageName");
+                        if (!expectedUnrecognized.contains(packageName + ":" + choiceName)) {
+                            fail("Unexpected unrecognized choice name: " + ExtendedJson.gsonPretty.toJson(entry));
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    private IntegrationStore testGolden(String baseName, String treasuryPartyId) {
         String treasuryHint = treasuryPartyId.substring(0, treasuryPartyId.indexOf(':'));
         Path updatesFile = TestFiles.GOLDEN_TEST_DIR.resolve(baseName + ".json");
         Path expectedStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_expected.json");
         Path actualStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_actual.json");
+        Path demoStoreFile = updatesFile.getParent().resolve(baseName + "_" + treasuryHint + "_demo_compact.json");
 
         System.out.println("running golden test with Ledger API updates list from: " + updatesFile);
         System.out.println("  treasury party: " + treasuryPartyId);
         System.out.println("  expected: " + expectedStoreFile);
         System.out.println("  actual:   " + actualStoreFile);
+
+        // Write this compact file to make it easier to understand the actual kind of tx log being parsed
+        System.out.println("  demo (without original transaction events):   " + demoStoreFile);
 
         // ingest all updates
         List<JsGetUpdatesResponse> updates = readTestJson(updatesFile, new TypeToken<>() {
@@ -138,6 +213,29 @@ class IntegrationStoreTest {
         IntegrationStore store = new IntegrationStore(treasuryPartyId, 0L);
         for (JsGetUpdatesResponse updateResponse : updates) {
             store.ingestUpdate(updateResponse.getUpdate());
+        }
+
+        // update demo file without transaction events
+        IntegrationStore compactStore = IntegrationStore.copyWithoutTransactionEvents(store);
+        boolean didUpdateDemoFile = false;
+        if (Files.exists(demoStoreFile)) {
+            try {
+                String existingDemoJson = Files.readString(demoStoreFile);
+                String compactJson = compactStore.toString();
+                if (!existingDemoJson.equals(compactJson)) {
+                    didUpdateDemoFile = true;
+                    Files.writeString(demoStoreFile, compactJson);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            didUpdateDemoFile = true;
+            try {
+                Files.writeString(demoStoreFile, compactStore.toString());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // write and compare test files
@@ -163,6 +261,12 @@ class IntegrationStoreTest {
                 throw new RuntimeException(e);
             }
         }
+
+        if (didUpdateDemoFile) {
+            fail("The demo compact store file at " + demoStoreFile + " was updated. Please verify that the changes are expected.");
+        }
+
+        return store;
     }
 
     static private BigDecimal damlDecimal(long val) {

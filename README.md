@@ -27,7 +27,8 @@ The sample illustrates the endpoints, the request payloads, and their responses 
 * Establish transfer pre-approvals for an external party
 * Query for a list of token standard holdings
 * Transfer token standard assets
-* Digest the transaction stream
+* Parse treasury holdings from the transaction stream
+* Parse completed and pending transfers from the transaction stream
 * Poll the command completion APIs to know when an externally-signed command is successful
 
 The sample uses the following tools:
@@ -67,7 +68,7 @@ This sample was last tested with Canton Network APIs `0.4.18`.
     # JSON Ledger API
     curl http://canton.localhost:2975/v2/version
     ```
-   
+
     ```
     # Validator API
     curl http://wallet.localhost:2000/api/validator/v0/validator-user
@@ -75,7 +76,7 @@ This sample was last tested with Canton Network APIs `0.4.18`.
 
     ```
     # Scan API
-    curl http://scan.localhost:4000/api/scan/v0/scans 
+    curl http://scan.localhost:4000/api/scan/v0/scans
     ```
 
     ```

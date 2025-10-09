@@ -36,7 +36,12 @@ public class ContractIdTypeAdapterFactory implements TypeAdapterFactory {
         TypeAdapter<ContractId> contractIdAdapter = new TypeAdapter<ContractId>() {
             @Override
             public void write(JsonWriter out, ContractId value) throws IOException {
-                out.value(value.contractId);
+                if (value == null) {
+                    out.nullValue();
+                    return;
+                } else {
+                    out.value(value.contractId);
+                }
             }
 
             @Override

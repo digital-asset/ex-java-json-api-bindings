@@ -33,6 +33,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.*;
+import java.time.Instant;
 import java.util.*;
 
 public class Ledger {
@@ -192,15 +193,6 @@ public class Ledger {
         return InteractiveSubmissionServiceOuterClass.PreparedTransaction.parseFrom(transactionBytes);
     }
 
-    public static Signature printAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
-
-        InteractiveSubmissionServiceOuterClass.PreparedTransaction preparedTransaction = parseTransaction(base64EncodedPayload);
-        String transactionSubmitted = preparedTransaction.toString();
-        System.out.println("Raw transaction: " + transactionSubmitted);
-
-        return sign(keyPair, base64EncodedPayload, hashedPayload);
-    }
-
     public static Signature sign(KeyPair keyPair, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         String fingerprint = Encode.toHexString(Keys.fingerPrintOf(keyPair.getPublic()));
@@ -214,6 +206,15 @@ public class Ledger {
 
     public static Signature sign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         return sign(keyPair, hashedPayload);
+    }
+
+    public static Signature printAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
+
+        InteractiveSubmissionServiceOuterClass.PreparedTransaction preparedTransaction = parseTransaction(base64EncodedPayload);
+        String transactionSubmitted = preparedTransaction.toString();
+        System.out.println("Raw transaction: " + transactionSubmitted);
+
+        return sign(keyPair, base64EncodedPayload, hashedPayload);
     }
 
     public static Signature verifyAndSign(KeyPair keyPair, String base64EncodedPayload, String hashedPayload) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidProtocolBufferException {
