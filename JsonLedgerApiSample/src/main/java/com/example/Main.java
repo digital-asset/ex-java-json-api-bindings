@@ -262,7 +262,7 @@ public class Main {
             wallet.issueTransferPreapprovalProposal(synchronizerId, commandId, dso, exchangePartyId, externalParty.partyId(), externalParty.keyPair());
 
             System.out.printf("Awaiting completion of transfer preapproval proposal (Command ID %s)%n", commandId);
-            expectSuccessfulCompletion(wallet, externalParty.partyId(), commandId, offsetBeforeProposal);
+            expectSuccessfulCompletion(wallet, externalParty.partyId(), true, commandId, offsetBeforeProposal);
 
             System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
             waitFor(5 * 1000, 12, () -> {
@@ -385,7 +385,7 @@ public class Main {
         }
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
-        expectSuccessfulCompletion(wallet, senderPartyId, commandId, offsetBeforeTransfer);
+        expectSuccessfulCompletion(wallet, senderPartyId, senderKeyPair.isPresent(), commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
     }
@@ -424,15 +424,15 @@ public class Main {
         }
 
         System.out.printf("Awaiting completion of treasury transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);
-        expectSuccessfulCompletion(wallet, ids.treasury().partyId(), commandId, offsetBeforeTransfer);
+        expectSuccessfulCompletion(wallet, ids.treasury().partyId(), true, commandId, offsetBeforeTransfer);
 
         System.out.println("Transfer complete");
     }
 
-    private static void expectSuccessfulCompletion(Wallet wallet, String partyId, String commandId, Long startOffset) throws Exception {
+    private static void expectSuccessfulCompletion(Wallet wallet, String partyId, boolean isExternalParty, String commandId, Long startOffset) throws Exception {
         CommandCompletionTracker completionTracker = new CommandCompletionTracker(startOffset);
         waitFor(2000, 10, () -> {
-            List<CompletionStreamResponse> completions = wallet.checkForCommandCompletion(List.of(partyId), completionTracker.nextOffset);
+            List<CompletionStreamResponse> completions = wallet.checkForCommandCompletion(partyId, isExternalParty, completionTracker.nextOffset);
             completionTracker.observeCompletions(completions);
             return completionTracker.resultCodeFor(commandId).isPresent();
         });

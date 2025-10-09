@@ -297,8 +297,9 @@ public class Wallet {
         this.exchangeLedgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
     }
 
-    public List<CompletionStreamResponse> checkForCommandCompletion(List<String> parties, Long beginExclusive) throws Exception {
-        return this.exchangeLedgerApi.getCompletions(parties, beginExclusive);
+    public List<CompletionStreamResponse> checkForCommandCompletion(String party, boolean isExternalParty, Long beginExclusive) throws Exception {
+        Ledger ledger = isExternalParty? this.exchangeLedgerApi : this.managingLedgerApi;
+        return ledger.getCompletions(List.of(party), beginExclusive);
     }
 
     public Long getLedgerEnd() throws Exception {
