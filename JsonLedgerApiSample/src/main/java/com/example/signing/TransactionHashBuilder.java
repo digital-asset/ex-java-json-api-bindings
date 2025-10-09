@@ -49,7 +49,6 @@ public class TransactionHashBuilder extends CantonHashBuilder {
     }
 
     private void encodeMetadata(InteractiveSubmissionServiceOuterClass.Metadata metadata) {
-        append(PREPARED_TRANSACTION_HASH_PURPOSE);
         append((byte)1);
 
         var submitterInfo = metadata.getSubmitterInfo();
@@ -114,6 +113,11 @@ public class TransactionHashBuilder extends CantonHashBuilder {
         append(NODE_ENCODING_VERSION);
         append((byte)3); // 'rollback' node tag
         encode(rollback.getChildrenList(), this::encodeNodeById);
+    }
+
+    private void encodeInputContract(InteractiveSubmissionServiceOuterClass.Metadata.InputContract inputContract) {
+        append(inputContract.getCreatedAt());
+        hashed(() -> encodeCreateNode(inputContract.getV1(), Optional.empty()));
     }
 
     private void encodeValue(ValueOuterClass.Value value) {
@@ -210,21 +214,10 @@ public class TransactionHashBuilder extends CantonHashBuilder {
         encodeValue(entry.getValue());
     }
 
-    private void encodeInputContract(InteractiveSubmissionServiceOuterClass.Metadata.InputContract inputContract) {
-        append(inputContract.getCreatedAt());
-        hashed(() -> encodeCreateNode(inputContract.getV1(), Optional.empty()));
-    }
-
     private void encodeNodeById(String id) {
         InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node = this.nodesById.get(id);
         assert node != null;
         hashed(() -> encodeNode(node));
-    }
-
-    private void encodeTransaction(InteractiveSubmissionServiceOuterClass.DamlTransaction transaction) {
-        append(PREPARED_TRANSACTION_HASH_PURPOSE);
-        encode(transaction.getVersion());
-        encode(transaction.getRootsList(), this::encodeNodeById);
     }
 
     private void encodeNode(InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node) {
@@ -252,14 +245,35 @@ public class TransactionHashBuilder extends CantonHashBuilder {
         }
     }
 
-    @Override
-    public byte[] hash() {
+    private void encodeTransaction(InteractiveSubmissionServiceOuterClass.DamlTransaction transaction) {
+        encode(transaction.getVersion());
+        encode(transaction.getRootsList(), this::encodeNodeById);
+    }
+
+    private void hashTransaction(InteractiveSubmissionServiceOuterClass.DamlTransaction transactionBody) {
         hashed(() -> {
             append(PREPARED_TRANSACTION_HASH_PURPOSE);
-            append(HASHING_SCHEME_VERSION_V2);
-            hashed(() -> encodeTransaction(preparedTransaction.getTransaction()));
-            hashed(() -> encodeMetadata(preparedTransaction.getMetadata()));
+            encodeTransaction(preparedTransaction.getTransaction());
         });
+    }
+
+    private void hashMetadata(InteractiveSubmissionServiceOuterClass.Metadata metadata) {
+        hashed(() -> {
+            append(PREPARED_TRANSACTION_HASH_PURPOSE);
+            encodeMetadata(preparedTransaction.getMetadata());
+        });
+    }
+
+    private void encodePreparedTransaction() {
+        append(PREPARED_TRANSACTION_HASH_PURPOSE);
+        append(HASHING_SCHEME_VERSION_V2);
+        hashTransaction(preparedTransaction.getTransaction());
+        hashMetadata(preparedTransaction.getMetadata());
+    }
+
+    @Override
+    public byte[] hash() {
+        hashed(this::encodePreparedTransaction);
         return finish();
     }
 }
