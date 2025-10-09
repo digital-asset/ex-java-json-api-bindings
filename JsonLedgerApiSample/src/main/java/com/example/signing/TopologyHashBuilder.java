@@ -8,6 +8,9 @@ import com.google.protobuf.ByteString;
 
 import java.util.*;
 
+// Adapted from the reference topology tranasction hashing implementation shipped with Canton:
+// https://github.com/digital-asset/canton/blob/bd02d03612d2bc22b51fb21ba7ab9082e62ef7f0/community/app/src/pack/examples/08-interactive-submission/interactive_topology_util.py#L100
+// Reference documentation on topology transactions: https://docs.digitalasset.com/build/3.3/tutorials/app-dev/external_signing_topology_transaction.html#version-wrapper
 public class TopologyHashBuilder extends CantonHashBuilder {
 
     private static final byte[] HASH_PREFIX = {

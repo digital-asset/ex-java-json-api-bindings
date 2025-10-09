@@ -24,6 +24,7 @@ class TopologyTransactionHashBuilderTest {
     @Test
     void createTreasuryExample() throws Exception {
         List<String> inputs = new ArrayList<>();
+        // An example of some topology transactions used to create a treasury party, as sampled from this example application.
         inputs.add("CosBCAEQARqEAQqBAQpEMTIyMDllYzljMTQxY2M3MGZiNjRiOTg3M2EyZWY3ZGQ3NmY5YjUxYzFhOWE5MjA3ZmJmMmI3NjhlMDQwODdkZDQyNWISNxAEGiwwKjAFBgMrZXADIQBhJWW3y52wD+i3fB7JVAb10zZK+ViNw4SbjT8G8MdYWyoDAQUEMAEiABAe");
         inputs.add("CpYBCAEQARqPAYIBiwEKTnRyZWFzdXJ5OjoxMjIwOWVjOWMxNDFjYzcwZmI2NGI5ODczYTJlZjdkZDc2ZjliNTFjMWE5YTkyMDdmYmYyYjc2OGUwNDA4N2RkNDI1YhgBIjcQBBosMCowBQYDK2VwAyEAYSVlt8udsA/ot3weyVQG9dM2SvlYjcOEm40/BvDHWFsqAwEFBDABEB4=");
         inputs.add("CrMBCAEQARqsAUqpAQpOdHJlYXN1cnk6OjEyMjA5ZWM5YzE0MWNjNzBmYjY0Yjk4NzNhMmVmN2RkNzZmOWI1MWMxYTlhOTIwN2ZiZjJiNzY4ZTA0MDg3ZGQ0MjViEAEaVQpRcGFydGljaXBhbnQ6OjEyMjAwMTI2ODFiMTVlYTdiMjY5MGNhY2JjMTYzNjY0YTZkZmIwOTZhN2UwNmJhNmVkZjdjZDA0ODBmOWU2ODVjMmQzEAIQHg==");
@@ -34,6 +35,7 @@ class TopologyTransactionHashBuilderTest {
     @Test
     void createSenderExample() throws Exception {
         List<String> inputs = new ArrayList<>();
+        // An example of some topology transactions used to create a sender party, as sampled from this example application.
         inputs.add("CosBCAEQARqEAQqBAQpEMTIyMGNiOGY4ZTUzMjE0MTNhMWU4N2E4ZWYyMzc5ZWY2MDE1ODgxMDJiZGZhZWU3MDRlZjkzNTY3MGNhNzg0OTA2MGISNxAEGiwwKjAFBgMrZXADIQByPvwpZaxNOr75Ny9n+SlpU+qCMIwIDaE5+OX0giLG8yoDAQUEMAEiABAe");
         inputs.add("CpMBCAEQARqMAYIBiAEKS2FsaWNlOjoxMjIwY2I4ZjhlNTMyMTQxM2ExZTg3YThlZjIzNzllZjYwMTU4ODEwMmJkZmFlZTcwNGVmOTM1NjcwY2E3ODQ5MDYwYhgBIjcQBBosMCowBQYDK2VwAyEAcj78KWWsTTq++TcvZ/kpaVPqgjCMCA2hOfjl9IIixvMqAwEFBDABEB4=");
         inputs.add("CrABCAEQARqpAUqmAQpLYWxpY2U6OjEyMjBjYjhmOGU1MzIxNDEzYTFlODdhOGVmMjM3OWVmNjAxNTg4MTAyYmRmYWVlNzA0ZWY5MzU2NzBjYTc4NDkwNjBiEAEaVQpRcGFydGljaXBhbnQ6OjEyMjAwMTI2ODFiMTVlYTdiMjY5MGNhY2JjMTYzNjY0YTZkZmIwOTZhN2UwNmJhNmVkZjdjZDA0ODBmOWU2ODVjMmQzEAIQHg==");

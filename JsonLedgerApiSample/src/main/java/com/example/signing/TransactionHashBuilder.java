@@ -41,6 +41,7 @@ public class TransactionHashBuilder extends CantonHashBuilder {
             nodeSeedsById.put(seed.getNodeId() + "", seed);
         }
     }
+
     private void encodeIdentifier(ValueOuterClass.Identifier identifier) {
         encode(identifier.getPackageId());
         encode(identifier.getModuleName().split("\\."), this::encode);

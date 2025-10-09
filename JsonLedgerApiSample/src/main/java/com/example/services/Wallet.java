@@ -28,7 +28,6 @@ import com.example.models.TemplateId;
 import com.example.models.TokenStandard;
 import com.example.signing.Encode;
 import com.example.signing.SignatureProvider;
-import com.example.signing.TopologyHashBuilder;
 import com.example.signing.TopologySignatureProvider;
 import com.google.protobuf.InvalidProtocolBufferException;
 import splice.api.token.holdingv1.HoldingView;
@@ -37,7 +36,6 @@ import splice.api.token.transferinstructionv1.TransferFactory_Transfer;
 
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.time.Instant;
 import java.util.*;
