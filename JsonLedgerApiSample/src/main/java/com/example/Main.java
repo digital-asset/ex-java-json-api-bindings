@@ -74,6 +74,7 @@ public class Main {
 
             Wallet wallet = new Wallet(
                     env.managingUser(),
+                    env.exchangeUser(),
                     env.scanApiUrl(),
                     env.tokenStandardUrl(),
                     env.ledgerApiUrl(),

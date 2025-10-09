@@ -48,7 +48,9 @@ public class Wallet {
 
     // authorized APIs
     public LedgerUser managingUser;
+    public LedgerUser exchangeUser;
     public Ledger managingLedgerApi;
+    public Ledger exchangeLedgerApi;
     public ScanProxy scanProxyApi;
 
     // callbacks
@@ -57,6 +59,7 @@ public class Wallet {
 
     public Wallet(
             LedgerUser managingUser,
+            LedgerUser exchangeUser,
             String scanApiUrl,
             String tokenStandardUrl,
             String ledgerApiUrl,
@@ -73,7 +76,9 @@ public class Wallet {
 
         // authorized APIs
         this.managingUser = managingUser;
+        this.exchangeUser = exchangeUser;
         this.managingLedgerApi = new Ledger(ledgerApiUrl, managingUser);
+        this.exchangeLedgerApi = new Ledger(ledgerApiUrl, exchangeUser);
         this.validatorApi = new Validator(validatorApiUrl, managingUser);
         this.scanProxyApi = new ScanProxy(scanProxyApiUrl, managingUser);
 
@@ -92,12 +97,20 @@ public class Wallet {
         // these require a valid Validator token
         try {
             System.out.println("DSO Party: " + this.scanProxyApi.getDsoPartyId());
-            System.out.println("Ledger end: " + this.managingLedgerApi.getLedgerEnd());
         } catch (com.example.client.scanProxy.invoker.ApiException ex) {
             System.err.println(ex.getCode() + " response when accessing the Scan Proxy API. Check the validator token.");
             throw ex;
+        }
+        try {
+            System.out.println("Ledger end (managing user): " + this.managingLedgerApi.getLedgerEnd());
         } catch (com.example.client.ledger.invoker.ApiException ex) {
             System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the validator token.");
+            throw ex;
+        }
+        try {
+            System.out.println("Ledger end (exchange user): " + this.exchangeLedgerApi.getLedgerEnd());
+        } catch (com.example.client.ledger.invoker.ApiException ex) {
+            System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the exchange token.");
             throw ex;
         }
     }
