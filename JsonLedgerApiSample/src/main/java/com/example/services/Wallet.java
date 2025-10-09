@@ -154,7 +154,7 @@ public class Wallet {
 
     public boolean hasEstablishedTransferPreapproval(String partyId) throws Exception {
         CumulativeFilter transferPreapprovalFilter = Ledger.createFilterByTemplate(TemplateId.TRANSFER_PREAPPROVAL_ID);
-        List<JsGetActiveContractsResponse> activeContracts = this.managingLedgerApi.getActiveContractsByFilter(partyId, List.of(transferPreapprovalFilter));
+        List<JsGetActiveContractsResponse> activeContracts = this.exchangeLedgerApi.getActiveContractsByFilter(partyId, List.of(transferPreapprovalFilter));
         // TODO: filter by provider party and expiry time
         return !activeContracts.isEmpty();
     }
@@ -167,7 +167,7 @@ public class Wallet {
 
     public List<ContractAndId<HoldingView>> queryForHoldings(String partyId, InstrumentId instrumentId) throws Exception {
         CumulativeFilter holdingInterfaceFilter = Ledger.createFilterByInterface(TemplateId.HOLDING_INTERFACE_ID);
-        return this.managingLedgerApi.getActiveContractsByFilter(partyId, List.of(holdingInterfaceFilter)).stream()
+        return this.exchangeLedgerApi.getActiveContractsByFilter(partyId, List.of(holdingInterfaceFilter)).stream()
                 .map(r -> ConversionHelpers.fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                 .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                 .toList();
@@ -180,7 +180,7 @@ public class Wallet {
                 Ledger.createFilterByInterface(TemplateId.TRANSFER_FACTORY_INTERFACE_ID),
                 Ledger.createFilterByInterface(TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID)
                 );
-        return this.managingLedgerApi.getUpdatesWithFilter(partyId, filters, beginAfterOffset);
+        return this.exchangeLedgerApi.getUpdatesWithFilter(partyId, filters, beginAfterOffset);
     }
 
     public List<ContractAndId<HoldingView>> selectHoldingsForTransfer(String partyId, InstrumentId instrumentId, BigDecimal transferAmount) throws Exception {
@@ -261,6 +261,7 @@ public class Wallet {
         );
 
         if (senderKeyPair.isEmpty()) {
+            // for local parties
             this.managingLedgerApi.submitAndWaitForCommands(
                     senderPartyId,
                     commandId,
@@ -268,6 +269,7 @@ public class Wallet {
                     disclosures);
 
         } else {
+            // for external parties
             prepareAndSign(senderPartyId, senderKeyPair.get(), synchronizerId, commandId, transferCommands, disclosures);
         }
 
@@ -280,7 +282,7 @@ public class Wallet {
     }
 
     public void prepareAndSign(String externalPartyId, KeyPair externalPartyKeyPair, String synchronizerId, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
-        JsPrepareSubmissionResponse preparedTransaction = this.managingLedgerApi.prepareSubmissionForSigning(
+        JsPrepareSubmissionResponse preparedTransaction = this.exchangeLedgerApi.prepareSubmissionForSigning(
                 synchronizerId,
                 externalPartyId,
                 commandId,
@@ -292,14 +294,14 @@ public class Wallet {
                 preparedTransaction.getPreparedTransaction(),
                 preparedTransaction.getPreparedTransactionHash());
 
-        this.managingLedgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
+        this.exchangeLedgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
     }
 
     public List<CompletionStreamResponse> checkForCommandCompletion(List<String> parties, Long beginExclusive) throws Exception {
-        return this.managingLedgerApi.getCompletions(parties, beginExclusive);
+        return this.exchangeLedgerApi.getCompletions(parties, beginExclusive);
     }
 
     public Long getLedgerEnd() throws Exception {
-        return this.managingLedgerApi.getLedgerEnd();
+        return this.exchangeLedgerApi.getLedgerEnd();
     }
 }
