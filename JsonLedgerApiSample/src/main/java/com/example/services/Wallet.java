@@ -19,9 +19,7 @@ import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass
 import com.example.ConversionHelpers;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
-import com.example.client.ledger.invoker.ApiException;
 import com.example.client.ledger.model.*;
-import com.example.client.scanProxy.model.ContractWithState;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.models.ContractAndId;
@@ -30,6 +28,7 @@ import com.example.models.TemplateId;
 import com.example.models.TokenStandard;
 import com.example.signing.Encode;
 import com.example.signing.SignatureProvider;
+import com.example.signing.TopologySignatureProvider;
 import com.google.protobuf.InvalidProtocolBufferException;
 import splice.api.token.holdingv1.HoldingView;
 import splice.api.token.holdingv1.InstrumentId;
@@ -54,6 +53,7 @@ public class Wallet {
 
     // callbacks
     public SignatureProvider signatureProvider;
+    public TopologySignatureProvider topologySignatureProvider;
 
     public Wallet(
             LedgerUser managingUser,
@@ -62,7 +62,8 @@ public class Wallet {
             String ledgerApiUrl,
             String validatorApiUrl,
             String scanProxyApiUrl,
-            SignatureProvider signatureProvider
+            SignatureProvider signatureProvider,
+            TopologySignatureProvider topologySignatureProvider
     ) throws URISyntaxException {
 
         // public APIs
@@ -77,6 +78,7 @@ public class Wallet {
         this.scanProxyApi = new ScanProxy(scanProxyApiUrl, managingUser);
 
         this.signatureProvider = signatureProvider;
+        this.topologySignatureProvider = topologySignatureProvider;
     }
 
     public void confirmConnectivity() throws Exception {
@@ -113,17 +115,18 @@ public class Wallet {
         return this.scanProxyApi.getTransferPreapproval(partyId).isPresent();
     }
 
-    public ExternalParty allocateExternalPartyNew(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
+    public ExternalParty allocateExternalParty(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
 
         GenerateExternalPartyTopologyResponse generateStepResponse = this.ledgerApi.generateExternalPartyTopology(synchronizerId, partyHint, externalPartyKeyPair.getPublic());
 
         String partyId = generateStepResponse.getPartyId();
+
         List<String> transactionsToSign = generateStepResponse.getTopologyTransactions();
         if (transactionsToSign == null) {
-            transactionsToSign = new ArrayList<>();
+            transactionsToSign = Collections.emptyList();
         }
 
-        Signature multiHashSignature = Ledger.sign(externalPartyKeyPair, generateStepResponse.getMultiHash(), generateStepResponse.getMultiHash());
+        Signature multiHashSignature = topologySignatureProvider.sign(externalPartyKeyPair, transactionsToSign, generateStepResponse.getMultiHash());
         this.ledgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
 
         this.ledgerApi.grantUserRights(this.managingUser.userId(), List.of(
