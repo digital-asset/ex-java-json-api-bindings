@@ -86,6 +86,45 @@ This sample was last tested with Canton Network APIs `0.4.18`.
       --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2NhbnRvbi5uZXR3b3JrLmdsb2JhbCIsInN1YiI6ImxlZGdlci1hcGktdXNlciJ9.A0VZW69lWWNVsjZmDDpVvr1iQ_dJLga3f-K2bicdtsc'
     ```
 
+## User Setup
+
+The sample relies on two Canton Users.
+
+* The **Managing User** has the `participant_admin` right.
+  That right enables the Managing User to onboard new, external parties, for example.
+  Typically, this will be the existing default Validator user or the `ledger-api-user`.
+ 
+* The **Exchange User** has the `CanReadAsAnyParty` and `CanExecuteAsAnyParty` rights.
+  The Exchange User is used to prepare and submit transactions on behalf of the external wallets.
+  This user does not exist by default. You will need to create it. Here is an example:
+
+    ```sh
+    curl --location 'http://canton.localhost:2975/v2/users' \
+    --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
+    --header 'Authorization: ••••••' \
+    --data '{
+        "user": {
+          "id": "exchange",
+          "primaryParty": "",
+          "isDeactivated": false,
+          "identityProviderId": "",
+          "metadata": { "resourceVersion": "", "annotations": { } }
+        },
+        "rights": [
+          { "kind": { "CanExecuteAsAnyParty": { "value": {} } } },
+          { "kind": { "CanReadAsAnyParty": { "value": {} } } }
+        ]
+      }'
+    ```
+
+    The above must be submitted by the **Managing User**.
+    That is, the `Authorization: ` header should be populated with a token
+    of a participant admin.
+
+To run the sample, you will need to provide tokens for these two users as environment variables.
+See the `.env.example` file.
+
 ## Running
 
 1. **Export** environment variables, as needed, for the values shown in
