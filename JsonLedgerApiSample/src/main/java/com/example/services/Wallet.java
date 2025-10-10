@@ -17,6 +17,7 @@ package com.example.services;
 
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.example.ConversionHelpers;
+import com.example.Env;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.model.*;
@@ -48,7 +49,9 @@ public class Wallet {
 
     // authorized APIs
     public LedgerUser managingUser;
-    public Ledger ledgerApi;
+    public LedgerUser exchangeUser;
+    public Ledger managingLedgerApi;
+    public Ledger exchangeLedgerApi;
     public ScanProxy scanProxyApi;
 
     // callbacks
@@ -57,6 +60,7 @@ public class Wallet {
 
     public Wallet(
             LedgerUser managingUser,
+            LedgerUser exchangeUser,
             String scanApiUrl,
             String tokenStandardUrl,
             String ledgerApiUrl,
@@ -73,7 +77,9 @@ public class Wallet {
 
         // authorized APIs
         this.managingUser = managingUser;
-        this.ledgerApi = new Ledger(ledgerApiUrl, managingUser);
+        this.exchangeUser = exchangeUser;
+        this.managingLedgerApi = new Ledger(ledgerApiUrl, managingUser);
+        this.exchangeLedgerApi = new Ledger(ledgerApiUrl, exchangeUser);
         this.validatorApi = new Validator(validatorApiUrl, managingUser);
         this.scanProxyApi = new ScanProxy(scanProxyApiUrl, managingUser);
 
@@ -82,7 +88,7 @@ public class Wallet {
     }
 
     public void confirmConnectivity() throws Exception {
-        System.out.println("Version: " + this.ledgerApi.getVersion());
+        System.out.println("Version: " + this.managingLedgerApi.getVersion());
         System.out.println("Synchronizer id: " + this.scanApi.getSynchronizerId());
         GetRegistryInfoResponse registryInfo = this.tokenMetadataApi.getRegistryInfo();
         System.out.println("Registry Party: " + registryInfo.getAdminId());
@@ -92,14 +98,54 @@ public class Wallet {
         // these require a valid Validator token
         try {
             System.out.println("DSO Party: " + this.scanProxyApi.getDsoPartyId());
-            System.out.println("Ledger end: " + this.ledgerApi.getLedgerEnd());
         } catch (com.example.client.scanProxy.invoker.ApiException ex) {
             System.err.println(ex.getCode() + " response when accessing the Scan Proxy API. Check the validator token.");
             throw ex;
+        }
+        try {
+            System.out.println("Ledger end (managing user): " + this.managingLedgerApi.getLedgerEnd());
         } catch (com.example.client.ledger.invoker.ApiException ex) {
             System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the validator token.");
             throw ex;
         }
+        try {
+            System.out.println("Ledger end (exchange user): " + this.exchangeLedgerApi.getLedgerEnd());
+        } catch (com.example.client.ledger.invoker.ApiException ex) {
+            System.err.println(ex.getCode() + " response when accessing the Ledger API. Check the exchange token.");
+            throw ex;
+        }
+    }
+
+    public void confirmAuthorization(Env env) throws Exception {
+
+        // users must exist
+        User managingUser = this.managingLedgerApi.getUser(env.managingUser().userId())
+                .orElseThrow(() -> new IllegalArgumentException("The user " + env.managingUser().userId() + " does not exist."));
+        System.out.println("User " + env.managingUser().userId() + " exists.");
+
+        User exchangeUser = this.managingLedgerApi.getUser(env.exchangeUser().userId())
+                .orElseThrow(() -> new IllegalArgumentException("The user " + env.exchangeUser().userId() + " does not exist."));
+        System.out.println("User " + env.exchangeUser().userId() + " exists.");
+
+        // managing user rights
+        this.managingLedgerApi.getUserRights(env.managingUser().userId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf7)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + managingUser.getId() + " does not have ProviderAdmin. See the README."));
+        System.out.println("User " + env.managingUser().userId() + " has ProviderAdmin rights.");
+
+        // exchange user rights
+        this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf2)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanExecuteAsAnyParty. See the README."));
+        System.out.println("User " + env.exchangeUser().userId() + " has CanExecuteAsAnyParty rights.");
+
+        this.managingLedgerApi.getUserRights(exchangeUser.getId()).stream()
+                .filter(r -> r.getKind().getActualInstance() instanceof KindOneOf4)
+                .findFirst().orElseThrow(() ->
+                        new IllegalArgumentException("User " + exchangeUser.getId() + " does not have CanReadAsAnyParty. See the README."));
+        System.out.println("User " + env.exchangeUser().userId() + " has CanReadAsAnyParty rights.");
     }
 
     public String getDsoPartyId() throws Exception {
@@ -107,7 +153,7 @@ public class Wallet {
     }
 
     public Optional<PartyDetails> getPartyDetails(String partyId) throws Exception {
-        return this.ledgerApi.getPartyDetails(partyId);
+        return this.managingLedgerApi.getPartyDetails(partyId);
     }
 
     // This API endpoint is specific to Canton Coin; the method's output is irrelevant when considering other token standard implementations.
@@ -117,7 +163,7 @@ public class Wallet {
 
     public ExternalParty allocateExternalParty(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
 
-        GenerateExternalPartyTopologyResponse generateStepResponse = this.ledgerApi.generateExternalPartyTopology(synchronizerId, partyHint, externalPartyKeyPair.getPublic());
+        GenerateExternalPartyTopologyResponse generateStepResponse = this.managingLedgerApi.generateExternalPartyTopology(synchronizerId, partyHint, externalPartyKeyPair.getPublic());
 
         String partyId = generateStepResponse.getPartyId();
 
@@ -127,12 +173,7 @@ public class Wallet {
         }
 
         Signature multiHashSignature = topologySignatureProvider.sign(externalPartyKeyPair, transactionsToSign, generateStepResponse.getMultiHash());
-        this.ledgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
-
-        this.ledgerApi.grantUserRights(this.managingUser.userId(), List.of(
-                Ledger.makeCanReadAsRight(partyId),
-                Ledger.makeCanExecuteAsRight(partyId)
-        ));
+        this.managingLedgerApi.allocateExternalParty(synchronizerId, transactionsToSign, multiHashSignature);
 
         return new ExternalParty(partyId, externalPartyKeyPair);
     }
@@ -146,7 +187,7 @@ public class Wallet {
 
     public boolean hasEstablishedTransferPreapproval(String partyId) throws Exception {
         CumulativeFilter transferPreapprovalFilter = Ledger.createFilterByTemplate(TemplateId.TRANSFER_PREAPPROVAL_ID);
-        List<JsGetActiveContractsResponse> activeContracts = this.ledgerApi.getActiveContractsByFilter(partyId, List.of(transferPreapprovalFilter));
+        List<JsGetActiveContractsResponse> activeContracts = this.exchangeLedgerApi.getActiveContractsByFilter(partyId, List.of(transferPreapprovalFilter));
         // TODO: filter by provider party and expiry time
         return !activeContracts.isEmpty();
     }
@@ -159,7 +200,7 @@ public class Wallet {
 
     public List<ContractAndId<HoldingView>> queryForHoldings(String partyId, InstrumentId instrumentId) throws Exception {
         CumulativeFilter holdingInterfaceFilter = Ledger.createFilterByInterface(TemplateId.HOLDING_INTERFACE_ID);
-        return this.ledgerApi.getActiveContractsByFilter(partyId, List.of(holdingInterfaceFilter)).stream()
+        return this.exchangeLedgerApi.getActiveContractsByFilter(partyId, List.of(holdingInterfaceFilter)).stream()
                 .map(r -> ConversionHelpers.fromInterface(r.getContractEntry(), TemplateId.HOLDING_INTERFACE_ID, HoldingView::fromJson))
                 .filter(v -> v != null && v.record().instrumentId.equals(instrumentId))
                 .toList();
@@ -172,7 +213,7 @@ public class Wallet {
                 Ledger.createFilterByInterface(TemplateId.TRANSFER_FACTORY_INTERFACE_ID),
                 Ledger.createFilterByInterface(TemplateId.TRANSFER_INSTRUCTION_INTERFACE_ID)
                 );
-        return this.ledgerApi.getUpdatesWithFilter(partyId, filters, beginAfterOffset);
+        return this.exchangeLedgerApi.getUpdatesWithFilter(partyId, filters, beginAfterOffset);
     }
 
     public List<ContractAndId<HoldingView>> selectHoldingsForTransfer(String partyId, InstrumentId instrumentId, BigDecimal transferAmount) throws Exception {
@@ -253,13 +294,15 @@ public class Wallet {
         );
 
         if (senderKeyPair.isEmpty()) {
-            this.ledgerApi.submitAndWaitForCommands(
+            // for local parties
+            this.managingLedgerApi.submitAndWaitForCommands(
                     senderPartyId,
                     commandId,
                     transferCommands,
                     disclosures);
 
         } else {
+            // for external parties
             prepareAndSign(senderPartyId, senderKeyPair.get(), synchronizerId, commandId, transferCommands, disclosures);
         }
 
@@ -272,7 +315,7 @@ public class Wallet {
     }
 
     public void prepareAndSign(String externalPartyId, KeyPair externalPartyKeyPair, String synchronizerId, String commandId, List<Command> commands, List<DisclosedContract> disclosures) throws Exception {
-        JsPrepareSubmissionResponse preparedTransaction = this.ledgerApi.prepareSubmissionForSigning(
+        JsPrepareSubmissionResponse preparedTransaction = this.exchangeLedgerApi.prepareSubmissionForSigning(
                 synchronizerId,
                 externalPartyId,
                 commandId,
@@ -284,14 +327,15 @@ public class Wallet {
                 preparedTransaction.getPreparedTransaction(),
                 preparedTransaction.getPreparedTransactionHash());
 
-        this.ledgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
+        this.exchangeLedgerApi.executeSignedSubmission(preparedTransaction, externalPartyId, signature);
     }
 
-    public List<CompletionStreamResponse> checkForCommandCompletion(List<String> parties, Long beginExclusive) throws Exception {
-        return this.ledgerApi.getCompletions(parties, beginExclusive);
+    public List<CompletionStreamResponse> checkForCommandCompletion(String party, boolean isExternalParty, Long beginExclusive) throws Exception {
+        Ledger ledger = isExternalParty? this.exchangeLedgerApi : this.managingLedgerApi;
+        return ledger.getCompletions(List.of(party), beginExclusive);
     }
 
     public Long getLedgerEnd() throws Exception {
-        return this.ledgerApi.getLedgerEnd();
+        return this.exchangeLedgerApi.getLedgerEnd();
     }
 }

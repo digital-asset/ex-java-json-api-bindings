@@ -413,6 +413,11 @@ public class Ledger {
         // System.out.println("\ngrant user rights response: " + response.toJson() + "\n");
     }
 
+    public List<Right> getUserRights(String userId) throws ApiException {
+        ListUserRightsResponse response = this.ledgerApi.getV2UsersUserIdRights(userId);
+        return response.getRights();
+    }
+
     public List<JsGetActiveContractsResponse> getActiveContractsByFilter(String partyId, List<CumulativeFilter> cumulativeFilters) throws Exception {
         long offset = getLedgerEnd();
 
