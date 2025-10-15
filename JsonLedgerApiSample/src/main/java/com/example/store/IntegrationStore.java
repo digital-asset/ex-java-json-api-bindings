@@ -1,5 +1,6 @@
 package com.example.store;
 
+import com.example.Assert;
 import com.example.GsonTypeAdapters.ExtendedJson;
 import com.example.client.ledger.model.*;
 import com.example.store.models.TxHistoryEntry;
@@ -45,6 +46,10 @@ public class IntegrationStore {
     private final ArrayList<TxHistoryEntry> txHistoryLog = new ArrayList<>();
 
     public IntegrationStore(String treasuryParty, Long startingOffset) {
+        if (startingOffset < 0) {
+            throw new IllegalArgumentException("Invalid starting offset; should be >= 0");
+        }
+
         this.treasuryParty = treasuryParty;
         this.lastIngestedOffset = startingOffset;
     }
@@ -150,7 +155,7 @@ public class IntegrationStore {
 
     private void ingestTransaction(JsTransaction tx) {
         updateLastIngested(tx.getOffset(), tx.getSynchronizerId(), tx.getRecordTime(), tx.getUpdateId());
-        assert tx.getEvents() != null;
+        Assert.that("the observed transaction contained a defined list of ledger events", tx.getEvents() != null);
         TxHistoryEntry.UpdateMetadata updateMetadata = new TxHistoryEntry.UpdateMetadata(tx.getUpdateId(), tx.getRecordTime(), tx.getOffset());
         TransactionParser parser = new TransactionParser(updateMetadata, new UtxoStoreImpl());
         List<TxHistoryEntry> entries = parser.parse(null, tx.getEvents());

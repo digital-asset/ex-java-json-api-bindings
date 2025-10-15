@@ -21,6 +21,7 @@ import com.example.Env;
 import com.example.access.ExternalParty;
 import com.example.access.LedgerUser;
 import com.example.client.ledger.model.*;
+import com.example.client.scanProxy.model.ContractWithState;
 import com.example.client.tokenMetadata.model.GetRegistryInfoResponse;
 import com.example.client.transferInstruction.model.TransferFactoryWithChoiceContext;
 import com.example.models.ContractAndId;
@@ -156,11 +157,6 @@ public class Wallet {
         return this.managingLedgerApi.getPartyDetails(partyId);
     }
 
-    // This API endpoint is specific to Canton Coin; the method's output is irrelevant when considering other token standard implementations.
-    public boolean hasCantonCoinTransferPreapproval(String partyId) throws Exception {
-        return this.scanProxyApi.getTransferPreapproval(partyId).isPresent();
-    }
-
     public ExternalParty allocateExternalParty(String synchronizerId, String partyHint, KeyPair externalPartyKeyPair) throws Exception {
 
         GenerateExternalPartyTopologyResponse generateStepResponse = this.managingLedgerApi.generateExternalPartyTopology(synchronizerId, partyHint, externalPartyKeyPair.getPublic());
@@ -183,6 +179,11 @@ public class Wallet {
         var transferPreapprovalProposal = Splice.makeTransferPreapprovalProposal(externalPartyId, exchangePartyId, dso);
         List<Command> createTransferPreapprovalCommands = Ledger.makeCreateCommand(TemplateId.TRANSFER_PREAPPROVAL_PROPOSAL_ID, transferPreapprovalProposal);
         this.prepareAndSign(externalPartyId, externalPartyKeyPair, synchronizerId, commandId, createTransferPreapprovalCommands, noDisclosures);
+    }
+
+    // This API endpoint is specific to Canton Coin; the method's output is irrelevant when considering other token standard implementations.
+    public Optional<ContractWithState> findCantonCoinTransferPreapproval(String partyId) throws Exception {
+        return this.scanProxyApi.getTransferPreapproval(partyId);
     }
 
     public boolean hasEstablishedTransferPreapproval(String partyId) throws Exception {
@@ -243,7 +244,7 @@ public class Wallet {
      * @param memoTag
      * @param otherTransferMetadata
      * @param amount
-     * @param holdings
+     * @param holdingContractIds
      * @param preventMultiStep
      * @return whether or not the transfer was submitted.
      *

@@ -143,10 +143,10 @@ public class Ledger {
     }
 
     @NotNull
-    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String transferFactoryContractId, Object choicePayload) {
+    public static List<Command> makeExerciseCommand(TemplateId templateId, String choiceName, String contractId, Object choicePayload) {
         ExerciseCommand exerciseTransferCommand = new ExerciseCommand()
                 .templateId(templateId.getRaw())
-                .contractId(transferFactoryContractId)
+                .contractId(contractId)
                 .choice(choiceName)
                 .choiceArgument(choicePayload);
 
