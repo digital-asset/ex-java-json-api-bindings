@@ -149,6 +149,8 @@ paths:
       tags: [scan-proxy]
       x-jvm-package: scanproxy
       operationId: "lookupTransferPreapprovalByParty"
+      security:
+        - adminAuth: []
       parameters:
         - name: "party"
           in: "path"

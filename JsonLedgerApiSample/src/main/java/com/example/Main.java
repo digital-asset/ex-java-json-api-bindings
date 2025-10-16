@@ -184,7 +184,7 @@ public class Main {
 
     private static void ingestAndParseTransactions(Wallet wallet, IntegrationStore store) {
         long lastIngestedOffset = store.getLastIngestedOffset();
-        assert lastIngestedOffset >= 0;
+        Assert.that("The integration store is tracking the ledger at a valid offset", lastIngestedOffset >= 0);
         try {
             List<JsGetUpdatesResponse> updates = wallet.queryForHoldingTransactions(store.getTreasuryParty(), lastIngestedOffset);
             for (JsGetUpdatesResponse updateResponse : updates) {
@@ -268,12 +268,12 @@ public class Main {
             expectSuccessfulCompletion(wallet, externalParty.partyId(), true, commandId, offsetBeforeProposal);
 
             System.out.println("Awaiting auto-acceptance of transfer preapproval proposal");
-            waitFor(5 * 1000, 12, () -> {
-                return wallet.hasEstablishedTransferPreapproval(externalParty.partyId());
-            });
+            waitFor(5 * 1000, 12, () ->
+                wallet.hasEstablishedTransferPreapproval(externalParty.partyId())
+            );
 
-            assert wallet.getPartyDetails(externalParty.partyId()).isPresent();
-            assert wallet.hasCantonCoinTransferPreapproval(externalParty.partyId());
+            Assert.that("the newly-created party is observable in the APIs", wallet.getPartyDetails(externalParty.partyId()).isPresent());
+            Assert.that("the newly-created party's transfer preapproval is observable in the APIs", wallet.findCantonCoinTransferPreapproval(externalParty.partyId()).isPresent());
 
             return externalParty;
         } catch (Exception ex) {
@@ -384,7 +384,7 @@ public class Main {
         Long offsetBeforeTransfer = wallet.getLedgerEnd();
         boolean transferWasSubmitted = wallet.transferHoldings(synchronizerId, commandId, senderPartyId, senderKeyPair, receiverPartyId, instrumentId, memoTag, new HashMap<>(), amount, holdingContractIds, true);
         if (!transferWasSubmitted) {
-            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
+            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer".formatted(receiverPartyId));
         }
 
         System.out.printf("Awaiting completion of transfer from %s to %s (Command ID %s)%n%n", senderPartyId, receiverPartyId, commandId);
@@ -423,7 +423,7 @@ public class Main {
         boolean transferWasSubmitted =
                 wallet.transferHoldings(ids.synchronizerId(), commandId, ids.treasury().partyId(), Optional.of(ids.treasury().keyPair()), receiverPartyId, instrumentId, Optional.of(transferId), new HashMap<>(), amount, holdings, true);
         if (!transferWasSubmitted) {
-            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer");
+            throw new IllegalStateException("Transfer preapproval was established for party %s, but no preapproval was found when setting up transfer".formatted(receiverPartyId));
         }
 
         System.out.printf("Awaiting completion of treasury transfer from %s to %s (Command ID %s)%n%n", ids.treasury().partyId(), receiverPartyId, commandId);

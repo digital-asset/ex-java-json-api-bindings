@@ -3,6 +3,7 @@ package com.example.signing;
 import com.daml.ledger.api.v2.ValueOuterClass;
 import com.daml.ledger.api.v2.interactive.InteractiveSubmissionServiceOuterClass;
 import com.daml.ledger.api.v2.interactive.transaction.v1.InteractiveSubmissionDataOuterClass;
+import com.example.Assert;
 import com.google.protobuf.ByteString;
 
 import java.nio.charset.StandardCharsets;
@@ -216,15 +217,16 @@ public class TransactionHashBuilder extends CantonHashBuilder {
 
     private void encodeNodeById(String id) {
         InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node = this.nodesById.get(id);
-        assert node != null;
+        Assert.that("the node referenced with ID " + id + " in a transaction would be defined by it", node != null);
         hashed(() -> encodeNode(node));
     }
 
     private void encodeNode(InteractiveSubmissionServiceOuterClass.DamlTransaction.Node node) {
-        assert node.hasV1();
+        Assert.that("transaction node is in V1 format", node.hasV1());
         var v1 = node.getV1();
+        String nodeId = node.getNodeId();
 
-        var seed = this.nodeSeedsById.get(node.getNodeId());
+        var seed = this.nodeSeedsById.get(nodeId);
         switch (v1.getNodeTypeCase()) {
             case CREATE:
                 encodeCreateNode(v1.getCreate(), Optional.ofNullable(seed)
@@ -234,7 +236,7 @@ public class TransactionHashBuilder extends CantonHashBuilder {
                 encodeFetchNode(v1.getFetch());
                 break;
             case EXERCISE:
-                assert seed != null;
+                Assert.that("the transaction's 'exercise' node references node, " + nodeId + ", with a known seed", seed != null);
                 encodeExerciseNode(v1.getExercise(), seed.getSeed());
                 break;
             case ROLLBACK:
